@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: rss.cgi,v 1.1 2003-08-10 20:24:26 jaeger Exp $
+# $Id: rss.cgi,v 1.2 2003-09-29 16:15:57 jaeger Exp $
 #
 
 # rss.cgi: Gives a RSS 0.91 content syndication feed
@@ -26,7 +26,7 @@ my @changelogs = Jaeger::Changelog->Select("1=1 order by time_begin desc limit 1
 foreach my $changelog (@changelogs) {
 	print "\t\t<item>\n";
 	print "\t\t\t<title>", $changelog->title(), "</title>\n";
-	print "\t\t\t<link>http://jaeger.festing.org", $changelog->url(), "</link>\n";
+	print "\t\t\t<link>", $changelog->url(), "</link>\n";
 	print "\t\t</item>\n";
 }
 

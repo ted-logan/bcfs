@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: user.cgi,v 1.3 2003-08-26 23:54:20 jaeger Exp $
+# $Id: user.cgi,v 1.4 2003-09-29 16:15:57 jaeger Exp $
 #
 
 # user.cgi: Allows editing and viewing of users
@@ -18,7 +18,7 @@ my $lf = Jaeger::Base->Lookfeel();
 
 # users who aren't logged in don't get to see this page
 unless(Jaeger::User->Login()) {
-	$lf->redirect('http://jaeger.festing.org/login.cgi');
+	$lf->redirect($Jaeger::Base::BaseURL . 'login.cgi');
 }
 
 # show whatever page the user requested
