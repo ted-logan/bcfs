@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.3 2002-08-26 05:33:24 jaeger Exp $
+# $Id: Changelog.pm,v 1.4 2002-08-26 06:20:57 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -287,6 +287,44 @@ sub _html {
 
 	return $self->lf()->changelog(%$self);
 
+}
+
+sub Navbar {
+	my $package = shift;
+
+	my ($lf, $id);
+	# this might be a class method, or might be an instance method
+	if(ref $package) {
+		$id = $package->id();
+		$lf = $package->lf();
+	} else {
+		$id = 0;
+		$lf = new Jaeger::Lookfeel;
+	}
+
+	my @changelogs = All Jaeger::Changelog(undef, 'time_begin desc', 5, 1);
+
+	my @links;
+
+	foreach my $changelog (@changelogs) {
+		if($id == $changelog->id()) {
+			push @links, $lf->link_current(
+				url => $changelog->url(),
+				title => $changelog->title()
+			);
+		} else {
+			push @links, $lf->link(
+				url => $changelog->url(),
+				title => $changelog->title()
+			);
+		}
+	}
+
+	return $lf->linkbox(
+		url => '/changelog.cgi',
+		title => 'j&auml;gerfesting',
+		links => join('', @links)
+	);
 }
 
 # returns an array with all of the changelog in the database
