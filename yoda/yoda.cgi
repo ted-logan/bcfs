@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: yoda.cgi,v 1.1 2002-08-26 18:00:43 jaeger Exp $
+# $Id: yoda.cgi,v 1.2 2003-01-20 20:08:33 jaeger Exp $
 #
 
 # yoda.cgi: For voyeristic pleasure, display Yoda's gas mileage
@@ -26,6 +26,12 @@ if($q->param('go') eq 'yep') {
 
 		foreach my $p (@Jaeger::Yoda::Params) {
 			$params{$p} = $q->param($p);
+		}
+
+		if($q->param('valid')) {
+			$params{valid} = 'true';
+		} else {
+			$params{valid} = 'false';
 		}
 
 		$yoda->insert(%params);
