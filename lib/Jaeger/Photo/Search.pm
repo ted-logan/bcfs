@@ -1,0 +1,72 @@
+package	Jaeger::Photo::Search;
+
+# 
+# $Id: Search.pm,v 1.1 2003-01-26 12:48:01 jaeger Exp $
+#
+# Copyright (c) 2002 Buildmeasite.com
+# Copyright (c) 2003 Ted Logan (jaeger@festing.org)
+
+# Displays a list of photos and thumbnails according to a search
+# Now exists without the help of Jaeger::Photo::List that Jaeger::Search exists
+
+# created  08 January 2003
+
+use strict;
+
+use Jaeger::Search::Searchable;
+use Jaeger::Photo;
+
+@Jaeger::Photo::Search::ISA = qw(Jaeger::Search::Searchable);
+
+# returns a list of photos for this search, to be used by
+# Jaeger::Search::Searchable
+sub _content {
+	my $self = shift;
+
+	# select the photos
+	my @photos = Jaeger::Photo->Select(
+		$self->{search}->like('description')
+	);
+
+	# rank the photos
+	foreach my $photo (@photos) {
+		$photo->{rank} = $self->{search}->rank($photo->{description});
+	}
+
+	return @photos;
+}
+
+sub what {
+	return 'photos';
+}
+
+#
+# methods used by Jaeger::Search::Searchable to show this page
+#
+
+sub _title {
+	my $self = shift;
+
+	return $self->{title} = 'Photo Search Results';
+}
+
+# this sub was copied and pasted from Jaeger::Photo::List
+sub _html {
+	my $self = shift;
+
+	my @html;
+
+	my $photos = $self->content();
+
+	foreach my $photo (@$photos) {
+		next unless $photo;
+		push @html, $self->lf()->photo_list(
+			url => $photo->url(),
+			thumbnail => "/digitalpics/$photo->{round}/thumbnail/$photo->{number}.jpg",
+			description => $photo->description(),
+			date => $photo->date_format()
+		);
+	}
+
+	return join('', @html);
+}
