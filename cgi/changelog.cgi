@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: changelog.cgi,v 1.2 2002-09-22 00:03:26 jaeger Exp $
+# $Id: changelog.cgi,v 1.3 2002-11-02 17:13:29 jaeger Exp $
 #
 
 # changelog.cgi: Displays a changelog, or an index of changelogs
@@ -20,15 +20,15 @@ use Jaeger::Lookfeel;
 
 use CGI;
 
-my $q = new CGI;
+my $q = Jaeger::Base::Query();
 
-my $lf = new Jaeger::Lookfeel;
+my $lf = Jaeger::Base::Lookfeel();
 
 my $changelog;
 
 if(my $id = $q->param('id')) {
 	# specify specific changelog by id
-	$changelog = new Jaeger::Changelog($id);
+	$changelog = Jaeger::Changelog->new_id($id);
 	unless($changelog) {
 		$changelog = new Jaeger::Changelog;
 		$changelog->{title} = 'No changelog';
@@ -37,7 +37,7 @@ if(my $id = $q->param('id')) {
 
 } elsif(my $year = $q->param('browse')) {
 	# browse through changelog titles by year
-	$changelog = Jaeger::Changelog->browse($year);
+	$changelog = Jaeger::Changelog->Browse($year);
 
 =for later
 } elsif(my $date = $q->param('date')) {
@@ -49,7 +49,7 @@ if(my $id = $q->param('id')) {
 =cut
 } else {
 	# show the most recent changelog
-	$changelog = newest Jaeger::Changelog;
+	$changelog = Newest Jaeger::Changelog;
 }
 
 # display the changelog
