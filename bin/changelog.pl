@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: changelog.pl,v 1.4 2002-09-04 15:59:25 jaeger Exp $
+# $Id: changelog.pl,v 1.5 2003-01-20 19:40:22 jaeger Exp $
 #
 
 # 28 May 2000
@@ -28,7 +28,7 @@ my $tempfile = shift;
 
 my $changelog;
 if($id) {
-	$changelog = new Jaeger::Changelog($id);
+	$changelog = Jaeger::Changelog->new_id($id);
 	unless($changelog) {
 		die "Changelog with id = $id doesn't exist\n";
 	}
@@ -38,7 +38,9 @@ if($id) {
 	$changelog = new Jaeger::Changelog();
 
 	$time_begin = timestamp($time_begin);
-	$time_end = timestamp($time_end);
+	if($time_end) {
+		$time_end = timestamp($time_end);
+	}
 
 	if($time_begin) {
 		$changelog->time_begin($time_begin);
@@ -55,7 +57,7 @@ if($id) {
 		chomp $title;
 	}
 
-	$changelog->title($title);
+	$changelog->{title} = $title;
 }
 
 $changelog->edit($tempfile);
