@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: rss.pl,v 1.1 2004-05-07 02:43:16 jaeger Exp $
+# $Id: rss.pl,v 1.2 2004-11-12 23:10:47 jaeger Exp $
 #
 
 #
@@ -17,23 +17,54 @@ use strict;
 use lib '/home/jaeger/programming/webpage/lib';
 
 use Jaeger::Lookfeel;
+use Jaeger::UserBox;
 
 use XML::RSS;
 use LWP::UserAgent;
 
-my @links = qw(http://kiesa.festing.org/journal/xml-rss.php http://bitscape.org/lounge.rss);
+my @links = qw(http://kiesa.festing.org/journal/xml-rss.php);
 
 my $lf = new Jaeger::Lookfeel;
 
 my @html;
 
+# Update global rss boxes
+
 foreach my $link (@links) {
-	push @html, parse_url($link);
+	eval {
+		push @html, parse_url($link);
+	};
+	if($@) {
+		warn "Error reading $link: $@\n";
+	}
 }
 
-my $sql = "update lookfeel set value = " . $lf->{dbh}->quote(join('', @html)) .
-	", timestamp = now() where label = 'rss_links'";
+$lf->{dbh}->do("delete from lookfeel where label like 'rss_links%'");
+
+my $sql = "insert into lookfeel values ('rss_links', now(), " .
+	$lf->{dbh}->quote(join('', @html)) . ")";
 $lf->{dbh}->do($sql);
+
+# Update personal rss boxes
+
+my %user_boxes;
+foreach my $box (Jaeger::UserBox->Select('1=1 order by title')) {
+	eval {
+		$user_boxes{$box->{user_id}} .= parse_url($box->{url});
+	};
+	if($@) {
+		warn "Error reading [$box->{id}] $box->{url}: $@\n";
+	}
+}
+
+foreach my $uid (keys %user_boxes) {
+	my $user = Jaeger::User->new_id($uid);
+
+	my $sql = "insert into lookfeel values ('rss_links_$user->{login}', " .
+		"now(), " . $lf->{dbh}->quote($user_boxes{$uid}) . ")";
+
+	$lf->{dbh}->do($sql);
+}
 
 exit;
 
