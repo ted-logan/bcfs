@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.17 2004-05-16 16:17:37 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.18 2004-11-12 23:09:35 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -194,6 +194,10 @@ sub _main {
 	push @navbar, Jaeger::Comment->Navbar();
 
 	push @navbar, $self->rss_links();
+
+	if($user) {
+		push @navbar, eval "\$self->rss_links_$user->{login}()";
+	}
 
 	$params{navbar} = $self->links(linkbox => join('', @navbar));
 
