@@ -44,8 +44,9 @@ create table comment (
 	id		serial primary key,
 	changelog_id	int4 references changelog,
 	user_id		int4 references jaeger_user,
-	response_id	int4,
+	response_to_id	int4,
 	title		text not null,
+	date		timestamp with time zone default now() not null,
 	body		text not null
 );
 
