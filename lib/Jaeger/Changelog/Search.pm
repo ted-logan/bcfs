@@ -1,7 +1,7 @@
 package Jaeger::Changelog::Search;
 
 #
-# $Id: Search.pm,v 1.1 2003-01-26 12:48:39 jaeger Exp $
+# $Id: Search.pm,v 1.2 2004-05-16 16:21:09 jaeger Exp $
 #
 
 # package to allow searching of changelogs
@@ -21,7 +21,7 @@ sub _content {
 
 	my $search = $self->{search};
 
-	my @cl = Jaeger::Changelog->Select($search->like(qw(title content)));
+	my @cl = Jaeger::Changelog->Select($search->like_status(qw(title content)));
 
 	# rank the changelogs
 	foreach my $changelog (@cl) {
