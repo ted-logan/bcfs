@@ -1,7 +1,7 @@
 package Jaeger::Comment;
 
 #
-# $Id: Comment.pm,v 1.3 2004-02-16 02:57:21 jaeger Exp $
+# $Id: Comment.pm,v 1.4 2004-05-16 16:16:33 jaeger Exp $
 #
 
 # Code to show and create user comments
@@ -160,13 +160,17 @@ sub Navbar {
 
 	my @links;
 
-	my @comments = $package->Select("status <= $level order by date desc limit 8");
+	my @comments = $package->Select("status <= $level and date > now() + '-1 week' order by date desc limit 8");
 	foreach my $comment (@comments) {
 		push @links, $lf->comment_link(
 			link => $comment->link(),
 			user => $comment->user()->link(),
 			date => $comment->date(),
 		);
+	}
+
+	unless(@comments) {
+		push @links, "<i>(No recent comments)</i>\n";
 	}
 
 	return $lf->linkbox(
