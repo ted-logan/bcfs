@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.24 2004-02-29 19:34:19 jaeger Exp $
+# $Id: Changelog.pm,v 1.25 2004-03-06 00:06:32 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -491,6 +491,15 @@ sub handler {
 	if(! -d $r->filename()) {
 		my $fh = Apache::File->new($r->filename());
 		if($fh) {
+			if((my $rc = $r->meets_conditions()) != OK) {
+				return $rc;
+			}
+
+			# Set useful http/1.1 headers
+			$r->set_content_length();
+			$r->set_etag();
+			$r->set_last_modified((stat $r->finfo)[9]);
+
 			$r->send_http_header();
 			$r->send_fd($fh);
 			return OK;
