@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: photos.pl,v 1.2 2003-07-05 02:06:21 jaeger Exp $
+# $Id: photos.pl,v 1.3 2004-11-12 23:26:10 jaeger Exp $
 #
 
 # Eventually, this will allow importing completely new rounds into the
@@ -23,8 +23,14 @@ unless(@ARGV) {
 	die "What rounds to import?\n";
 }
 
+my $new = 0;
+if(grep /--new/, @ARGV) {
+	$new = 1;
+	@ARGV = grep !/--new/, @ARGV;
+}
+
 foreach my $round (@ARGV) {
-	annotate_round($round);
+	annotate_round($round, $new);
 }
 
 exit;
@@ -34,6 +40,7 @@ exit;
 #
 sub annotate_round {
 	my $round = shift;
+	my $new = shift;
 
 	my @photos = Jaeger::Photo->Select("round = '$round' order by number");
 
@@ -45,6 +52,9 @@ sub annotate_round {
 	print "Round $round: ", scalar(@photos), " photos\n";
 
 	foreach my $photo (@photos) {
+		if($new && !$photo->{hidden}) {
+			next;
+		}
 		annotate_photo($photo);
 	}
 }
@@ -54,6 +64,14 @@ sub annotate_round {
 #
 sub annotate_photo {
 	my $photo = shift;
+
+	# FIXME set the time zone intelligently
+	unless($photo->{timezone_id}) {
+		$photo->{timezone} = Jaeger::Timezone->Select(name => 'MST');
+	}
+	unless($photo->{location_id}) {
+		$photo->{location_id} = 1;
+	}
 
 	# does a cropped photo exist? if not, this photo should be hidden
 	unless($photo->file_crop()) {
@@ -86,11 +104,6 @@ sub annotate_photo {
 	}
 
 	# parent process
-
-	# FIXME set the time zone intelligently
-	unless($photo->{timezone_id}) {
-		$photo->{timezone} = Jaeger::Timezone->Select(name => 'PDT');
-	}
 
 	# get the description of the photo
 	print "\n";
@@ -169,5 +182,5 @@ sub import_round {
 		closedir DIR;
 	}
 
-	return sort values %photos;
+	return sort {$a->{number} <=> $b->{number}} values %photos;
 }
