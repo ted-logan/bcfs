@@ -1,7 +1,7 @@
 package	Jaeger::Search;
 
 # 
-# $Id: Search.pm,v 1.1 2003-01-26 12:50:14 jaeger Exp $
+# $Id: Search.pm,v 1.2 2004-05-16 16:19:16 jaeger Exp $
 #
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
 
@@ -18,6 +18,7 @@ use Time::Local;
 
 use Jaeger::Photo::Search;
 use Jaeger::Changelog::Search;
+use Jaeger::Comment::Search;
 use Jaeger::Journal::Search;
 
 use Carp;
@@ -80,6 +81,19 @@ sub like {
 	}
 
 	return join(' or ', @where);
+}
+
+# Return a similar SQL where clause to like() above, except with
+# "status <= $status" at the beginning, for content that might be restricted
+sub like_status {
+	my $self = shift;
+
+	my $status = 0;
+	if(my $user = Jaeger::User->Login()) {
+		$status = $user->{status};
+	}
+
+	return "status <= $status and (" . $self->like(@_) . ')';
 }
 
 # returns an integer rank for the input column(s)
@@ -157,6 +171,15 @@ sub _html {
 	# changelog results
 	if(grep /(all|changelog)/, @what) {
 		my $search = new Jaeger::Changelog::Search($self);
+		push @results, {
+			count => $search->count(),
+			html => $search->html()
+		};
+	}
+
+	# comment results
+	if(grep /(all|comment)/, @what) {
+		my $search = new Jaeger::Comment::Search($self);
 		push @results, {
 			count => $search->count(),
 			html => $search->html()
