@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: yoda.cgi,v 1.2 2003-01-20 20:08:33 jaeger Exp $
+# $Id: yoda.cgi,v 1.3 2003-10-01 01:27:15 jaeger Exp $
 #
 
 # yoda.cgi: For voyeristic pleasure, display Yoda's gas mileage
@@ -11,16 +11,17 @@ use strict;
 use lib '/home/jaeger/programming/webpage/lib';
 use Jaeger::Lookfeel;
 use Jaeger::Yoda;
+use Jaeger::User;
 
 use CGI;
 
 my $q = new CGI;
 my $lf = new Jaeger::Lookfeel;
 my $yoda = new Jaeger::Yoda;
+my $user = Jaeger::User->Login();
 
 if($q->param('go') eq 'yep') {
-	# yeah, so this is horribly insecure
-	if($q->param('password') eq 'slashdot') {
+	if($user && $user->login() eq 'jaeger') {
 		# sanity-check and insert the gas-fetching incident
 		my %params;
 
@@ -35,12 +36,10 @@ if($q->param('go') eq 'yep') {
 		}
 
 		$yoda->insert(%params);
-	} else {
-		warn "yoda.cgi: Rejected password\n";
 	}
 }
 
-if($q->param('go') eq 'nope') {
+if($q->param('go') eq 'nope' && $user && $user->login() eq 'jaeger') {
 	# show the gas-fetching incident insertion form
 	$yoda->{submit} = 1;
 }
