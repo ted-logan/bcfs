@@ -66,6 +66,14 @@ create table user_comment_view (
 	date		timestamp with time zone default now() not null
 );
 
+create table user_box (
+	id		serial primary key,
+	user_id		int4 references jaeger_user,
+	title		text not null,
+	url		text not null,
+	last_update	timestamp with time zone
+);
+
 create table timezone (
 	id		serial primary key,
 	name		text not null unique,
