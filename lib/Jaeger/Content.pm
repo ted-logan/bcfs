@@ -1,7 +1,7 @@
 package		Jaeger::Content;
 
 #
-# $Id: Content.pm,v 1.1 2003-01-10 06:56:45 jaeger Exp $
+# $Id: Content.pm,v 1.2 2003-01-20 19:35:44 jaeger Exp $
 #
 
 # Content-controlling code
@@ -138,6 +138,44 @@ sub Navbar {
 	}
 
 	return @content;
+}
+
+# runs the specified command with this content as the file argument
+# returns 1 if the content has changed at all
+sub pipe {
+	my $self = shift;
+
+	my $command = shift;
+
+	my $tempfile = "/tmp/content-$$-" . ($Jaeger::Content::Count++)
+		. '.html';;
+
+	if($self->{value}) {
+		open TEMPFILE, ">$tempfile"
+			or die "Can't write to tempfile: $!\n";
+		print TEMPFILE $self->{value};
+		close TEMPFILE;
+	}
+
+	my $old_content = $self->{value};
+
+	system "$command $tempfile";
+
+	open TEMPFILE, $tempfile
+		or die "Can't open tempfile: $!\n";
+	local $/ = undef;
+	my $new_content = <TEMPFILE>;
+	close TEMPFILE;
+
+	unlink $tempfile;
+
+	$self->{value} = $new_content;
+
+	if($new_content eq $old_content) {
+		return 0;
+	} else {
+		return 1;
+	}
 }
 
 1;
