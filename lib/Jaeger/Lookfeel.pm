@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.3 2002-07-11 15:56:04 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.4 2002-08-26 05:33:03 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -122,9 +122,6 @@ sub _main {
 
 	$params{quote} = "<tt>$quote</tt>";
 
-	# count down to graduation: 09 June 2002
-	$params{graddaysleft} = int((1023606000 - time) / 86400);
-
 	# populate content solutions data: links, chatterbox
 	$params{links} = 'Coming soon: Content Solutions links';
 	$params{chatterbox} = $self->chatterbox(
@@ -154,6 +151,10 @@ sub navlinks {
 	my $self = shift;
 	my %params = @_;
 
+	unless(ref $params{prev} or ref $params{index} or ref $params{next}) {
+		return;
+	}
+
 	my @link;
 
 	if(ref $params{prev}) {
@@ -178,6 +179,22 @@ sub navlinks {
 	}
 
 	return join '', @link;
+}
+
+# yoda stuff
+
+sub _yoda_item {
+	my $self = shift;
+	my %params = @_;
+
+	$params{ppg} = sprintf '$%.2f', $params{ppg};
+	$params{gal} = sprintf '%.3f', $params{gal};
+	$params{total} = sprintf '$%.2f', $params{total};
+	if($params{mpg}) {
+		$params{mpg} = sprintf '%.2f', $params{mpg};
+	}
+
+	return %params;
 }
 
 1;
