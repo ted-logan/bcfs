@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.19 2005-04-01 02:45:44 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.20 2005-04-02 06:22:56 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -19,6 +19,7 @@ use Jaeger::Base;
 use Jaeger::Journal;
 use Jaeger::Changelog;
 use Jaeger::Content;
+use Jaeger::Event;
 use Jaeger::User;
 
 use Fortune;
@@ -400,6 +401,24 @@ sub _login_status_user {
 
 	my %params = @_;
 
+	# Show upcoming calender events
+	my @calender;
+
+	foreach my $event (Jaeger::Event->Upcoming(Jaeger::User->Login())) {
+		push @calender, $self->link(
+			url => '',
+			title => $event->{name},
+			new => ' ' . $event->{date}
+		);
+	}
+
+	if(@calender == 0) {
+		push @calender, "(empty)";
+	}
+
+	$params{calender} = join '', @calender;
+
+	# Assemble a list of recent visitors
 	my $where = "last_visit > now() + '-1h' order by last_visit desc";
 	my @recent;
 	foreach my $user (Jaeger::User->Select($where)) {

@@ -106,6 +106,18 @@ create view photo_date as select
 	from photo, timezone
 	where not photo.hidden and timezone_id = timezone.id and photo.date > 0;
 
+create table event (
+	id		serial primary key,
+	user_id		int4 references jaeger_user,
+
+	name		text not null,
+	date		text not null,
+	recurring	boolean not null
+);
+
+create view recurring_event as select
+	id, user_id, name, date(date(date) + interval '1 year' * ceil((current_date - date(date)) / 365.2425)) as "date" from event where recurring is true;
+
 create table kohan_schedule (
 	id		serial primary key,
 	user_id		int4 references jaeger_user,
