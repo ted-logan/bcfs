@@ -1,7 +1,7 @@
 package		Jaeger::Changelog::Browse;
 
 #
-# $Id: Browse.pm,v 1.1 2002-09-02 05:19:09 jaeger Exp $
+# $Id: Browse.pm,v 1.2 2002-11-02 17:15:33 jaeger Exp $
 #
 
 # package to allow browsing by years of changelogs
@@ -49,25 +49,24 @@ sub changelogs_by_year {
 	my $year = shift;
 	my $next_year = $year + 1;
 
-	return All Jaeger::Changelog(
-		"time_begin >= '$year-01-01' and time_begin < $next_year-01-01",
-		'time_begin asc',
-		undef,
-		1);
+	return Jaeger::Changelog->Select(
+		"time_begin>='$year-01-01' and time_begin<'$next_year-01-01' ".
+		'order by time_begin asc'
+	);
 }
 
 # returns an object for the previous year, if any
 sub _prev {
 	my $self = shift;
 
-	return Jaeger::Changelog->browse($self->{year} - 1);
+	return Jaeger::Changelog->Browse($self->{year} - 1);
 }
 
 # returns an object for the next year, if any
 sub _next {
 	my $self = shift;
 
-	return Jaeger::Changelog->browse($self->{year} + 1);
+	return Jaeger::Changelog->Browse($self->{year} + 1);
 }
 
 # returns a link to the url of this year
@@ -83,14 +82,8 @@ sub _html {
 	my $lf = $self->lf();
 
 	my $year = $self->{year};
-	my $next_year = $year + 1;
 
-	my @changelogs = All Jaeger::Changelog(
-		"time_begin >= '$year-01-01' and " .
-			"time_begin < '$next_year-01-01'",
-		'time_begin asc',
-		undef,
-		1);
+	my @changelogs = $self->changelogs_by_year($year);
 
 	my @list;
 	my $last_month;
