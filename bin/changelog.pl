@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: changelog.pl,v 1.5 2003-01-20 19:40:22 jaeger Exp $
+# $Id: changelog.pl,v 1.6 2003-04-25 19:00:11 jaeger Exp $
 #
 
 # 28 May 2000
@@ -17,12 +17,28 @@ use Jaeger::Changelog;
 my ($time_begin, $time_end); # temporary varible
 my $title;
 my $id;
+my $help;
 GetOptions(
 	'date=s' => \$time_begin,
 	'time_end=s' => \$time_end,
 	"title=s" => \$title,
-	"id=i" => \$id
+	"id=i" => \$id,
+	"help" => \$help,
 );
+
+if($help) {
+	print "changelog creator \$Revision: 1.6 $\n";
+	print "Command-line options:\n";
+	print "\t--date=date     Specify the beginning date\n";
+	print "\t                Default: time at beginning of edit\n";
+	print "\t--time_end=date Specify the ending date\n";
+	print "\t                Default: time at end of edit\n";
+	print "\t--title=title   Specify the title\n";
+	print "\t                Default: ask\n";
+	print "\t--id=id         Edit an existing changelog, by id\n";
+	print "\t--help          Show this help screen\n";
+	exit;
+}
 
 my $tempfile = shift;
 
