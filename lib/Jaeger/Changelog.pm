@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.23 2004-02-28 21:07:45 jaeger Exp $
+# $Id: Changelog.pm,v 1.24 2004-02-29 19:34:19 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -510,6 +510,8 @@ sub handler {
 			# send updated cookies
 			$user->cookies();
 		}
+	} else {
+		$Jaeger::User::Current = undef;
 	}
 
 	my $changelog;
@@ -523,27 +525,18 @@ sub handler {
 			$changelog->{content} = 'No changelog was found with the given id';
 		}
 
-		# Check to see if we have access to this changelog
-		my $level = $user ? $user->{status} : 0;
-
-		if($changelog->{status} > $level) {
-			# No access -- quietly redirect
-			$r->headers_out->set(Location => "/changelog/");
-			return REDIRECT;
-		}
-
 	} elsif($r->uri() =~ m#/changelog/(\d+)\.html/reply#) {
 		# Post a reply to the changelog
 		my $replyto = Jaeger::Changelog->new_id($1);
 		if($replyto) {
-			$changelog = new Jaeger::Comment::Post($replyto);
-
 			# Are we logged in?
-			unless($user) {
+			if($user) {
+				$changelog = new Jaeger::Comment::Post($replyto);
+			} else {
 				# Redirect to the login page
-				$r->headers_out->set(Location => "/login.cgi?redirect=/changelog/$1.html/reply");
-				return REDIRECT;
+				$changelog = "/login.cgi?redirect=/changelog/$1.html/reply";
 			}
+
 
 		} else {
 			$changelog = new Jaeger::Changelog;
@@ -555,15 +548,14 @@ sub handler {
 		# Post a reply to the comment
 		my $replyto = Jaeger::Comment->new_id($1);
 		if($replyto) {
-			$changelog = new Jaeger::Comment::Post(
-				$replyto->changelog(), $replyto
-			);
-
 			# Are we logged in?
-			unless($user) {
+			if($user) {
+				$changelog = new Jaeger::Comment::Post(
+					$replyto->changelog(), $replyto
+				);
+			} else {
 				# Redirect to the login page
-				$r->headers_out->set(Location => "/login.cgi?redirect=/changelog/comment/$1.html/reply");
-				return REDIRECT;
+				$changelog = "/login.cgi?redirect=/changelog/comment/$1.html/reply";
 			}
 
 		} else {
@@ -581,16 +573,6 @@ sub handler {
 			$changelog->{content} = 'No comment was found with the given id';
 		}
 
-		# Check to see if we have access to this changelog
-		my $level = $user ? $user->{status} : 0;
-
-		if($changelog->{status} > $level) {
-			# No access -- quietly redirect
-			$r->headers_out->set(Location => "/changelog/");
-
-			return REDIRECT;
-		}
-
 	} elsif($r->uri() =~ m#/changelog/(\d\d\d\d)(/?)#) {
 		# Browse changelogs by year
 		my $year = $1;
@@ -600,9 +582,7 @@ sub handler {
 			$changelog = Jaeger::Changelog->Browse($year);
 		} else {
 			# redirect to the "directory"
-			$r->headers_out->set(Location => "/changelog/$1/");
-
-			return REDIRECT;
+			$changelog = "/changelog/$1/";
 		}
 
 	} elsif($r->uri() eq '/changelog/') {
@@ -611,7 +591,22 @@ sub handler {
 
 	} else {
 		# quietly redirect to the most recent changelog
-		$r->headers_out->set(Location => "/changelog/");
+		$changelog = '/changelog/';
+	}
+
+	# Check to see if we have access to this changelog or comment
+	my $level = $user ? $user->{status} : 0;
+
+	if(ref($changelog) && $changelog->{status} > $level) {
+		# No access -- quietly redirect
+		$changelog = '/changelog/';
+	}
+
+	# Do we want to redirect to somewhere else?
+	unless(ref $changelog) {
+		warn "Redirecting to $changelog\n";
+
+		$r->headers_out->set(Location => $changelog);
 
 		return REDIRECT;
 	}
