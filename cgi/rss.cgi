@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: rss.cgi,v 1.2 2003-09-29 16:15:57 jaeger Exp $
+# $Id: rss.cgi,v 1.3 2004-06-15 14:50:36 jaeger Exp $
 #
 
 # rss.cgi: Gives a RSS 0.91 content syndication feed
@@ -22,7 +22,7 @@ print "\t\t<description>Random content from a hacker in Louisville, Colorado. (T
 print "\t\t<language>en-us</language>\n";
 
 # grab recent changelogs and print them out here
-my @changelogs = Jaeger::Changelog->Select("1=1 order by time_begin desc limit 10");
+my @changelogs = Jaeger::Changelog->Select("status <= 0 order by time_begin desc limit 10");
 foreach my $changelog (@changelogs) {
 	print "\t\t<item>\n";
 	print "\t\t\t<title>", $changelog->title(), "</title>\n";
