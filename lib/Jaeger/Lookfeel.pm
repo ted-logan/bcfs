@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.12 2003-10-30 01:02:36 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.13 2003-11-03 04:07:41 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -99,6 +99,16 @@ sub _changelog {
 			time_begin => $params{time_begin}
 		);
 	}
+
+	return %params;
+}
+
+sub _comment {
+	my $self = shift;
+
+	my %params = @_;
+
+	$params{date} =~ s/\.*//;
 
 	return %params;
 }
@@ -387,7 +397,7 @@ sub _login_status_user {
 		my $sec = time - $self->parsetimestamp($user->last_visit());
 
 		my $when;
-		if($sec <= 0) {
+		if($sec < 1) {
 			$when = ' (now)';
 		} else {
 			my $min = int($sec / 60);
@@ -404,6 +414,20 @@ sub _login_status_user {
 	}
 
 	$params{recent} = join('', @recent);
+
+	return %params;
+}
+
+sub _comment_preview {
+	my $self = shift;
+
+	my %params = @_;
+
+	$params{body_submit} = $params{body};
+	$params{body_submit} =~ s/&/&amp;/g;
+	$params{body_submit} =~ s/>/&gt;/g;
+	$params{body_submit} =~ s/</&lt;/g;
+	$params{body_submit} =~ s/"/&quot;/g;
 
 	return %params;
 }
