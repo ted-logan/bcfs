@@ -1,7 +1,7 @@
 package		Jaeger::Changelog::Browse;
 
 #
-# $Id: Browse.pm,v 1.2 2002-11-02 17:15:33 jaeger Exp $
+# $Id: Browse.pm,v 1.3 2003-05-15 00:06:24 jaeger Exp $
 #
 
 # package to allow browsing by years of changelogs
@@ -72,7 +72,7 @@ sub _next {
 # returns a link to the url of this year
 sub _url {
 	my $self = shift;
-	return $self->{url} = "$Jaeger::Base::BaseURL/changelog.cgi?browse=$self->{year}";
+	return $self->{url} = "$Jaeger::Base::BaseURL/changelog/$self->{year}/";
 }
 
 # returns html for this object
