@@ -1,7 +1,7 @@
 package Jaeger::Base;
 
 #
-# $Id: Base.pm,v 1.3 2002-11-02 17:14:15 jaeger Exp $
+# $Id: Base.pm,v 1.4 2003-01-10 06:59:33 jaeger Exp $
 #
 # Copyright (c) 1999, 2000 x13.com
 # Copyright (c) 2001, 2002 Buildmeasite.com
@@ -77,6 +77,13 @@ sub new {
 	}
 
 	bless $self, $package;
+
+	if(scalar keys %$self == 2) {
+		foreach my $column ($self->columns()) {
+			$self->{$column} = undef;
+		}
+	}
+
 	return $self;
 }
 
