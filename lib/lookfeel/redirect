@@ -1,0 +1,7 @@
+#!/usr/bin/perl
+
+use CGI;
+
+my $q = new CGI;
+
+print $q->redirect('http://jaeger.festing.org/---lastid---.html');
