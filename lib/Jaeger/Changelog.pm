@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.12 2003-08-24 20:58:08 jaeger Exp $
+# $Id: Changelog.pm,v 1.13 2003-08-25 02:31:44 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -232,7 +232,15 @@ sub _html {
 		$user->log_access($self);
 	}
 
-	return $self->lf()->changelog(%$self);
+	my %params = %$self;
+
+	# show the users who have viewed the changelog
+	my $user = Jaeger::User->Login();
+	if($user) {
+		$params{content} .= '<br><br><small>These people have read this changelog: ' . join(', ', sort map {$_->name()} @{$self->user_views()}) . '</small>';
+	}
+
+	return $self->lf()->changelog(%params);
 }
 
 # returns the Postgres-compatible date of this object so we can show related
@@ -290,6 +298,15 @@ sub Navbar {
 		title => 'j&auml;gerfesting',
 		links => join('', @links)
 	);
+}
+
+# returns the identities of those who have viewed this changelog
+sub _user_views {
+	my $self = shift;
+
+	my $where = 'id in (select distinct user_id from user_changelog_view where changelog_id = ' . $self->id() . ')';
+
+	return $self->{user_views} = [Jaeger::User->Select($where)];
 }
 
 #
