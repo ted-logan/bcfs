@@ -2,7 +2,12 @@
 <meta name="keywords" content="jaeger, festing, ted logan">
 <link REL="icon" HREF="/graphics/aicon.png" TYPE="image/png">
 <link rel="stylesheet" href="/jaeger.css" type="text/css">
-<head><title>j&auml;gerfesting---title---</title></head>
+<head>
+<meta name="ICBM" content="40.04712,-105.25163">
+<meta name="DC.title" content="jaegerfesting">
+---navlink---
+<title>j&auml;gerfesting---title---</title>
+</head>
 
 <body bgcolor="#000000" text="#e0e0a0" alink="#ffffff" link="#20d020" vlink="#d03040">
 
