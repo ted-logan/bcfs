@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: rss.pl,v 1.2 2004-11-12 23:10:47 jaeger Exp $
+# $Id: rss.pl,v 1.3 2005-01-04 04:13:31 jaeger Exp $
 #
 
 #
@@ -22,7 +22,7 @@ use Jaeger::UserBox;
 use XML::RSS;
 use LWP::UserAgent;
 
-my @links = qw(http://kiesa.festing.org/journal/xml-rss.php);
+my @links = qw();
 
 my $lf = new Jaeger::Lookfeel;
 
