@@ -1,7 +1,7 @@
 package Jaeger::Base;
 
 #
-# $Id: Base.pm,v 1.4 2003-01-10 06:59:33 jaeger Exp $
+# $Id: Base.pm,v 1.5 2003-01-31 21:58:57 jaeger Exp $
 #
 # Copyright (c) 1999, 2000 x13.com
 # Copyright (c) 2001, 2002 Buildmeasite.com
@@ -339,6 +339,13 @@ sub parsetimestamp {
 		or warn "$sql;\n";
 
 	return ($sth->fetchrow_array())[0];
+}
+
+# this function should be overridden to return the real date for this entry
+sub _date {
+	my $self = shift;
+
+	return undef;
 }
 
 # returns a Postgres-compatible date value for today
