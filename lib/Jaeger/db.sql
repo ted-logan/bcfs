@@ -28,6 +28,41 @@ create table content (
 	value text
 );
 
+create table jaeger_user (
+	id		serial primary key,
+	login		text not null unique,
+	status		int4 not null,
+	name		text not null unique,
+	password	text not null,
+	email		text not null,
+	last_visit	timestamp with time zone default now() not null,
+	webpage		text,
+	about		text
+);
+
+create table comment (
+	id		serial primary key,
+	changelog_id	int4 references changelog,
+	user_id		int4 references jaeger_user,
+	response_id	int4,
+	title		text not null,
+	body		text not null
+);
+
+create table user_changelog_view (
+	id		serial primary key,
+	changelog_id	int4 references changelog,
+	user_id		int4 references jaeger_user,
+	date		timestamp with time zone default now() not null
+);
+
+create table user_comment_view (
+	id		serial primary key,
+	comment_id	int4 references comment,
+	user_id		int4 references jaeger_user,
+	date		timestamp with time zone default now() not null
+);
+
 create table timezone (
 	id		serial primary key,
 	name		text not null unique,
@@ -59,3 +94,15 @@ create view photo_date as select
 	((date + ofst * 3600) / 86400) * 86400 as "date"
 	from photo, timezone
 	where not photo.hidden and timezone_id = timezone.id and photo.date > 0;
+
+create table kohan_schedule (
+	id		serial primary key,
+	user_id		int4 references jaeger_user,
+	
+	day		date not null,
+	unique(user_id, day),
+	available	boolean not null,
+
+	available_begin	timestamp,
+	available_end	timestamp
+);
