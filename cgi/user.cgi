@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: user.cgi,v 1.1 2003-08-24 20:54:08 jaeger Exp $
+# $Id: user.cgi,v 1.2 2003-08-25 03:17:38 jaeger Exp $
 #
 
 # user.cgi: Allows editing and viewing of users
@@ -16,13 +16,31 @@ use Jaeger::User::Edit;
 my $q = Jaeger::Base->Query();
 my $lf = Jaeger::Base->Lookfeel();
 
+# users who aren't logged in don't get to see this page
+unless(Jaeger::User->Login()) {
+	$lf->redirect('http://jaeger.festing.org/login.cgi');
+}
+
+# show whatever page the user requested
+
 my $page;
 
 if($q->param('action') eq 'edit') {
+	# show the "edit thyself" page
 	$page = new Jaeger::User::Edit();
+
+} elsif($q->param('user')) {
+	# show a specific user
+	my $login = $q->param('user');
+
+	$page = Jaeger::User->Select(login => $login);
+
+	unless($page) {
+	}
+
 } else {
-	$page = new Jaeger::Base;
-	$page->{title} = 'Users';
+	# show the list of users
+	$page = new Jaeger::User::List;
 }
 
 my $html = $lf->main($page);
