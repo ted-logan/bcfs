@@ -1,0 +1,78 @@
+<html>
+<meta name="keywords" content="jaeger, festing, ted logan">
+<link REL="icon" HREF="/graphics/aicon.png" TYPE="image/png">
+<head><title>j&auml;gerfesting---title---</title></head>
+
+<body bgcolor="#000000" text="#e0e0a0" alink="#ffffff" link="#20d020" vlink="#d03040">
+
+<table cellpadding="5">
+<tr>
+<td></td>
+<td bgcolor="#102050">
+<a href="/changelog.cgi"><img src="/graphics/jaegerfesting.png" width="283" height="46" border="0" alt="jaegerfesting"></a>
+</td>
+</tr>
+
+<tr>
+<td valign="top" bgcolor="#102050" cellpadding="0">
+---navbar---
+</td>
+
+<td valign="top" bgcolor="#102050" rowspan="2">
+
+<table width="100%">
+---content---
+<tr><td>
+<center>
+---navlinks---
+</center>
+</td></tr>
+</table>
+
+</td>
+
+<td valign="top" bgcolor="#102050">
+<img src="/graphics/logo.png" width=118 height=206 alt="">
+&nbsp;
+</td>
+</tr>
+
+<tr>
+<td valign="top" bgcolor="#102050">
+---links---
+</td>
+
+<td valign="top" bgcolor="#102050">
+---chatterbox---
+</td>
+</tr>
+
+<tr>
+<td></td>
+<td bgcolor="#102050">
+---quote---
+</td>
+</tr>
+
+<tr>
+<td></td>
+<td bgcolor="#102050">
+<small>Only ---graddaysleft--- days until graduation!</small>
+</td>
+</tr>
+
+<tr>
+<td></td>
+<td bgcolor="#102050">
+<i>
+&copy; 1998-2002 Ted Logan. All Rights Reserved.<br>
+<a href="mailto:jaeger@festing.org">jaeger@festing.org</a><br>
+</i>
+<small>
+<a href="/ted_logan.asc">PGP key</a>
+</small>
+</td>
+</tr>
+</table>
+</td>
+</tr>
