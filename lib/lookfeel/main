@@ -36,9 +36,10 @@ I'm <a href="http://www.gemandted.com/">Married</a>!
 </font>
 <p>
 ---navbar---
+---links---
 </td>
 
-<td valign="top" bgcolor="#102050" rowspan="2">
+<td valign="top" bgcolor="#102050">
 
 <table width="100%">
 ---content---
@@ -54,15 +55,7 @@ I'm <a href="http://www.gemandted.com/">Married</a>!
 <td valign="top" bgcolor="#102050">
 <img src="/graphics/logo.png" width=118 height=206 alt="">
 &nbsp;
-</td>
-</tr>
 
-<tr>
-<td valign="top" bgcolor="#102050">
----links---
-</td>
-
-<td valign="top" bgcolor="#102050">
 <table width="100%" border="0" cellspacing="0">
 <tr><td bgcolor="#000000" align="center"><font color="#ffffff"><b>Quick Links</b></font></td></tr>
 <tr><td>
@@ -95,7 +88,6 @@ Try <a href="http://www.buildmeasite.com/?jaeger">Buildmeasite</a>.
 
 </td></tr>
 </table>
-</form>
 </td>
 </tr>
 
