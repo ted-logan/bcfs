@@ -1,14 +1,15 @@
 package	Jaeger::User;
 
 # 
-# $Id: User.pm,v 1.1 2003-08-24 16:20:38 jaeger Exp $
+# $Id: User.pm,v 1.2 2003-08-24 20:57:35 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
 
 # Allows users to log in and do fun and useful stuff
 
-# created  08 May 2003
+# 08 May 2003
+# Ted Logan <jaeger@festing.org>
 
 use strict;
 
@@ -62,13 +63,25 @@ sub update {
 		return undef;
 	}
 
-	# complain unless the real e-mail is set
-	unless($self->{real_email}) {
-		carp "Jaeger::User->update(): real_email must be set";
+	# complain unless the e-mail is set
+	unless($self->{email}) {
+		carp "Jaeger::User->update(): email must be set";
 		return undef;
 	}
 
 	$self->SUPER::update();
+}
+
+sub columns {
+	my $self = shift;
+
+	my @columns = $self->SUPER::columns();
+
+	unless($self->{last_visit}) {
+		@columns = grep !/last_visit/, @columns;
+	}
+
+	return @columns;
 }
 
 # change the crypt()ed password
@@ -98,6 +111,18 @@ sub check_password {
 	$self->{plain_password} = $password;
 
 	return crypt($password, $self->{password}) eq $self->{password};
+}
+
+sub update_last_visit {
+	my $self = shift;
+
+	my $sql = "select now()";
+	my $sth = $self->dbh()->prepare($sql);
+	$sth->execute();
+
+	$self->{last_visit} = ($sth->fetchrow_array())[0];
+
+	$self->update();
 }
 
 #
@@ -152,8 +177,11 @@ sub _Login {
 		# check the user's password
 		if($user->check_password($password)) {
 			# all ok
-			# (we'll still want to double-check the status)
 			warn "Sucessfully logged in $user->{name}\n";
+
+			# update the user's login date
+			$user->update_last_visit();
+
 			return $user;
 		} else {
 			# invalid password
@@ -202,6 +230,7 @@ sub log_access {
 	} else {
 		# Whatever was passed to us we don't support
 		carp "Jaeger::User->log_access(): unknown object $object\n";
+		return undef;
 	}
 
 	$self->dbh()->do($sql)
