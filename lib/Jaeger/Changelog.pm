@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.14 2003-08-25 03:16:22 jaeger Exp $
+# $Id: Changelog.pm,v 1.15 2003-08-28 00:16:55 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -277,6 +277,21 @@ sub Navbar {
 		@changelogs = Jaeger::Changelog->Select('1=1 order by time_begin desc limit 5');
 	}
 
+	# these are the changelog ids that haven't yet been read by the user
+	my %unread;
+	my $user = Jaeger::User->Login();
+	if($user) {
+		my $sql = "select id from changelog where time_begin > '" .
+			$user->signup() . "' and id not in (select " .
+			"changelog_id from user_changelog_view where user_id =".
+			$user->id() . ")";
+		my $sth = $Jaeger::Base::Pgdbh->prepare($sql);
+		$sth->execute() or warn "$sql;\n";
+		while(my ($id) = $sth->fetchrow_array()) {
+			$unread{$id} = 1;
+		}
+	}
+
 	my @links;
 
 	foreach my $changelog (@changelogs) {
@@ -288,7 +303,8 @@ sub Navbar {
 		} else {
 			push @links, $lf->link(
 				url => $changelog->url(),
-				title => $changelog->title()
+				title => $changelog->title(),
+				new => ($unread{$changelog->id()} ? " New!" : "")
 			);
 		}
 	}
