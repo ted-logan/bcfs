@@ -1,7 +1,7 @@
 package		Jaeger::Changelog::Browse;
 
 #
-# $Id: Browse.pm,v 1.4 2004-02-16 02:57:27 jaeger Exp $
+# $Id: Browse.pm,v 1.5 2004-05-13 21:30:50 jaeger Exp $
 #
 
 # package to allow browsing by years of changelogs
@@ -106,7 +106,8 @@ sub _html {
 		push @list, $lf->browse_changelog(
 			url => $changelog->url(),
 			title => $changelog->title(),
-			time_begin => $changelog->time_begin()
+			time_begin => $changelog->time_begin(),
+			visibility => $Jaeger::Changelog::Status{$changelog->status()},
 		);
 	}
 
