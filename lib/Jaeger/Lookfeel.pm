@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.5 2002-08-26 06:21:22 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.6 2002-11-02 17:16:45 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -18,12 +18,11 @@ use Jaeger::Base;
 
 use Jaeger::Journal;
 use Jaeger::Changelog;
+use Jaeger::Content;
 
 use Fortune;
 
 @Jaeger::Lookfeel::ISA = qw(Jaeger::Base);
-
-@Jaeger::Lookfeel::KeepParams = qw(what id label year);
 
 sub new {
 	my $package = shift;
@@ -55,6 +54,9 @@ sub AUTOLOAD {
 	if(my $content = $self->_lookfeel($page)) {
 		# we might have a section-specific thing we need to do
 		my %params = eval "\$self->_$page(\@_)";
+		if($@) {
+			warn "lookfeel eval error: $@\n";
+		}
 		unless(%params) {
 			%params = @_;
 		}
@@ -127,6 +129,12 @@ sub _main {
 
 	# populate the navigation links
 	my @navbar;
+	if((ref $obj[0]) eq 'Jaeger::Content') {
+		push @navbar, $obj[0]->Navbar();
+	} else {
+		push @navbar, Jaeger::Content->Navbar();
+	}
+
 	if(ref $obj[0] eq 'Jaeger::Changelog') {
 		push @navbar, $obj[0]->Navbar();
 	} else {
@@ -192,6 +200,32 @@ sub navlinks {
 	}
 
 	return join '', @link;
+}
+
+# content links
+sub _content_link {
+	my $self = shift;
+	my %params = @_;
+
+	$params{indent} = '&nbsp;&nbsp;&nbsp;' x $params{level};
+
+	if($params{current} eq $params{title}) {
+		$params{title} = '<font color="#ffffff">' . $params{title} . '</font>';
+	}
+
+	if(ref $params{children}) {
+		my @children;
+		foreach my $child (@{$params{children}}) {
+			push @children, $self->content_link(
+				level => $params{level} + 1,
+				current => $params{current},
+				%$child
+			);
+		}
+		$params{children} = join('', @children);
+	}
+
+	return %params;
 }
 
 # yoda stuff
