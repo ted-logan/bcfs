@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.13 2003-08-25 02:31:44 jaeger Exp $
+# $Id: Changelog.pm,v 1.14 2003-08-25 03:16:22 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -237,7 +237,7 @@ sub _html {
 	# show the users who have viewed the changelog
 	my $user = Jaeger::User->Login();
 	if($user) {
-		$params{content} .= '<br><br><small>These people have read this changelog: ' . join(', ', sort map {$_->name()} @{$self->user_views()}) . '</small>';
+		$params{content} .= '<br><br><small>These people have read this changelog: ' . join(', ', map {$_->link()} sort {$a->{name} cmp $b->{name}} @{$self->user_views()}) . '</small>';
 	}
 
 	return $self->lf()->changelog(%params);
