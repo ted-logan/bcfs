@@ -1,7 +1,7 @@
 package Jaeger::Base;
 
 #
-# $Id: Base.pm,v 1.6 2003-10-12 17:20:37 jaeger Exp $
+# $Id: Base.pm,v 1.7 2003-11-05 04:22:07 jaeger Exp $
 #
 # Copyright (c) 1999, 2000 x13.com
 # Copyright (c) 2001, 2002 Buildmeasite.com
@@ -206,17 +206,25 @@ sub columns {
 }
 
 # instantiates a new look-and-feel object unless one already exists
-sub _lf {
+sub lf {
 	my $self = shift;
 
-	return $self->{lf} = Jaeger::Base::Lookfeel();
+	unless($self->{lf}) {
+		$self->{lf} = Jaeger::Base::Lookfeel();
+	}
+
+	return $self->{lf};
 }
 
 # instantiates a new CGI query object unless one already exists
-sub _query {
+sub query {
 	my $self = shift;
 
-	return $self->{query} = Jaeger::Base::Query();
+	unless($self->{query}) {
+		$self->{query} = Jaeger::Base::Query();
+	}
+
+	return $self->{query};
 }
 
 # provide access to underscored functions
