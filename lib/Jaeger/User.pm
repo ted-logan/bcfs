@@ -1,7 +1,7 @@
 package	Jaeger::User;
 
 # 
-# $Id: User.pm,v 1.9 2004-02-29 19:34:35 jaeger Exp $
+# $Id: User.pm,v 1.10 2004-03-12 21:47:38 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -278,7 +278,11 @@ sub _url {
 sub _link {
 	my $self = shift;
 
-	return $self->{link} = '<a href="' . $self->url() . qq'">$self->{name}</a>';
+	if(Jaeger::User->Login()) {
+		return $self->{link} = '<a href="' . $self->url() . qq'">$self->{name}</a>';
+	} else {
+		return $self->{link} = $self->{name};
+	}
 }
 
 1;
