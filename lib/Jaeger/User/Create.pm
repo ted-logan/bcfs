@@ -1,7 +1,7 @@
 package Jaeger::User::Create;
 
 #
-# $Id: Create.pm,v 1.2 2003-08-26 23:55:05 jaeger Exp $
+# $Id: Create.pm,v 1.3 2003-11-05 04:16:28 jaeger Exp $
 #
 
 # Allows the creation of new users
@@ -162,6 +162,7 @@ sub step2 {
 
 	# increment the user's status
 	$user->{status} = 10;
+	$user->{signup} = 'now()';
 	$user->update();
 }
 
