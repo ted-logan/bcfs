@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.10 2003-01-31 21:59:18 jaeger Exp $
+# $Id: Changelog.pm,v 1.11 2003-05-15 00:06:48 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -14,6 +14,9 @@ use strict;
 use Jaeger::Base;
 use Jaeger::Lookfeel;
 use Jaeger::Changelog::Browse;
+
+use Apache::Constants qw(OK DECLINED REDIRECT);
+use Apache::File;
 
 @Jaeger::Changelog::ISA = qw(Jaeger::Base);
 
@@ -204,7 +207,7 @@ sub _index {
 
 	$self->{index} = new Jaeger::Base;
 
-	$self->{index}->{url} = "changelog.cgi?browse=$year";
+	$self->{index}->{url} = "/changelog/$year/";
 	$self->{index}->{title} = 'Index';
 
 	return $self->{index};
@@ -214,7 +217,7 @@ sub _index {
 sub _url {
 	my $self = shift;
 #	return $self->{url} = "$self->{id}.html";
-	return $self->{url} = "$Jaeger::Base::BaseURL/changelog.cgi?id=$self->{id}";
+	return $self->{url} = "$Jaeger::Base::BaseURL/changelog/$self->{id}.html";
 }
 
 # returns html for this object
@@ -275,10 +278,70 @@ sub Navbar {
 	}
 
 	return $lf->linkbox(
-		url => '/changelog.cgi',
+		url => '/changelog/',
 		title => 'j&auml;gerfesting',
 		links => join('', @links)
 	);
+}
+
+#
+# mod_perl handler for changelogs (so we can get urls that don't end in
+# .cgi so Google will index)
+#
+sub handler {
+	my $r = shift;
+
+	# does the file being requested exist, and is it not a directory?
+	if(! -d $r->filename()) {
+		my $fh = Apache::File->new($r->filename());
+		if($fh) {
+			$r->send_http_header();
+			$r->send_fd($fh);
+			return OK;
+		}
+	}
+
+	my $changelog;
+
+	if($r->uri() =~ m#/changelog/(\d+)\.html$#) {
+		# Show changelog by specific id
+		$changelog = Jaeger::Changelog->new_id($1);
+		unless($changelog) {
+			$changelog = new Jaeger::Changelog;
+			$changelog->{title} = 'No changelog';
+			$changelog->{content} = 'No changelog was found with the given id';
+		}
+	
+	} elsif($r->uri() =~ m#/changelog/(\d+)(/?)#) {
+		# Browse changelogs by year
+		my $year = $1;
+
+		if($2) {
+			# show the year itself
+			$changelog = Jaeger::Changelog->Browse($year);
+		} else {
+			# redirect to the "directory"
+			$r->headers_out->set(Location => "/changelog/$1/");
+
+			return REDIRECT;
+		}
+
+	} elsif($r->uri() eq '/changelog/') {
+		# Show the most recent changelog
+		$changelog = Newest Jaeger::Changelog;
+
+	} else {
+		# quietly redirect to the most recent changelog
+		$r->headers_out->set(Location => "/changelog/");
+
+		return REDIRECT;
+	}
+
+	$r->send_http_header('text/html');
+
+	print Jaeger::Base::Lookfeel()->main($changelog);
+
+	return OK;
 }
 
 1;
