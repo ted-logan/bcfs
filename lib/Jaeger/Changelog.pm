@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.19 2003-11-05 04:17:33 jaeger Exp $
+# $Id: Changelog.pm,v 1.20 2003-11-13 17:31:01 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -321,7 +321,12 @@ sub Navbar {
 			if($unread{$changelog->id()}) {
 				$new = ' New!';
 			} else {
-				$new = ' (' . scalar(@{$changelog->comments()}) . ' comments)';
+				my $cc = @{$changelog->comments()};
+				if($cc == 1) {
+					$new = " (1 comment)";
+				} else {
+					$new = " ($cc comments)";
+				}
 			}
 			push @links, $lf->link(
 				url => $changelog->url(),
@@ -367,7 +372,7 @@ sub comment_list_html {
 	my @html;
 
 	if($comment) {
-		push @html, $self->link(), "<br>\n";
+		push @html, $self->link(), " <i>($self->{time_begin})</i><br>\n";
 	}
 
 	my @comments = sort {$a->date() cmp $b->date()}
