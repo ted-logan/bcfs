@@ -1,0 +1,9 @@
+<tr>
+<td valign="top">---name---</td>
+<td valign="top">---address---</td>
+<td valign="top">---gift---</td>
+<td valign="top">---arrived---</td>
+<td valign="top">---note_sent---</td>
+<td valign="top">---side---</td>
+<td valign="top"><a href="presents.cgi?go=nope&id=---id---">Edit</a></td>
+</tr>
