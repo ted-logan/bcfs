@@ -1,7 +1,7 @@
 package	Jaeger::User;
 
 # 
-# $Id: User.pm,v 1.4 2003-08-25 03:17:55 jaeger Exp $
+# $Id: User.pm,v 1.5 2003-11-01 17:50:55 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -157,14 +157,14 @@ sub _Login {
 
 	if(@_) {
 		# the login and password were specified by the caller
-		$login = shift;
+		$login = lc shift;
 		$password = shift;
 
 	} else {
 		# grab the login and password from cookies
 		my $q = $package->Query();
 
-		$login = $q->cookie('jaeger_login');
+		$login = lc $q->cookie('jaeger_login');
 		$password = $q->cookie('jaeger_password');
 	}
 
@@ -216,14 +216,13 @@ sub log_access {
 
 	my $sql;
 
-	if(ref($object) eq 'Jaeger::Changelog') {
+	if(ref($object) eq 'Jaeger::Changelog' && $object->id()) {
 		$sql = "insert into user_changelog_view (changelog_id, user_id) values (" . $object->id() . ", " . $self->id() . ")";
-	} elsif(ref($object) eq 'Jaeger::Comment') {
+	} elsif(ref($object) eq 'Jaeger::Comment' && $object->id()) {
 		$sql = "insert into user_comment_view (comment_id, user_id) values (" . $object->id() . ", " . $self->id() . ")";
 		
 	} else {
 		# Whatever was passed to us we don't support
-		carp "Jaeger::User->log_access(): unknown object $object\n";
 		return undef;
 	}
 
@@ -251,7 +250,8 @@ sub html {
 sub _url {
 	my $self = shift;
 
-	return $self->{url} = "http://jaeger.festing.org/user.cgi?user=$self->{login}";
+	return $self->{url} = $Jaeger::Base::BaseURL .
+		"user.cgi?user=$self->{login}";
 }
 
 sub _link {
