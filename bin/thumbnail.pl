@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: thumbnail.pl,v 1.1 2003-01-20 19:37:49 jaeger Exp $
+# $Id: thumbnail.pl,v 1.2 2004-11-12 23:07:46 jaeger Exp $
 #
 
 # create thumbnail images for the given rounds if they don't already exist
@@ -33,6 +33,8 @@ foreach my $round (@rounds) {
 	my @photos = Jaeger::Photo->Select(round => $round);
 
 	foreach my $photo (@photos) {
+		next if $photo->{hidden};
+
 		print "$round/$photo->{number}: ", $photo->file(), "\n";
 
 		next unless $photo->file();
