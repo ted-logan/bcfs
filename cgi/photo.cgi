@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: photo.cgi,v 1.1 2003-01-10 06:50:17 jaeger Exp $
+# $Id: photo.cgi,v 1.2 2003-01-26 12:41:25 jaeger Exp $
 #
 
 # photo.cgi: displays a photo
@@ -43,10 +43,6 @@ if(my $round = $q->param('round')) {
 } elsif(my $date = $q->param('date')) {
 	# display photos on a specific date
 	$page = new Jaeger::Photo::List::Date($date);
-
-} elsif(my $search = $q->param('q')) {
-	# display search results
-	$page = new Jaeger::Photo::List::Search($search);
 
 } else {
 	# display a thumbnail for a year, or the current year
