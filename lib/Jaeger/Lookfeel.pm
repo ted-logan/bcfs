@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.13 2003-11-03 04:07:41 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.14 2003-11-05 04:19:49 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -189,6 +189,9 @@ sub _main {
 	} else {
 		push @navbar, Jaeger::Changelog->Navbar($obj[0]->date());
 	}
+
+	push @navbar, Jaeger::Comment->Navbar();
+
 	push @navbar, Jaeger::Journal->Navbar($obj[0]->date());
 	$params{navbar} = $self->links(linkbox => join('', @navbar));
 
@@ -418,16 +421,36 @@ sub _login_status_user {
 	return %params;
 }
 
+sub _comment_edit {
+	my $self = shift;
+
+	my %params = @_;
+
+ 	$params{body} =~ s/&/&amp;/g;
+ 	$params{body} =~ s/>/&gt;/g;
+ 	$params{body} =~ s/</&lt;/g;
+ 	$params{body} =~ s/"/&quot;/g;
+
+	return %params;
+}
+
 sub _comment_preview {
 	my $self = shift;
 
 	my %params = @_;
 
-	$params{body_submit} = $params{body};
-	$params{body_submit} =~ s/&/&amp;/g;
-	$params{body_submit} =~ s/>/&gt;/g;
-	$params{body_submit} =~ s/</&lt;/g;
-	$params{body_submit} =~ s/"/&quot;/g;
+	$params{body_submit} = Jaeger::Comment::Post->Escape($params{body});
+
+	return %params;
+}
+
+sub _comment_link {
+	my $self = shift;
+
+	my %params = @_;
+
+	$params{indent} = '&nbsp;&nbsp;&nbsp;' x $params{indent};
+	$params{date} =~ s/\..*//;
 
 	return %params;
 }
