@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: cs2.pl,v 1.1 2003-02-06 03:12:04 jaeger Exp $
+# $Id: cs2.pl,v 1.2 2003-08-25 03:21:11 jaeger Exp $
 #
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
 
@@ -64,7 +64,7 @@ use CS2::Update qw(update);
 	my $date = $max;
 	$date =~ s/(\d\d\d\d)(\d\d)(\d\d)/$1-$2-$3/;
 
-	my @journals = Jaeger::Journal->Select("entrydate > $max");
+	my @journals = Jaeger::Journal->Select("entrydate > '$max'");
 
 	foreach my $journal (@journals) {
 		my $headline = new CS2::Headline;
