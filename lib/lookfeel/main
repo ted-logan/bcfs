@@ -16,6 +16,15 @@
 <tr>
 <td valign="top" bgcolor="#102050" cellpadding="0">
 ---navbar---
+<font size="+1">
+Want to <a href="/resume.txt">hire</a> a newly-graduated computer engineer?
+<p>
+I'm <a href="http://www.gemandted.com/">Engaged</a>!
+<p>
+<a href="/cgi-bin/photos.pl">Digital photos</a>
+<p>
+<a href="/cgi-bin/journal.pl">Journals</a>
+</font>
 </td>
 
 <td valign="top" bgcolor="#102050" rowspan="2">
@@ -51,13 +60,6 @@
 <td></td>
 <td bgcolor="#102050">
 ---quote---
-</td>
-</tr>
-
-<tr>
-<td></td>
-<td bgcolor="#102050">
-<small>Only ---graddaysleft--- days until graduation!</small>
 </td>
 </tr>
 
