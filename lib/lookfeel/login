@@ -6,7 +6,7 @@
 <tr><td colspan="2">
 ---message---
 <p>By all means, log in.</p>
-<p>Don't have an account? Soon, you'll be able to make one.</p>
+<p>Don't have an account? <a href="/create.cgi">Create one</a>.</p>
 </td></tr>
 
 <tr><td><b>Login:</b></td> <td><input name="login"></td></tr>
