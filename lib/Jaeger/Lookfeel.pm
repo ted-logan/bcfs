@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.4 2002-08-26 05:33:03 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.5 2002-08-26 06:21:22 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -15,6 +15,9 @@ package		Jaeger::Lookfeel;
 use strict;
 
 use Jaeger::Base;
+
+use Jaeger::Journal;
+use Jaeger::Changelog;
 
 use Fortune;
 
@@ -121,6 +124,16 @@ sub _main {
 	$quote =~ s/$/<br>/mg;
 
 	$params{quote} = "<tt>$quote</tt>";
+
+	# populate the navigation links
+	my @navbar;
+	if(ref $obj[0] eq 'Jaeger::Changelog') {
+		push @navbar, $obj[0]->Navbar();
+	} else {
+		push @navbar, Jaeger::Changelog->Navbar();
+	}
+	push @navbar, Jaeger::Journal->Navbar();
+	$params{navbar} = $self->links(linkbox => join('', @navbar));
 
 	# populate content solutions data: links, chatterbox
 	$params{links} = 'Coming soon: Content Solutions links';
