@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.5 2002-09-02 05:20:24 jaeger Exp $
+# $Id: Changelog.pm,v 1.6 2002-09-04 15:59:04 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -104,6 +104,15 @@ sub _set {
 sub insert {
 	my $self = shift;
 
+	my $sql = $self->{id} ? $self->_sql_update() : $self->_sql_insert();
+
+	$self->{dbh}->do($sql) or warn "$sql;\n";
+	return $sql;
+}
+
+sub _sql_insert {
+	my $self = shift;
+
 	my %insert = (
 		title => $self->{title},
 		content => $self->{content}
@@ -118,13 +127,23 @@ sub insert {
 		}
 	}
 
-	my $sql = 'insert into changelog (' . join(', ', keys %insert) .
+	return 'insert into changelog (' . join(', ', keys %insert) .
 		') values (' .
 		join(', ', map {$self->{dbh}->quote($insert{$_})} keys %insert).
 		')';
+}
 
-	$self->{dbh}->do($sql) or warn "$sql;\n";
-	return $sql;
+sub _sql_update {
+	my $self = shift;
+
+	my %update = map {$_ => $self->{$_}} @Jaeger::Changelog::Params;
+	delete $update{id};
+
+	return 'update changelog set ' .
+		join(', ', map
+			{"$_ = " . $self->{dbh}->quote($update{$_})}
+			keys %update) .
+		" where id = $self->{id}";
 }
 
 # Use this only at the console
