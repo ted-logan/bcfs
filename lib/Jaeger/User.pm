@@ -1,7 +1,7 @@
 package	Jaeger::User;
 
 # 
-# $Id: User.pm,v 1.5 2003-11-01 17:50:55 jaeger Exp $
+# $Id: User.pm,v 1.6 2003-11-05 04:20:08 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -52,6 +52,9 @@ sub update {
 		carp "Jaeger::User->update(): login must be set";
 		return undef;
 	}
+
+	# make sure the login will never be upper case
+	$self->{login} = lc $self->{login};
 
 	# complain unless status is set
 	unless(defined $self->{status}) {
