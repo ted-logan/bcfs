@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.1 2002-05-19 22:55:47 jaeger Exp $
+# $Id: Changelog.pm,v 1.2 2002-06-21 02:15:51 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -44,6 +44,24 @@ sub newest {
 
 	$self->_db_select("order by time_begin desc limit 1")
 		or return;
+
+	return $self;
+}
+
+# selects a changelog based on its old id
+# (this enables backwards compatibility from old links)
+sub old_id {
+	my $package = shift;
+
+	my $self = $package->SUPER::new();
+  
+	my $id_old = shift;
+	if(defined $id_old) {
+		$self->_db_select("where id_old = $id_old")
+			or return;
+	} else {
+		return;
+	}
 
 	return $self;
 }
