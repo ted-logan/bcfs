@@ -1,4 +1,4 @@
-<form action="/changelog/---changelog_id---.html/reply" method="post">
+<form action="---uri---" method="post">
 <input type="hidden" name="changelog_id" value="---changelog_id---">
 <input type="hidden" name="response_to_id" value="---response_to_id---">
 <tr><td bgcolor="#000000" colspan="2"><font color="#ffffff" size="+2"><b>Create ---header---</b></font></td></tr>
