@@ -1,7 +1,7 @@
 package		Jaeger::Journal;
 
 #
-# $Id: Journal.pm,v 1.1 2002-08-26 06:06:15 jaeger Exp $
+# $Id: Journal.pm,v 1.2 2002-08-26 06:22:06 jaeger Exp $
 #
 
 # Journal-controlling code
@@ -27,7 +27,6 @@ $Jaeger::Journal::Dir = '/home/jaeger/journal';
 # for the moment, this is all this package does
 
 sub Navbar {
-	my $dbh = $Jaeger::Base::Pgdbh;
 	my $lf = new Jaeger::Lookfeel;
 
 	my @links;
