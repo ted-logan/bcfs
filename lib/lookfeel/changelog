@@ -2,6 +2,10 @@
 ---timestamp---
 <tr><td colspan="2">
 ---content---
-<br><br>
+<hr noshade>
+<small>
+---navigation---
+</small>
+<hr noshade>
 </td></tr>
 
