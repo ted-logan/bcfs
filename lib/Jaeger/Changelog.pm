@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.26 2004-03-12 16:33:03 jaeger Exp $
+# $Id: Changelog.pm,v 1.27 2004-11-12 23:08:45 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -636,7 +636,13 @@ sub handler {
 		$googlebot->update_last_visit();
 	}
 
-	$r->send_http_header('text/html');
+	# Store the user's browser in the database
+	if($user) {
+		$user->{last_browser} = $ua;
+		$user->update();
+	}
+
+	$r->send_http_header('text/html; charset=UTF-8');
 
 	print Jaeger::Base::Lookfeel()->main($changelog);
 
