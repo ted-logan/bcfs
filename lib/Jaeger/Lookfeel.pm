@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.1 2002-05-19 22:56:30 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.2 2002-05-19 22:59:47 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -94,6 +94,90 @@ sub _changelog {
 	}
 
 	return %params;
+}
+
+# we pass to this an array of objects to be displayed
+# if more than one element is passed, the first one will be used only
+# for the title and navigation links
+sub _main {
+	my $self = shift;
+	my @obj = @_;
+	my %params;
+
+	if(my $title = $obj[0]->title()) {
+		$params{title} = ": $title";
+	}
+	$params{navlinks} = $self->navlinks(
+		prev => $obj[0]->prev(),
+		index => $obj[0]->index(),
+		next => $obj[0]->next(),
+	);
+
+	# get a quote
+	my $fortune = new Fortune;
+	$fortune->read('/home/jaeger/text/quotes/quotes');
+
+	my $quote = $fortune->quote();
+	$quote =~ s/$/<br>/m;
+
+	$params{quote} = "<tt>$quote</tt>";
+
+	# count down to graduation: 09 June 2002
+	$params{graddaysleft} = int((1023606000 - time) / 86400);
+
+	# populate content solutions data: links, chatterbox
+	$params{links} = 'Coming soon: Content Solutions links';
+	$params{chatterbox} = $self->chatterbox(
+		chatter => 'Coming soon, we hope'
+	);
+
+	# populate the content
+	if(@obj > 1) {
+		my @content;
+
+		# the top element will be used only for title and nav links
+		my $top = shift @obj;
+
+		foreach my $object (@obj) {
+			push @content, $object->html();
+		}
+
+		$params{content} = join '', @content;
+	} else {
+		$params{content} = $obj[0]->html();
+	}
+
+	return %params;
+}
+
+sub navlinks {
+	my $self = shift;
+	my %params = @_;
+
+	my @link;
+
+	if(ref $params{prev}) {
+		push @link, '&lt; - <a href="' . $params{prev}->url() .
+			'">Previous: ' . $params{prev}->title() . '</a>';
+	} else {
+		push @link, '&lt;- Previous';
+	}
+
+	if(ref $params{index}) {
+		push @link, ' [ <a href="' . $params{index}->url() . '">' .
+			$params{index}->title() . '</a> ] ';
+	} else {
+		push @link, ' [ Index ] ';
+	}
+
+	if(ref $params{next}) {
+		push @link, '<a href="' . $params{next}->url() . '">Next: ' .
+			$params{next}->title() . '</a> -&gt;';
+	} else {
+		push @link, 'Next -&gt;';
+	}
+
+	return join '', @link;
 }
 
 1;
