@@ -1,7 +1,7 @@
 package	Jaeger::User;
 
 # 
-# $Id: User.pm,v 1.8 2004-02-28 21:07:45 jaeger Exp $
+# $Id: User.pm,v 1.9 2004-02-29 19:34:35 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -204,11 +204,13 @@ sub cookies {
 			-name => 'jaeger_login',
 			-value => $self->{login},
 			-expires => '+31d',
+			-path => '/',
 		},
 		{
 			-name => 'jaeger_password',
 			-value => $self->{plain_password},
 			-expires => '+31d',
+			-path => '/',
 		}
 	);
 
