@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.11 2003-08-25 03:19:01 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.12 2003-10-30 01:02:36 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -372,6 +372,38 @@ sub _yoda_item {
 	} else {
 		$params{mpg} = 'n/a';
 	}
+
+	return %params;
+}
+
+sub _login_status_user {
+	my $self = shift;
+
+	my %params = @_;
+
+	my $where = "last_visit > now() + '-1h' order by last_visit desc";
+	my @recent;
+	foreach my $user (Jaeger::User->Select($where)) {
+		my $sec = time - $self->parsetimestamp($user->last_visit());
+
+		my $when;
+		if($sec <= 0) {
+			$when = ' (now)';
+		} else {
+			my $min = int($sec / 60);
+			$sec = int($sec) % 60;
+
+			$when = sprintf " %d:%02d ago", $min, $sec;
+		}
+
+		push @recent, $self->link(
+			url => $user->url(),
+			title => $user->name(),
+			new => $when,
+		);
+	}
+
+	$params{recent} = join('', @recent);
 
 	return %params;
 }
