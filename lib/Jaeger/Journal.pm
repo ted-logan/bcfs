@@ -1,7 +1,7 @@
 package		Jaeger::Journal;
 
 #
-# $Id: Journal.pm,v 1.6 2003-01-31 21:58:39 jaeger Exp $
+# $Id: Journal.pm,v 1.7 2003-02-06 23:39:19 jaeger Exp $
 #
 
 # Journal-controlling code
@@ -61,13 +61,13 @@ sub read {
 	close J;
 
 	# get the last modification date
-	$self->{time_begin} = scalar localtime((stat $file)[9]);
+	$self->{time_end} = scalar localtime((stat $file)[9]);
 
 	# do we have a comment telling us when the file was started?
 	if(my ($start) = $content[0] =~ /started (.*) --/) {
-		$self->{time_end} = $start;
+		$self->{time_begin} = $start;
 	} else {
-		$self->{time_end} = $self->{time_begin};
+		$self->{time_begin} = $self->{time_end};
 	}
 
 	# consume lines until we get to the open <body> tag
