@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.25 2004-03-06 00:06:32 jaeger Exp $
+# $Id: Changelog.pm,v 1.26 2004-03-12 16:33:03 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -525,7 +525,12 @@ sub handler {
 
 	my $changelog;
 
-	if($r->uri() =~ m#/changelog/(\d+)\.html$#) {
+	if($r->uri() =~ m#^//#) {
+		# We ended up with one too many slashes at the beginning
+		$changelog = $r->uri();
+		$changelog =~ s#^/+#/#;
+
+	} elsif($r->uri() =~ m#/changelog/(\d+)\.html$#) {
 		# Show changelog by specific id
 		$changelog = Jaeger::Changelog->new_id($1);
 		unless($changelog) {
