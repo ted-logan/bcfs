@@ -1,7 +1,7 @@
 package	Jaeger::Photo;
 
 # 
-# $Id: Photo.pm,v 1.1 2003-01-10 06:53:35 jaeger Exp $
+# $Id: Photo.pm,v 1.2 2003-01-31 21:58:15 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -60,6 +60,17 @@ sub update {
 	}
 
 	$self->SUPER::update();
+}
+
+# returns a Postgres-compatible date
+sub date {
+	my $self = shift;
+
+	my @date = (gmtime($self->{date}))[0..5];
+	$date[4]++;
+	$date[5] += 1900;
+
+	return sprintf("%04d-%02d-%02d %02d:%02d:%02d+00", reverse @date);
 }
 
 # selects this photo's timezone
