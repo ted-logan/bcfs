@@ -1,7 +1,7 @@
 package	Jaeger::Photo::List;
 
 # 
-# $Id: List.pm,v 1.1 2003-01-10 06:57:26 jaeger Exp $
+# $Id: List.pm,v 1.2 2003-01-26 09:03:11 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -38,7 +38,8 @@ sub html {
 
 	my $photos = $self->photos();
 
-	push @html, "<tr><td>", scalar(@$photos), " photos</td></tr>\n";
+	push @html, "<tr><td>", scalar(@$photos), " photo",
+		(@$photos == 1 ? '' : 's'), "</td></tr>\n";
 
 	foreach my $photo (@$photos) {
 		push @html, $self->lf()->photo_list(
