@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.18 2004-11-12 23:09:35 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.19 2005-04-01 02:45:44 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -165,7 +165,7 @@ sub _main {
 	my $quote = $fortune->quote();
 	$quote =~ s/$/<br>/mg;
 
-	$params{quote} = "<tt>$quote</tt>";
+	$params{quote} = $quote;
 
 	my @navbar;
 
