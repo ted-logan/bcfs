@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.8 2003-01-20 20:07:42 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.9 2003-01-26 12:51:46 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -21,6 +21,7 @@ use Jaeger::Changelog;
 use Jaeger::Content;
 
 use Fortune;
+use POSIX qw(ceil);
 
 @Jaeger::Lookfeel::ISA = qw(Jaeger::Base);
 
@@ -170,8 +171,10 @@ sub _main {
 	push @navbar, Jaeger::Journal->Navbar();
 	$params{navbar} = $self->links(linkbox => join('', @navbar));
 
+	my $q = Jaeger::Base::Query();
+
 	# populate content solutions data: links, chatterbox
-	$params{links} = $self->photo_search();
+	$params{links} = $self->search_box(q => $q->param('q'));
 	$params{chatterbox} = $self->chatterbox(
 		chatter => 'Coming soon, we hope'
 	);
@@ -250,6 +253,69 @@ sub _content_link {
 			);
 		}
 		$params{children} = join('', @children);
+	}
+
+	return %params;
+}
+
+# search stuff
+sub _search_results {
+	my $self = shift;
+
+	my %params = @_;
+
+	if($params{count} == 1) {
+		$params{count} = '1 result';
+
+	} elsif($params{count}) {
+		# total number of pages
+		my $totalpage = ceil($params{count} / $Jaeger::Search::Page);
+
+		$params{count} = "$params{count} results; showing " .
+			($params{page} * $Jaeger::Search::Page + 1) . ' to ' .
+			(($params{page} + 1) * $Jaeger::Search::Page);
+
+		# populate the page links
+
+		# page range to show
+		# (show at most 11 total page links 
+		my $minpage = $params{page} > 5 ? $params{page} - 5 : 0;
+		my $maxpage = $totalpage - $params{page} > 5 ?
+			$params{page} + 5 : $totalpage;
+
+		my @pages;
+
+		if($minpage != 0) {
+			push @pages, "&lt;&lt;&lt;\n";
+		}
+
+		# format the search query to nice url-encapsulation
+		my $query = $params{q};
+		$query =~ s/([^a-zA-Z0-9 ])/sprintf '%%%02x', ord($1)/ge;
+		$query =~ s/ /+/g;
+
+		for(my $i = $minpage; $i < $maxpage; $i++) {
+			if($i == $params{page}) {
+				push @pages, "[" . ($i + 1) ."]\n";
+			} else {
+				push @pages, $self->search_results_page(
+					page => $i,
+					pagenum => $i + 1,
+					what => $params{what},
+					q => $query,
+				);
+			}
+		}
+
+		if($maxpage != $totalpage) {
+			push @pages, "&gt;&gt;&gt;\n";
+		}
+
+		$params{pages} = join('', @pages);
+
+	} else {
+		# no results at all
+		$params{count} = 'no results';
 	}
 
 	return %params;
