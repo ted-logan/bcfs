@@ -1,7 +1,7 @@
 package Jaeger::Base;
 
 #
-# $Id: Base.pm,v 1.7 2003-11-05 04:22:07 jaeger Exp $
+# $Id: Base.pm,v 1.8 2004-02-29 19:33:10 jaeger Exp $
 #
 # Copyright (c) 1999, 2000 x13.com
 # Copyright (c) 2001, 2002 Buildmeasite.com
@@ -262,7 +262,7 @@ sub AUTOLOAD {
 }
 
 # determine the id of the current object
-sub _id {
+sub id {
 	my $self = shift;
 
 	unless($self->{id}) {
