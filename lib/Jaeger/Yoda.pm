@@ -1,7 +1,7 @@
 package		Jaeger::Yoda;
 
 #
-# $Id: Yoda.pm,v 1.1 2002-08-26 05:41:43 jaeger Exp $
+# $Id: Yoda.pm,v 1.2 2003-01-20 20:07:04 jaeger Exp $
 #
 
 # For voyerstic pleasure, shows Yoda's gas mileage
@@ -16,7 +16,7 @@ use Jaeger::Lookfeel;
 
 @Jaeger::Yoda::ISA = qw(Jaeger::Base);
 
-@Jaeger::Yoda::Params = qw(date station city state mileage ppg gal total);
+@Jaeger::Yoda::Params = qw(date station city state mileage ppg gal total valid);
 
 # returns a new object
 sub new {
@@ -72,7 +72,10 @@ sub _html {
 			if(ref $last_row) {
 				$row->{miles} =
 					$row->{mileage} - $last_row->{mileage};
-				$row->{mpg} = $row->{miles} / $row->{gal};
+				if($row->{valid}) {
+					$row->{mpg} =
+						$row->{miles} / $row->{gal};
+				}
 			}
 			push @content, $self->lf()->yoda_item(%$row);
 			$last_row = $row;
