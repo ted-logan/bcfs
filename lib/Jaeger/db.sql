@@ -21,9 +21,10 @@ create table lookfeel (
 );
 
 create table content (
-	label varchar(32) not null primary key,
+	id serial primary key,
+	label varchar(32) not null unique,
 	parent varchar(32),
-	timestamp datetime default now() not null,
+	timestamp timestamp with time zone default now() not null,
 	value text
 );
 
