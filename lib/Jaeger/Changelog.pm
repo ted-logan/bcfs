@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.8 2003-01-10 07:00:35 jaeger Exp $
+# $Id: Changelog.pm,v 1.9 2003-01-31 21:21:30 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -200,7 +200,7 @@ sub _next {
 sub _index {
 	my $self = shift;
 
-	my $year = (localtime)[5] + 1900;
+	my ($year) = $self->{time_begin} =~ /^(\d\d\d\d)-/;
 
 	$self->{index} = new Jaeger::Base;
 
