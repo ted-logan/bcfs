@@ -1,7 +1,7 @@
 package Jaeger::Base;
 
 #
-# $Id: Base.pm,v 1.8 2004-02-29 19:33:10 jaeger Exp $
+# $Id: Base.pm,v 1.9 2004-03-12 16:35:45 jaeger Exp $
 #
 # Copyright (c) 1999, 2000 x13.com
 # Copyright (c) 2001, 2002 Buildmeasite.com
@@ -379,6 +379,7 @@ sub redirect {
 	}
 	my $url = shift;
 	unless($url =~ /^http/) {
+		$url =~ s#^/##;
 		$url = $Jaeger::Base::BaseURL . $url;
 	}
 	print $self->query()->redirect($url);
