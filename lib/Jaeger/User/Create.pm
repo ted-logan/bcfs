@@ -1,7 +1,7 @@
 package Jaeger::User::Create;
 
 #
-# $Id: Create.pm,v 1.1 2003-08-24 20:56:52 jaeger Exp $
+# $Id: Create.pm,v 1.2 2003-08-26 23:55:05 jaeger Exp $
 #
 
 # Allows the creation of new users
@@ -122,8 +122,6 @@ sub step1 {
 
 		join '', @password;
 	};
-
-	warn "New password is $password\n";
 
 	# insert the user
 	my $user = new Jaeger::User;

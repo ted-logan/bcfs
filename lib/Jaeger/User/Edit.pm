@@ -1,7 +1,7 @@
 package Jaeger::User::Edit;
 
 #
-# $Id: Edit.pm,v 1.1 2003-08-24 20:57:03 jaeger Exp $
+# $Id: Edit.pm,v 1.2 2003-08-26 23:55:05 jaeger Exp $
 #
 
 # Allows the creation of new users
@@ -52,8 +52,6 @@ sub update {
 	my $q = $self->query();
 
 	my $user = Jaeger::User->Login();
-
-	warn "Updating user $user\n";
 
 	# verify that all of the inputs are filled
 	my $name = $q->param('name');
