@@ -1,7 +1,7 @@
 package	Jaeger::User;
 
 # 
-# $Id: User.pm,v 1.2 2003-08-24 20:57:35 jaeger Exp $
+# $Id: User.pm,v 1.3 2003-08-25 02:32:47 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -155,21 +155,16 @@ sub _Login {
 
 	if(@_) {
 		# the login and password were specified by the caller
-		warn "(grabbing login/password from caller)\n";
 		$login = shift;
 		$password = shift;
 
 	} else {
 		# grab the login and password from cookies
-		warn "(grabbing login/password from cookies)\n";
-
 		my $q = $package->Query();
 
 		$login = $q->cookie('jaeger_login');
 		$password = $q->cookie('jaeger_password');
 	}
-
-	warn "Jaeger::User->Login(): Attempting to log in $login/$password\n";
 
 	my $user = $package->Select(login => $login);
 
@@ -177,7 +172,6 @@ sub _Login {
 		# check the user's password
 		if($user->check_password($password)) {
 			# all ok
-			warn "Sucessfully logged in $user->{name}\n";
 
 			# update the user's login date
 			$user->update_last_visit();
@@ -185,12 +179,10 @@ sub _Login {
 			return $user;
 		} else {
 			# invalid password
-			warn "Invalid password\n";
 			return undef;
 		}
 	} else {
 		# user not found
-		warn "User not found\n";
 		return undef;
 	}
 }
