@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.4 2002-08-26 06:20:57 jaeger Exp $
+# $Id: Changelog.pm,v 1.5 2002-09-02 05:20:24 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -13,6 +13,7 @@ use strict;
 
 use Jaeger::Base;
 use Jaeger::Lookfeel;
+use Jaeger::Changelog::Browse;
 
 @Jaeger::Changelog::ISA = qw(Jaeger::Base);
 
@@ -64,6 +65,15 @@ sub old_id {
 	}
 
 	return $self;
+}
+
+# provides a list of changelogs by year
+sub browse {
+	my $package = shift;
+
+	my $year = shift;
+
+	return new Jaeger::Changelog::Browse($year);
 }
 
 # internal function; selects a row from the database
@@ -272,6 +282,20 @@ sub _next {
 		$self->{next} = undef;
 	}
 	return $self->{next};
+}
+
+# returns a link to the index
+sub _index {
+	my $self = shift;
+
+	my $year = (localtime)[5] + 1900;
+
+	$self->{index} = new Jaeger::Base;
+
+	$self->{index}->{url} = "changelog.cgi?browse=$year";
+	$self->{index}->{title} = 'Index';
+
+	return $self->{index};
 }
 
 # returns a link to the url of this changelog
