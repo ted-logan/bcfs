@@ -1,7 +1,7 @@
 package	Jaeger::Timezone;
 
 # 
-# $Id: Timezone.pm,v 1.1 2003-01-10 06:54:53 jaeger Exp $
+# $Id: Timezone.pm,v 1.2 2003-07-05 02:14:01 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -38,6 +38,16 @@ sub format {
 	$time += $self->{ofst} * 3600;
 
 	my @date = gmtime($time);
+
+	# if the time is precisely midnight, don't display it
+	if(($time % 86400) == 0) {
+		return sprintf "%s %02d %s %04d %s",
+			$Jaeger::Timezone::Weekdays[$date[6]],  # weekday
+			$date[3],                               # day of month
+			$Jaeger::Timezone::Months[$date[4]],    # month
+			$date[5] + 1900,                        # year
+			$self->{name};                          # time zone
+	}
 
 	# Perhaps I should just use strftime() instead of this mess.
 
