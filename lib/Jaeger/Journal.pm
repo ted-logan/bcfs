@@ -1,7 +1,7 @@
 package		Jaeger::Journal;
 
 #
-# $Id: Journal.pm,v 1.2 2002-08-26 06:22:06 jaeger Exp $
+# $Id: Journal.pm,v 1.3 2002-08-27 03:15:44 jaeger Exp $
 #
 
 # Journal-controlling code
@@ -42,7 +42,10 @@ sub Navbar {
 		$url =~ s/\.html//;
 
 		my @date = (split /\./, $entry)[0 .. 2];
-		my $time = timelocal(0, 0, 0, reverse @date);
+		my @date_local = @date;
+		$date_local[0] -= 1900;
+		$date_local[1]--;
+		my $time = timelocal(0, 0, 0, reverse @date_local);
 		my $weekday = $Jaeger::Journal::Weekdays[(localtime $time)[6]];
 		my $title = "$weekday $date[2] $Jaeger::Journal::Months[$date[1]] $date[0]";
 
