@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: content.cgi,v 1.3 2003-05-17 15:21:58 jaeger Exp $
+# $Id: content.cgi,v 1.4 2004-11-12 23:35:57 jaeger Exp $
 #
 
 # displays a page of static content, or redirects to a changelog if we're being
@@ -24,7 +24,7 @@ if($content) {
 	# show some content
 	my $lf = new Jaeger::Lookfeel;
 
-	print "content-type: text/html\n\n";
+	print "content-type: text/html; charset=UTF-8\n\n";
 	print $lf->main($content);
 
 } else {

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: login.cgi,v 1.3 2003-09-29 16:16:36 jaeger Exp $
+# $Id: login.cgi,v 1.4 2004-11-12 23:35:57 jaeger Exp $
 #
 
 # login.cgi: Logs a user in
@@ -61,5 +61,5 @@ $page->{html} = $lf->login(
 	redirect => $q->param('redirect'),
 );
 
-print "content-type: text/html\n\n";
+print "content-type: text/html; charset=UTF-8\n\n";
 print $lf->main($page);

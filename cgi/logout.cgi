@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: logout.cgi,v 1.1 2003-08-24 16:22:07 jaeger Exp $
+# $Id: logout.cgi,v 1.2 2004-11-12 23:35:57 jaeger Exp $
 #
 
 # logout.cgi: removes a user's cookies, logging him out
@@ -16,7 +16,7 @@ my $q = Jaeger::Base->Query();
 my $lf = Jaeger::Base->Lookfeel();
 
 # clear the user's cookies, if they should happen to exist
-print "content-type: text/html\n";
+print "content-type: text/html; charset=UTF-8\n";
 print "Set-cookie: ", $q->cookie(
 	-name => 'jaeger_login',
 	-value => '',

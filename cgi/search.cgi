@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: search.cgi,v 1.1 2003-01-26 12:40:30 jaeger Exp $
+# $Id: search.cgi,v 1.2 2004-11-12 23:35:57 jaeger Exp $
 #
 
 # Performs a search
@@ -18,5 +18,5 @@ my $lf = Jaeger::Base::Lookfeel();
 
 my $search = new Jaeger::Search($q->param('q'));
 
-print "content-type: text/html\n\n";
+print "content-type: text/html; charset=UTF-8\n\n";
 print $lf->main($search);

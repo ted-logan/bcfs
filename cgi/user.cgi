@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: user.cgi,v 1.4 2003-09-29 16:15:57 jaeger Exp $
+# $Id: user.cgi,v 1.5 2004-11-12 23:35:57 jaeger Exp $
 #
 
 # user.cgi: Allows editing and viewing of users
@@ -45,7 +45,7 @@ if($q->param('action') eq 'edit') {
 
 my $html = $lf->main($page);
 
-print "content-type: text/html\n";
+print "content-type: text/html; charset=UTF-8\n";
 foreach my $cookie (@{$page->lf()->{cookies}}) {
 	print "Set-Cookie: $cookie\n";
 }
