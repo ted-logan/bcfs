@@ -1,7 +1,7 @@
 package Jaeger::Base;
 
 #
-# $Id: Base.pm,v 1.5 2003-01-31 21:58:57 jaeger Exp $
+# $Id: Base.pm,v 1.6 2003-10-12 17:20:37 jaeger Exp $
 #
 # Copyright (c) 1999, 2000 x13.com
 # Copyright (c) 2001, 2002 Buildmeasite.com
@@ -27,7 +27,7 @@ unless($Jaeger::Base::Pgdbh) {
 	die "Jaeger::Base: Unable to connect to pg database\n";
 }
 
-$Jaeger::Base::BaseURL = '';
+$Jaeger::Base::BaseURL = 'http://jaeger.festing.org/';
 
 #
 # global data to keep track of child modules
@@ -73,7 +73,11 @@ sub new {
 	$self->{table} = $package->table();
 
 	if($self->{id}) {
-		$Jaeger::Base::Ids{$package}->{$self->{id}} = $self;
+		if($Jaeger::Base::Ids{$package}->{$self->{id}}) {
+			return $Jaeger::Base::Ids{$package}->{$self->{id}};
+		} else {
+			$Jaeger::Base::Ids{$package}->{$self->{id}} = $self;
+		}
 	}
 
 	bless $self, $package;
