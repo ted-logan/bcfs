@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.7 2002-11-02 17:14:39 jaeger Exp $
+# $Id: Changelog.pm,v 1.8 2003-01-10 07:00:35 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -33,7 +33,9 @@ sub Newest {
 sub old_id {
 	my $package = shift;
 
-	return $package->Select('id_old = $id_old');
+	my $id_old = shift;
+
+	return $package->Select(id_old => $id_old);
 }
 
 # provides a list of changelogs by year
