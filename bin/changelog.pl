@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: changelog.pl,v 1.8 2004-02-16 02:58:51 jaeger Exp $
+# $Id: changelog.pl,v 1.9 2004-06-26 19:53:56 jaeger Exp $
 #
 
 # 28 May 2000
@@ -17,18 +17,21 @@ use Jaeger::Changelog;
 my ($time_begin, $time_end); # temporary varible
 my $title;
 my $id;
+my $import;
 my $help;
 GetOptions(
 	'date=s' => \$time_begin,
 	'time_end=s' => \$time_end,
 	"title=s" => \$title,
 	"id=i" => \$id,
+	"import=s" => \$import,
 	"help" => \$help,
 );
 
 if($help) {
-	print 'changelog creator $Revision: 1.8 $', "\n";
+	print 'changelog creator $Revision: 1.9 $', "\n";
 	print "Command-line options:\n";
+	print "\t--import FILE	 Read FILE as an offline changelog\n";
 	print "\t--date=date     Specify the beginning date\n";
 	print "\t                Default: time at beginning of edit\n";
 	print "\t--time_end=date Specify the ending date\n";
@@ -49,6 +52,45 @@ if($id) {
 		die "Changelog with id = $id doesn't exist\n";
 	}
 	print "Selecting changelog id = $id (", $changelog->title(), ")\n";
+
+} elsif($import) {
+	$changelog = new Jaeger::Changelog();
+
+	$changelog->{status} = 0;
+
+	open IMPORT, $import
+		or die "Unable to open $import\n";
+	
+	# Read the header info
+	my %header;
+	while(<IMPORT>) {
+		s/[\r\n]+$//;
+		last unless $_;
+		my ($key, $value) = /(.*?):\s*(.*)/;
+		$header{lc $key} = $value;
+		print "$key=$value\n";
+	}
+
+	unless($header{title}) {
+		die "Title unspecified\n";
+	}
+	$changelog->{title} = $header{title};
+
+	$time_begin = timestamp($header{begin});
+	if($time_begin) {
+		$changelog->{time_begin} = $time_begin;
+	}
+
+	$time_end = timestamp($header{end});
+	if($time_end) {
+		$changelog->{time_end} = $time_end;
+	}
+
+	# Read the rest of the file into the changelog
+	local $/ = undef;
+	$changelog->{content} = <IMPORT>;
+
+	close IMPORT;
 
 } else {
 	$changelog = new Jaeger::Changelog();
