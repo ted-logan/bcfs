@@ -1,7 +1,7 @@
 package Jaeger::Search::Searchable;
 
 #
-# $Id: Searchable.pm,v 1.1 2003-01-26 12:50:52 jaeger Exp $
+# $Id: Searchable.pm,v 1.2 2004-05-16 16:20:40 jaeger Exp $
 #
 
 # Module containing utility functions for searchable objects
@@ -91,10 +91,12 @@ sub _html {
 
 	foreach my $cl (@{$self->content()}) {
 		next unless $cl;
+		my $date = $cl->time_begin() ? $cl->time_begin() : $cl->date();
+		$date =~ s/\..*//;
 		push @content, $self->lf()->search_results_text(
 			url => $cl->url(),
 			title => $cl->title(),
-			time_begin => $cl->time_begin(),
+			time_begin => $date,
 		);
 	}
 
