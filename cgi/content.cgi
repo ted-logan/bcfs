@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: content.cgi,v 1.2 2003-02-23 18:00:48 jaeger Exp $
+# $Id: content.cgi,v 1.3 2003-05-17 15:21:58 jaeger Exp $
 #
 
 # displays a page of static content, or redirects to a changelog if we're being
@@ -30,7 +30,7 @@ if($content) {
 } else {
 	# redirect to my changelogs
 
-	my $url = $Jaeger::Base::BaseURL . '/changelog.cgi';
+	my $url = $Jaeger::Base::BaseURL . '/changelog/';
 
 	if($q->param('what') eq 'article') {
 		my $id_old = $q->param('id');
