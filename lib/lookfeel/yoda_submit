@@ -48,6 +48,11 @@
 </tr>
 
 <tr>
+<td><b>Valid:</b></td>
+<td><input name="valid" type="checkbox" checked></td>
+</tr>
+
+<tr>
 <td></td>
 <td><input type="submit" value="Submit"></td>
 </tr>
