@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: static.pl,v 1.1 2003-01-20 19:39:00 jaeger Exp $
+# $Id: static.pl,v 1.2 2003-08-25 03:20:44 jaeger Exp $
 #
 
 # Statically exports changelogs into html files
@@ -15,7 +15,7 @@ my $lf = new Jaeger::Lookfeel;
 
 my $dir = '/home/jaeger/programming/webpage/html';
 
-my @changelogs = All Jaeger::Changelog(undef, 'time_begin asc');
+my @changelogs = Jaeger::Changelog->Select();
 
 foreach my $changelog (@changelogs) {
 	print "$changelog->{id}: $changelog->{time_begin} $changelog->{title}\n";
@@ -27,6 +27,8 @@ foreach my $changelog (@changelogs) {
 
 	close F;
 }
+
+exit;
 
 my $lastid = $changelogs[-1]->{id};
 
