@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.10 2003-01-31 22:00:22 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.11 2003-08-25 03:19:01 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -19,6 +19,7 @@ use Jaeger::Base;
 use Jaeger::Journal;
 use Jaeger::Changelog;
 use Jaeger::Content;
+use Jaeger::User;
 
 use Fortune;
 use POSIX qw(ceil);
@@ -155,8 +156,18 @@ sub _main {
 
 	$params{quote} = "<tt>$quote</tt>";
 
-	# populate the navigation links
 	my @navbar;
+
+	# the first "navigation box" will be the user logged-in status
+	my $user = Jaeger::User->Login();
+
+	if($user) {
+		push @navbar, $self->login_status_user(user => $user->name());
+	} else {
+		push @navbar, $self->login_status_nonuser();
+	}
+
+	# populate the navigation links
 	if((ref $obj[0]) eq 'Jaeger::Content') {
 		push @navbar, $obj[0]->Navbar();
 	} else {
@@ -317,6 +328,32 @@ sub _search_results {
 		# no results at all
 		$params{count} = 'no results';
 	}
+
+	return %params;
+}
+
+#
+# User stuff
+#
+
+sub _user_view {
+	my $self = shift;
+
+	my %params = @_;
+
+	$params{status} = $Jaeger::User::Status{$params{status}};
+
+	$params{last_visit} =~ s/\..*//;
+
+	return %params;
+}
+
+sub _user_list_item {
+	my $self = shift;
+
+	my %params = @_;
+
+	$params{last_visit} =~ s/\..*//;
 
 	return %params;
 }
