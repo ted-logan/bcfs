@@ -1,7 +1,7 @@
 package	Jaeger::Photo::List;
 
 # 
-# $Id: List.pm,v 1.2 2003-01-26 09:03:11 jaeger Exp $
+# $Id: List.pm,v 1.3 2003-01-26 12:45:36 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -23,7 +23,6 @@ use Jaeger::Base;
 
 use Jaeger::Photo::List::Date;
 use Jaeger::Photo::List::Round;
-use Jaeger::Photo::List::Search;
 
 #
 # used by Jaeger::Lookfeel to show this page
