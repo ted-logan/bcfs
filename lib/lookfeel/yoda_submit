@@ -1,0 +1,55 @@
+<form action="yoda.cgi" method="post">
+
+<input type="hidden" name="go" value="yep">
+
+<tr>
+<td><b>Password:</b></td>
+<td><input type="password" name="password"></td>
+</tr>
+
+<tr>
+<td><b>Date:</b></td>
+<td><input name="date" value="---date---"></td>
+</tr>
+
+<tr>
+<td><b>Station:</b></td>
+<td><input name="station" value="---station---"></td>
+</tr>
+
+<tr>
+<td><b>City:</b></td>
+<td><input name="city" value="---city---"></td>
+</tr>
+
+<tr>
+<td><b>State:</b></td>
+<td><input name="state" value="---state---"></td>
+</tr>
+
+<tr>
+<td><b>Mileage:</b></td>
+<td><input name="mileage" value="---mileage---"></td>
+</tr>
+
+<tr>
+<td><b>$/gal:</b></td>
+<td><input name="ppg" value="---ppg---"></td>
+</tr>
+
+<tr>
+<td><b>Gallons:</b></td>
+<td><input name="gal" value="---gal---"></td>
+</tr>
+
+<tr>
+<td><b>Total:</b></td>
+<td><input name="total" value="---total---"></td>
+</tr>
+
+<tr>
+<td></td>
+<td><input type="submit" value="Submit"></td>
+</tr>
+
+</form>
