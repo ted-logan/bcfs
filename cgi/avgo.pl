@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: avgo.pl,v 1.1 2002-11-02 17:06:29 jaeger Exp $
+# $Id: avgo.pl,v 1.2 2002-11-02 17:08:28 jaeger Exp $
 
 # Plain-text output of jaegerfesting for avantgo chanel
 # 09 September 2000
@@ -17,7 +17,7 @@ print "content-type: text/html\n\n";
 my $q = new CGI;
 
 if(my $id = $q->param('changelog')) {
-        my $changelog = new Jaeger::Changelog($id);
+        my $changelog = Jaeger::Changelog->new_id($id);
 
         print "<html><head><title>", $changelog->title(), "</title></head>\n";
         print "<h2>", $changelog->title(), "</h2>\n";
@@ -36,7 +36,9 @@ if(my $id = $q->param('changelog')) {
                 print " | <a href=\"avgo.pl?changelog=", $next->id(), "\">", $next->title(), "</a> -&gt;\n";
         }
 } else {
-        my @changelogs = All Jaeger::Changelog(undef, 'time_begin desc', 10);
+        my @changelogs = Jaeger::Changelog->Select(
+		'1=1 order by time_begin desc limit 10'
+	);
 =for later	
         my $chatterbox = new Shared::Chatter;
         my @chatter = $chatterbox->recent("timestamp > now() + '-2d'", 10);
