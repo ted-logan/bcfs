@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.11 2003-05-15 00:06:48 jaeger Exp $
+# $Id: Changelog.pm,v 1.12 2003-08-24 20:58:08 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -13,10 +13,12 @@ use strict;
 
 use Jaeger::Base;
 use Jaeger::Lookfeel;
+use Jaeger::User;
 use Jaeger::Changelog::Browse;
 
 use Apache::Constants qw(OK DECLINED REDIRECT);
 use Apache::File;
+use Apache::Cookie;
 
 @Jaeger::Changelog::ISA = qw(Jaeger::Base);
 
@@ -224,6 +226,12 @@ sub _url {
 sub _html {
 	my $self = shift;
 
+	# If we're logged in, log this changelog access
+	my $user = Jaeger::User->Login();
+	if($user) {
+		$user->log_access($self);
+	}
+
 	return $self->lf()->changelog(%$self);
 }
 
@@ -339,7 +347,20 @@ sub handler {
 
 	$r->send_http_header('text/html');
 
+	# Are we a logged-in user?
+	my %jar = Apache::Cookie->new($r)->parse();
+	if($jar{jaeger_login} && $jar{jaeger_password}) {
+		my $login = $jar{jaeger_login}->value();
+		my $password = $jar{jaeger_password}->value();
+		Jaeger::User->Login($login, $password);
+	}
+
 	print Jaeger::Base::Lookfeel()->main($changelog);
+
+	# Clean up after the logged-in user, since we're doing the sneaky
+	# mod_perl thing
+
+	$Jaeger::User::Current = 0;
 
 	return OK;
 }
