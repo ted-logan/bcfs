@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: rss.pl,v 1.3 2005-01-04 04:13:31 jaeger Exp $
+# $Id: rss.pl,v 1.4 2005-02-20 00:26:08 jaeger Exp $
 #
 
 #
@@ -22,7 +22,7 @@ use Jaeger::UserBox;
 use XML::RSS;
 use LWP::UserAgent;
 
-my @links = qw();
+my @links = qw(http://kiesa.diaryland.com/index.rss);
 
 my $lf = new Jaeger::Lookfeel;
 
@@ -77,8 +77,17 @@ sub parse_url {
 	my $ua = new LWP::UserAgent;
 	my $response = $ua->get($url);
 
+	if(!$response->is_success()) {
+		# Site didn't respond
+		return undef;
+	}
+
+	# Clean up broken XML for Diaryland, et al
+	my $content = $response->content();
+	$content =~ s#<description>.*?</description>##g;
+
 	my $rss = new XML::RSS;
-	$rss->parse($response->content());
+	$rss->parse($content);
 
 	my @links;
 
