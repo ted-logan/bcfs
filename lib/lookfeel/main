@@ -1,10 +1,11 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<meta name="keywords" content="jaeger, festing, ted logan">
-<link REL="icon" HREF="/graphics/aicon.png" TYPE="image/png">
-<link rel="stylesheet" href="/jaeger.css" type="text/css">
 <head>
-<meta name="ICBM" content="40.04712,-105.25163">
-<meta name="DC.title" content="jaegerfesting">
+<link REL="icon" HREF="/graphics/aicon.png" TYPE="image/png"/>
+<link rel="stylesheet" href="/jaeger.css" type="text/css"/>
+<meta name="ICBM" content="40.04712,-105.25163"/>
+<meta name="DC.title" content="jaegerfesting"/>
+<meta name="keywords" content="jaeger, festing, ted logan"/>
 ---navlink---
 <title>j&auml;gerfesting---title---</title>
 </head>
@@ -15,12 +16,12 @@
 <tr>
 <td></td>
 <td bgcolor="#102050">
-<a href="/changelog.cgi"><img src="/graphics/jaegerfesting.png" width="283" height="46" border="0" alt="jaegerfesting"></a>
+<a href="/changelog/"><img src="/graphics/jaegerfesting.png" width="283" height="46" border="0" alt="jaegerfesting"></a>
 </td>
 </tr>
 
 <tr>
-<td valign="top" bgcolor="#102050" cellpadding="0">
+<td valign="top" bgcolor="#102050">
 <font size="+1">
 Want to <a href="/resume.pdf">hire</a> a newly-graduated computer engineer?
 <p>
@@ -57,11 +58,35 @@ I'm <a href="http://www.gemandted.com/">Married</a>!
 </td>
 
 <td valign="top" bgcolor="#102050">
-<table width="100%" border=0 cellspacing=0>
-<tr><td bgcolor="#000000" align="center"><font color="#ffffff"><b>Shameless Ad</b></font></td></tr>
+<table width="100%" border="0" cellspacing="0">
+<tr><td bgcolor="#000000" align="center"><font color="#ffffff"><b>Quick Links</b></font></td></tr>
 <tr><td>
+
+&#149; <a href="http://bitscape.org/">Bitscape</a><br>
+&#149; <a href="http://yanthor.net/">Yanthor</a><br>
+&#149; <a href="http://www.gaijin.com/journal/current.html">Gaijin</a><br>
+&#149; <a href="http://www.bakterium.com/">bakterium.</a><br>
+&#149; <a href="http://njivy.org/">Nic Ivy</a><br>
+&#149; <a href="http://www.wilhelm-aerospace.org/captainlogan.shtml">Captain Logan</a><br>
+&#149; <a href="http://www.deepshell.net/">Deepshell (Sleeper)</a><br>
+&#149; <a href="http://www.maddhatt.net/">Maddhatt</a><br>
+&#149; <a href="http://blog.srparish.net/">srp</a><br>
+&#149; <a href="http://kenkinder.com/">Ken Kinder</a><br>
+&#149; <a href="http://www.mfdh.ca/mfdh/">mfdh</a><br>
+&#149; <a href="http://mywebpages.comcast.net/spookster/">Spookster</a><br>
+<br>
+&#149; <a href="http://slashdot.org/">Slashdot</a><br>
+&#149; <a href="http://www.imdb.com/">IMDb</a><br>
+&#149; <a href="http://www.geos.tv/">GEOS</a><br>
+&#149; <a href="http://www.tvtorrents.com/">TvTorrents</a><br>
+&#149; <a href="http://www.google.com/">Google</a><br>
+&#149; <a href="http://news.google.com/">Google News</a><br>
+
+<p>
 Need intelligent Linux hosting run by a fellow Slashdot geek?
 Try <a href="http://www.buildmeasite.com/?jaeger">Buildmeasite</a>.
+</p>
+
 </td></tr>
 </table>
 </form>
@@ -79,14 +104,15 @@ Try <a href="http://www.buildmeasite.com/?jaeger">Buildmeasite</a>.
 <td></td>
 <td bgcolor="#102050">
 <i>
-&copy; 1998-2002 Ted Logan. All Rights Reserved.<br>
+&copy; 1998-2003 Ted Logan. All Rights Reserved.<br>
 <a href="mailto:jaeger@festing.org">jaeger@festing.org</a><br>
 </i>
 <small>
-<a href="/ted_logan.asc">PGP key</a>
+<a href="/ted_logan.asc">PGP key</a><br>
+<a href="http://jaeger.festing.org/rss.cgi">RSS feed</a>
 </small>
 </td>
 </tr>
 </table>
-</td>
-</tr>
+</body>
+</html>
