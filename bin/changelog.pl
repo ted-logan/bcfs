@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: changelog.pl,v 1.7 2003-04-25 19:01:00 jaeger Exp $
+# $Id: changelog.pl,v 1.8 2004-02-16 02:58:51 jaeger Exp $
 #
 
 # 28 May 2000
@@ -27,7 +27,7 @@ GetOptions(
 );
 
 if($help) {
-	print 'changelog creator $Revision: 1.7 $', "\n";
+	print 'changelog creator $Revision: 1.8 $', "\n";
 	print "Command-line options:\n";
 	print "\t--date=date     Specify the beginning date\n";
 	print "\t                Default: time at beginning of edit\n";
@@ -52,6 +52,8 @@ if($id) {
 
 } else {
 	$changelog = new Jaeger::Changelog();
+
+	$changelog->{status} = 0;
 
 	$time_begin = timestamp($time_begin);
 	if($time_end) {
