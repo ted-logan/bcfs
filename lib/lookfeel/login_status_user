@@ -1,11 +1,11 @@
-<tr><td bgcolor="#000000"><font color="#ffffff"><b>---user---: Logged In</b></font></a></td></tr>
+<tr><td class="header"><span class="header">---user---: Logged In</span></td></tr>
 <tr><td>
 <small>
 <a href="/logout.cgi">Log Out</a> : <a href="/user.cgi?action=edit">Edit Thyself</a> : <a href="/user.cgi">User List</a>
 </small>
 </td></tr>
 
-<tr><td bgcolor="#000000"><font color="#ffffff"><b>Recent Visitors</b></font></a></td></tr>
+<tr><td class="header"><span class="header">Recent Visitors</span></td></tr>
 <tr><td>
 <small>
 ---recent---

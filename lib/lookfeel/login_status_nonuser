@@ -1,4 +1,4 @@
-<tr><td bgcolor="#000000"><font color="#ffffff"><b>[not logged in]</b></font></a></td></tr>
+<tr><td class="header">[not logged in]</td></tr>
 <tr><td>
 <small>
 <a href="/login.cgi">Log In</a> : <a href="/create.cgi">Create Account</a>

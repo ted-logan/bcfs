@@ -2,7 +2,7 @@
 <input type="hidden" name="action" value="edit">
 <input type="hidden" name="go" value="yep">
 
-<tr><td bgcolor="#000000" colspan="2"><font color="#ffffff" size="+2"><b>Edit Thyself</b></font></td></tr>
+<tr><td class="header" colspan="2">Edit Thyself</td></tr>
 
 <tr><td colspan="2">
 <font color="#d03040"><b>---message---</b></font>

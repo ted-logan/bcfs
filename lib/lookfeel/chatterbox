@@ -1,5 +1,5 @@
 <table width="100%" border=0 cellspacing=0>
-<tr><td bgcolor="#000000"><font color="#ffffff"><b>Chatterbox</b></font></td></tr>
+<tr><td class="header">Chatterbox</td></tr>
 <tr><td>
 ---chatter---
 </td></tr>

@@ -1,7 +1,5 @@
-<tr><td bgcolor="#000000"><a href="---url---"><font color="#ffffff"><b>---title---</b></font></a></td></tr>
-<tr><td>
-<small>
+<tr><td class="header"><a href="---url---" class="header">---title---</a></td></tr>
+<tr><td class="linkbox_body">
 ---links---
-</small>
 </td></tr>
 

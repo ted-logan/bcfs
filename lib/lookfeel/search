@@ -1,4 +1,4 @@
-<tr><td bgcolor="#000000"><font color="#ffffff"><b>Search</b></font></td></tr>
+<tr><td class="header">Search</td></tr>
 <form action="search.cgi" method="get">
 <tr><td><input name="q" value="---q---"></td></tr>
 <tr><td>Search criterion are ORed together. Put quotes around phrases.
