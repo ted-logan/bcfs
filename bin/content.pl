@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: content.pl,v 1.1 2003-01-20 19:39:34 jaeger Exp $
+# $Id: content.pl,v 1.2 2004-02-16 02:59:13 jaeger Exp $
 #
 
 # content.pl: Allows editing of static content
@@ -89,7 +89,7 @@ while(1) {
 		$dirty ||= $content->pipe(qq(vi "+set textwidth=72"));
 
 	} elsif($choice eq 'i') {
-		$dirty ||= $content->pipe('ispell');
+		$dirty ||= $content->pipe('aspell');
 
 	} elsif($choice eq 'y') {
 		if($dirty) {
