@@ -1,7 +1,7 @@
 package		Jaeger::Content;
 
 #
-# $Id: Content.pm,v 1.2 2003-01-20 19:35:44 jaeger Exp $
+# $Id: Content.pm,v 1.3 2003-11-02 21:14:29 jaeger Exp $
 #
 
 # Content-controlling code
@@ -43,7 +43,7 @@ sub _title {
 sub _url {
 	my $self = shift;
 
-	return $Jaeger::Base::BaseURL . "/content.cgi?page=$self->{label}";
+	return $Jaeger::Base::BaseURL . "content.cgi?page=$self->{label}";
 }
 
 sub parent {
