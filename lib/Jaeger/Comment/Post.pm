@@ -1,7 +1,7 @@
 package Jaeger::Comment::Post;
 
 #
-# $Id: Post.pm,v 1.5 2004-02-28 21:07:50 jaeger Exp $
+# $Id: Post.pm,v 1.6 2004-02-29 19:35:37 jaeger Exp $
 #
 
 # Code to allow a user to post a comment
@@ -36,6 +36,12 @@ sub new {
 		);
 	}
 
+	$self->html();
+
+	if($self->{redirect}) {
+		return $self->{redirect};
+	}
+
 	return $self;
 }
 
@@ -43,12 +49,10 @@ sub new {
 # Display functions
 #
 
-sub html {
+sub _html {
 	my $self = shift;
 
 	my $go = $self->query()->param('go');
-
-	warn "Go is $go\n";
 
 	my $reply_to = $self->{comment} ? $self->{comment} : $self->{changelog};
 
@@ -71,9 +75,9 @@ sub html {
 		);
 
 		if($comment->update()) {
-			return "Comment sucessfully created.";
+			$self->{redirect} = $comment->url();
 		} else {
-			return "Something went wrong.";
+			return $self->{html} = "Something went wrong.";
 		}
 
 		# now, redirect to the comment itself
@@ -84,7 +88,7 @@ sub html {
 			$self->query()->param('body')
 		);
 
-		return $reply_to->html() . $self->lf()->comment_preview(
+		return $self->{html} = $reply_to->html() . $self->lf()->comment_preview(
 			uri => $self->query()->uri(),
 			changelog_id => $self->{changelog}->id(),
 			response_to_id => $self->{comment} ? $self->{comment}->id() : "",
@@ -102,7 +106,7 @@ sub html {
 		);
 		
 	} else {
-		return $reply_to->html() . $self->lf()->comment_edit(
+		return $self->{html} = $reply_to->html() . $self->lf()->comment_edit(
 			uri => $self->query()->uri(),
 			changelog_id => $self->{changelog}->id(),
 			response_to_id => $self->{comment} ? $self->{comment}->id() : "",
