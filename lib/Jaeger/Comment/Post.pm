@@ -1,7 +1,7 @@
 package Jaeger::Comment::Post;
 
 #
-# $Id: Post.pm,v 1.1 2003-11-03 04:05:41 jaeger Exp $
+# $Id: Post.pm,v 1.2 2003-11-05 04:21:39 jaeger Exp $
 #
 
 # Code to allow a user to post a comment
@@ -50,14 +50,21 @@ sub html {
 
 	my $reply_to = $self->{comment} ? $self->{comment} : $self->{changelog};
 
+	my $title = $self->{request}->param('title');
+	$title =~ s/<.*?>//g;
+
 	if($go eq 'Submit') {
 		# submit the comment
 		my $comment = new Jaeger::Comment;
 		$comment->{user} = Jaeger::User->Login();
 		$comment->{changelog} = $self->{changelog};
 		$comment->{response_to} = $self->{comment};
-		$comment->{title} = $self->{request}->param('title');
-		$comment->{body} = $self->{request}->param('body');
+		$comment->{title} = $title;
+		$comment->{body} = Jaeger::Comment::Post->Allowed(
+			Jaeger::Comment::Post->Unescape(
+				$self->{request}->param('body')
+			)
+		);
 
 		if($comment->update()) {
 			return "Comment sucessfully created.";
@@ -69,17 +76,21 @@ sub html {
 
 	} elsif($go eq 'Preview') {
 		# preview the comment
+		my $body = Jaeger::Comment::Post->Allowed(
+			$self->{request}->param('body')
+		);
+
 		return $reply_to->html() . $self->lf()->comment_preview(
 			changelog_id => $self->{changelog}->id(),
 			response_to_id => $self->{comment} ? $self->{comment}->id() : "",
-			title => $self->{request}->param('title'),
-			body => $self->{request}->param('body'),
+			title => $title,
+			body => $body,
 		) . $self->lf()->comment_edit(
 			changelog_id => $self->{changelog}->id(),
 			response_to_id => $self->{comment} ? $self->{comment}->id() : "",
 			header => $self->title(),
-			title => $self->{request}->param('title'),
-			body => $self->{request}->param('body'),
+			title => $title,
+			body => $body,
 		);
 		
 	} else {
@@ -103,6 +114,47 @@ sub _title {
 		return $self->{title} = "Comment on changelog \"" .
 			$self->{changelog}->title() . "\"";
 	}
+}
+
+#
+# Strip unallowed html
+#
+
+my %allowed_html = map {$_, 1}
+	qw(a b blockquote br em i li p ol small strong ul);
+
+sub Allowed {
+	my $package = shift;
+
+	my $body = shift;
+
+	$body =~ s/(<\s*\/?\s*(\w*).*?>)/$allowed_html{lc $2} ? $1 : ''/seg;
+
+	return $body;
+}
+
+#
+# escape and un-escape special charcters so the browser doesn't choke
+#
+
+sub Escape {
+	my $package = shift;
+
+	my $body = shift;
+
+	$body =~ s/([&<>"\r\n\\])/sprintf "\\0x%02x", ord $1/ge;
+
+	return $body;
+}
+
+sub Unescape {
+	my $package = shift;
+
+	my $body = shift;
+
+	$body =~ s/\\0x(\w\w)/chr hex $1/ge;
+
+	return $body;
 }
 
 =for later
