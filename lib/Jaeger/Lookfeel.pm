@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.6 2002-11-02 17:16:45 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.7 2003-01-20 19:34:15 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -112,11 +112,38 @@ sub _main {
 	if(my $title = $obj[0]->title()) {
 		$params{title} = ": $title";
 	}
+
+	# set human-readable navigation links
 	$params{navlinks} = $self->navlinks(
 		prev => $obj[0]->prev(),
 		index => $obj[0]->index(),
 		next => $obj[0]->next(),
 	);
+
+	# set machine-readable navigation links
+	my @navlink;
+	if(my $prev = $obj[0]->prev()) {
+		push @navlink, $self->navlink(
+			type => 'prev',
+			url => $prev->url(),
+			title => $prev->title(),
+		);
+	}
+	if(my $next = $obj[0]->next()) {
+		push @navlink, $self->navlink(
+			type => 'next',
+			url => $next->url(),
+			title => $next->title(),
+		);
+	}
+	if(my $index = $obj[0]->index()) {
+		push @navlink, $self->navlink(
+			type => 'parent',
+			url => $index->url(),
+			title => $index->title(),
+		);
+	}
+	$params{navlink} = join('', @navlink);
 
 	# get a quote
 	my $fortune = new Fortune;
@@ -144,7 +171,7 @@ sub _main {
 	$params{navbar} = $self->links(linkbox => join('', @navbar));
 
 	# populate content solutions data: links, chatterbox
-	$params{links} = 'Coming soon: Content Solutions links';
+	$params{links} = $self->photo_search();
 	$params{chatterbox} = $self->chatterbox(
 		chatter => 'Coming soon, we hope'
 	);
