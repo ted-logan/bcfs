@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: photos.pl,v 1.1 2003-01-20 19:37:08 jaeger Exp $
+# $Id: photos.pl,v 1.2 2003-07-05 02:06:21 jaeger Exp $
 #
 
 # Eventually, this will allow importing completely new rounds into the
@@ -24,24 +24,35 @@ unless(@ARGV) {
 }
 
 foreach my $round (@ARGV) {
-	import_round($round);
+	annotate_round($round);
 }
 
 exit;
 
-sub import_round {
+#
+# Annotate an already-existing set of photos
+#
+sub annotate_round {
 	my $round = shift;
 
 	my @photos = Jaeger::Photo->Select("round = '$round' order by number");
 
+	# if this round doesn't already exist, we'll need to import it wholesale
+	unless(@photos) {
+		@photos = import_round($round);
+	}
+
 	print "Round $round: ", scalar(@photos), " photos\n";
 
 	foreach my $photo (@photos) {
-		import_photo($photo);
+		annotate_photo($photo);
 	}
 }
 
-sub import_photo {
+#
+# Show the photo to the user and solicit the photo's description
+#
+sub annotate_photo {
 	my $photo = shift;
 
 	# does a cropped photo exist? if not, this photo should be hidden
@@ -76,6 +87,11 @@ sub import_photo {
 
 	# parent process
 
+	# FIXME set the time zone intelligently
+	unless($photo->{timezone_id}) {
+		$photo->{timezone} = Jaeger::Timezone->Select(name => 'PDT');
+	}
+
 	# get the description of the photo
 	print "\n";
 	print $photo->{round}, '/', $photo->{number}, ': ',
@@ -88,6 +104,9 @@ sub import_photo {
 	chomp $descript;
 
 	# FIXME get the location of the photo
+	unless($photo->{location_id}) {
+		$photo->{location_id} = 1;
+	}
 
 	if($descript) {
 		$photo->{description} = $descript;
@@ -97,4 +116,58 @@ sub import_photo {
 	# kill the photo display
 	kill 1, $child_pid;
 	wait;
+}
+
+#
+# Insert a brand new round into the photo database, and return an array of
+# the photo objects created
+#
+sub import_round {
+	my $round = shift;
+
+	unless(-d "$Jaeger::Photo::Dir/$round") {
+		die "Round $round does not exist\n";
+	}
+
+	my %photos;
+
+	# read the uncropped photos
+	if(-d "$Jaeger::Photo::Dir/$round/raw") {
+		opendir DIR, "$Jaeger::Photo::Dir/$round/raw";
+
+		foreach my $file (grep /\.jpg/, readdir DIR) {
+			my ($number) = $file =~ /(.*)\.jpg/;
+
+			my $photo = new Jaeger::Photo;
+			$photo->{round} = $round;
+			$photo->{number} = $number;
+
+			# read the date from the file date and time
+			$photo->{date} = (stat $photo->file_raw())[9];
+
+			$photos{$number} = $photo;
+		}
+
+		closedir DIR;
+	}
+
+	# read the cropped photos
+	if(-d "$Jaeger::Photo::Dir/$round/new") {
+		opendir DIR, "$Jaeger::Photo::Dir/$round/new";
+
+		foreach my $file (grep /\.jpg/, readdir DIR) {
+			my ($number) = $file =~ /(.*)\.jpg/;
+
+			unless($photos{$number}) {
+				my $photo = new Jaeger::Photo;
+				$photo->{round} = $round;
+				$photo->{number} = $number;
+				$photos{$number} = $photo;
+			}
+		}
+
+		closedir DIR;
+	}
+
+	return sort values %photos;
 }
