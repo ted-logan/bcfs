@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.17 2003-11-03 04:07:27 jaeger Exp $
+# $Id: Changelog.pm,v 1.18 2003-11-03 20:14:49 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -317,10 +317,16 @@ sub Navbar {
 				title => $changelog->title()
 			);
 		} else {
+			my $new;
+			if($unread{$changelog->id()}) {
+				$new = ' New!';
+			} else {
+				$new = ' (' . scalar(@{$changelog->comments()}) . ' comments)';
+			}
 			push @links, $lf->link(
 				url => $changelog->url(),
 				title => $changelog->title(),
-				new => ($unread{$changelog->id()} ? " New!" : "")
+				new => $new,
 			);
 		}
 	}
