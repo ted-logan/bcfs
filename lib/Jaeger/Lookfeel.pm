@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.7 2003-01-20 19:34:15 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.8 2003-01-20 20:07:42 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -266,6 +266,8 @@ sub _yoda_item {
 	$params{total} = sprintf '$%.2f', $params{total};
 	if($params{mpg}) {
 		$params{mpg} = sprintf '%.2f', $params{mpg};
+	} else {
+		$params{mpg} = 'n/a';
 	}
 
 	return %params;
