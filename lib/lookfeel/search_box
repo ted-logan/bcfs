@@ -1,5 +1,5 @@
 <table width="100%">
-<tr><td class="header"><a href="search.cgi" class="header">Search</a></td></tr>
+<tr><td class="header"><a href="/search.cgi" class="header">Search</a></td></tr>
 <form action="/search.cgi" method="get">
 <tr><td><input name="q" value="---q---"></td></tr>
 <tr><td>
