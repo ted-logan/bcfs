@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.2 2002-05-19 22:59:47 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.3 2002-07-11 15:56:04 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -118,7 +118,7 @@ sub _main {
 	$fortune->read('/home/jaeger/text/quotes/quotes');
 
 	my $quote = $fortune->quote();
-	$quote =~ s/$/<br>/m;
+	$quote =~ s/$/<br>/mg;
 
 	$params{quote} = "<tt>$quote</tt>";
 
