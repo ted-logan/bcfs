@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.16 2003-11-01 17:52:25 jaeger Exp $
+# $Id: Changelog.pm,v 1.17 2003-11-03 04:07:27 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -50,7 +50,7 @@ sub Browse {
 
 	my $year = shift;
 
-	return new Jaeger::Changelog::Browse($year);
+	return Jaeger::Changelog::Browse->new($year);
 }
 
 # Use this only at the console
@@ -223,6 +223,13 @@ sub _url {
 	return $self->{url} = $Jaeger::Base::BaseURL . "changelog/$self->{id}.html";
 }
 
+sub _link {
+	my $self = shift;
+
+	return $self->{link} = '<a href="' . $self->url() . '">' .
+		$self->title() . '</a>';
+}
+
 # returns html for this object
 sub _html {
 	my $self = shift;
@@ -235,10 +242,19 @@ sub _html {
 
 	my %params = %$self;
 
-	# show the users who have viewed the changelog
 	if($user) {
-		$params{content} .= '<br><br><small>These people have read this changelog: ' . join(', ', map {$_->link()} sort {$a->{name} cmp $b->{name}} @{$self->user_views()}) . '</small>';
+		# show the users who have viewed the changelog
+		$params{navigation} = '<p>These people have read this changelog: ' . join(', ', map {$_->link()} sort {$a->{name} cmp $b->{name}} @{$self->user_views()}) . '</p>';
+
+		# Invite the user to post a comment
+		$params{navigation} .= qq'<p><a href="/changelog/$self->{id}.html/reply">Post comment</a></p>';
+	} else {
+		# Invite the user to log in to post
+		$params{navigation} .= '<p><a href="/login.cgi">Log In</a> to post a comment.</p>';
 	}
+
+	# show the comments attached to this changelog
+	$params{navigation} .= $self->comment_list_html();
 
 	return $self->lf()->changelog(%params);
 }
@@ -320,6 +336,8 @@ sub Navbar {
 sub _user_views {
 	my $self = shift;
 
+	return [] unless $self->id();
+
 	my $where = 'id in (select distinct user_id from user_changelog_view where changelog_id = ' . $self->id() . ')';
 
 	return $self->{user_views} = [Jaeger::User->Select($where)];
@@ -332,6 +350,27 @@ sub _comments {
 	return $self->{comments} = [Jaeger::Comment->Select(
 		changelog_id => $self->id()
 	)];
+}
+
+# returns html listing a changelog's comments
+sub comment_list_html {
+	my $self = shift;
+
+	my $comment = shift;
+
+	my @html;
+
+	if($comment) {
+		push @html, $self->link(), "<br>\n";
+	}
+
+	foreach my $comment (@{$self->comments()}) {
+		unless($comment->response_to()) {
+			push @html, $comment->responses_list_html(0);
+		}
+	}
+
+	return join('', @html);
 }
 
 #
@@ -368,6 +407,30 @@ sub handler {
 			$changelog->{content} = 'No changelog was found with the given id';
 		}
 	
+	} elsif($r->uri() =~ m#/changelog/(\d+)\.html/reply#) {
+		# Post a reply to the changelog
+		my $replyto = Jaeger::Changelog->new_id($1);
+		if($replyto) {
+			$changelog = new Jaeger::Comment::Post($r, $replyto);
+		} else {
+			$changelog = new Jaeger::Changelog;
+			$changelog->{title} = 'No changelog';
+			$changelog->{content} = 'No changelog was found with the given id';
+		}
+
+	} elsif($r->uri() =~ m#/changelog/comment/(\d+)\.html/reply#) {
+		# Post a reply to the comment
+		my $replyto = Jaeger::Comment->new_id($1);
+		if($replyto) {
+			$changelog = new Jaeger::Comment::Post(
+				$r, $replyto->changelog(), $replyto
+			);
+		} else {
+			$changelog = new Jaeger::Changelog;
+			$changelog->{title} = 'No comment';
+			$changelog->{content} = 'No comment was found with the given id';
+		}
+
 	} elsif($r->uri() =~ m#/changelog/comment/(\d+)\.html#) {
 		# show a changelog comment
 		$changelog = Jaeger::Comment->new_id($1);
