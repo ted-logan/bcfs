@@ -8,6 +8,7 @@ Not responsible for searches returning too many queries or not enough.</td></tr>
 <tr><td><input type="checkbox" name="search" value="all" checked> Everything</td></tr>
 <tr><td><input type="checkbox" name="search" value="photo"> Photos</td></tr>
 <tr><td><input type="checkbox" name="search" value="changelog"> Changelogs</td></tr>
+<tr><td><input type="checkbox" name="search" value="comment"> Comments</td></tr>
 <tr><td><input type="checkbox" name="search" value="journal"> Journals</td></tr>
 <tr><td align="right"><input type="submit" value="Search!"></td></tr>
 </form>

@@ -7,6 +7,7 @@
 <option value="all" selected>Everything</option>
 <option value="photo">Photos</option>
 <option value="changelog">Changelogs</option>
+<option value="comment">Comments</option>
 <option value="journal">Journals</option>
 </select>
 </td></tr>
