@@ -1,7 +1,7 @@
 package Jaeger::Comment;
 
 #
-# $Id: Comment.pm,v 1.1 2003-11-03 04:06:55 jaeger Exp $
+# $Id: Comment.pm,v 1.2 2003-11-05 04:19:00 jaeger Exp $
 #
 
 # Code to show and create user comments
@@ -127,10 +127,16 @@ sub responses_list_html {
 
 	my @html;
 
-	push @html, '&nbsp;&nbsp;' x $indent,
-		"&#149; " . $self->link() . "<br>\n";
+	push @html, $self->lf()->comment_link(
+		indent => $indent,
+		link => $self->link(),
+		user => $self->user()->link(),
+		date => $self->date(),
+	);
 
-	foreach my $response (@{$self->responses()}) {
+	my @responses = sort {$a->date() cmp $b->date()}
+		@{$self->responses()};
+	foreach my $response (@responses) {
 		push @html, $response->responses_list_html($indent + 1);
 	}
 
@@ -138,11 +144,42 @@ sub responses_list_html {
 }
 
 #
+# Return a navigation bar containing recent comments
+#
+sub Navbar {
+	my $package = shift;
+
+	my $lf = Jaeger::Base::Lookfeel();
+
+	my @links;
+
+	my @comments = $package->Select('1=1 order by date desc limit 8');
+	foreach my $comment (@comments) {
+		push @links, $lf->comment_link(
+			link => $comment->link(),
+			user => $comment->user()->link(),
+			date => $comment->date(),
+		);
+	}
+
+	return $lf->linkbox(
+		url => '/changelog',
+		title => 'Comments',
+		links => join('', @links)
+	);
+}
+
+#
 # Display functions
 #
 
-sub _html {
+sub html {
 	my $self = shift;
+
+	my $user = Jaeger::User->Login();
+	if($user) {
+		$user->log_access($self);
+	}
 
 	return $self->lf()->comment(
 		id => $self->id(),
