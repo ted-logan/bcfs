@@ -1,7 +1,7 @@
 package	Jaeger::User;
 
 # 
-# $Id: User.pm,v 1.7 2004-02-16 02:57:21 jaeger Exp $
+# $Id: User.pm,v 1.8 2004-02-28 21:07:45 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -19,6 +19,7 @@ use Jaeger::Base;
 
 use Jaeger::User::List;
 
+use Apache::Cookie;
 use Carp;
 
 # What the various status codes mean
@@ -198,19 +199,32 @@ sub _Login {
 sub cookies {
 	my $self = shift;
 
+	my @cookies = (
+		{
+			-name => 'jaeger_login',
+			-value => $self->{login},
+			-expires => '+31d',
+		},
+		{
+			-name => 'jaeger_password',
+			-value => $self->{plain_password},
+			-expires => '+31d',
+		}
+	);
+
 	my $q = $self->query();
 
-	push @{$self->lf()->{cookies}}, $q->cookie(
-		-name => 'jaeger_login',
-		-value => $self->{login},
-		-expires => '+31d',
-	);
+	if(ref($q) eq 'CGI') {
+		push @{$self->lf()->{cookies}}, map {$q->cookie(%$_)} @cookies;
 
-	push @{$self->lf()->{cookies}}, $q->cookie(
-		-name => 'jaeger_password',
-		-value => $self->{plain_password},
-		-expires => '+31d',
-	);
+	} elsif(ref($q) eq 'Apache::Request') {
+		foreach my $cookie (@cookies) {
+			my $c = Apache::Cookie->new($q, %$cookie);
+			$c->bake();
+		}
+	} else {
+		die "I can't recogonize query object $q";
+	}
 }
 
 # register the fact that this user accessed the resource in question

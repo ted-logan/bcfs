@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.22 2004-02-16 02:57:21 jaeger Exp $
+# $Id: Changelog.pm,v 1.23 2004-02-28 21:07:45 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -20,6 +20,7 @@ use Jaeger::Changelog::Browse;
 use Apache::Constants qw(OK DECLINED REDIRECT);
 use Apache::File;
 use Apache::Cookie;
+use Apache::Request;
 
 @Jaeger::Changelog::ISA = qw(Jaeger::Base);
 
@@ -496,6 +497,8 @@ sub handler {
 		}
 	}
 
+	$Jaeger::Base::Query = new Apache::Request($r);
+
 	# Are we a logged-in user?
 	my $user = undef;
 	my %jar = Apache::Cookie->new($r)->parse();
@@ -506,9 +509,6 @@ sub handler {
 		if($user) {
 			# send updated cookies
 			$user->cookies();
-			foreach my $c (@{Jaeger::Base::Lookfeel()->{cookies}}) {
-				$r->headers_out->set('Set-Cookie' => $c);
-			}
 		}
 	}
 
@@ -536,7 +536,7 @@ sub handler {
 		# Post a reply to the changelog
 		my $replyto = Jaeger::Changelog->new_id($1);
 		if($replyto) {
-			$changelog = new Jaeger::Comment::Post($r, $replyto);
+			$changelog = new Jaeger::Comment::Post($replyto);
 
 			# Are we logged in?
 			unless($user) {
@@ -556,7 +556,7 @@ sub handler {
 		my $replyto = Jaeger::Comment->new_id($1);
 		if($replyto) {
 			$changelog = new Jaeger::Comment::Post(
-				$r, $replyto->changelog(), $replyto
+				$replyto->changelog(), $replyto
 			);
 
 			# Are we logged in?
@@ -635,6 +635,7 @@ sub handler {
 	# mod_perl thing
 
 	$Jaeger::User::Current = 0;
+	$Jaeger::Base::Query = undef;
 
 	return OK;
 }

@@ -1,7 +1,7 @@
 package Jaeger::Comment::Post;
 
 #
-# $Id: Post.pm,v 1.4 2004-02-16 02:57:30 jaeger Exp $
+# $Id: Post.pm,v 1.5 2004-02-28 21:07:50 jaeger Exp $
 #
 
 # Code to allow a user to post a comment
@@ -16,7 +16,6 @@ use Jaeger::Base;
 use Jaeger::Lookfeel;
 use Jaeger::Comment::Post;
 
-use Apache::Request;
 use Carp;
 
 @Jaeger::Comment::Post::ISA = qw(Jaeger::Base);
@@ -26,13 +25,14 @@ sub new {
 
 	my $self = $package->SUPER::new();
 
-	$self->{request} = Apache::Request->new(shift);
+	my $q = $self->query();
+
 	$self->{changelog} = shift;
 	$self->{comment} = shift;
 
-	if($self->{request}->param('response_to_id')) {
+	if($q->param('response_to_id')) {
 		$self->{comment} = Jaeger::Comment->new_id(
-			$self->{request}->param('response_to_id')
+			$q->param('response_to_id')
 		);
 	}
 
@@ -46,13 +46,13 @@ sub new {
 sub html {
 	my $self = shift;
 
-	my $go = $self->{request}->param('go');
+	my $go = $self->query()->param('go');
 
 	warn "Go is $go\n";
 
 	my $reply_to = $self->{comment} ? $self->{comment} : $self->{changelog};
 
-	my $title = $self->{request}->param('title');
+	my $title = $self->query()->param('title');
 	$title =~ s/<.*?>//g;
 	$title =~ s/"/&quot;/g;
 
@@ -63,10 +63,10 @@ sub html {
 		$comment->{changelog} = $self->{changelog};
 		$comment->{response_to} = $self->{comment};
 		$comment->{title} = $title;
-		$comment->{status} = $self->{request}->param('status');
+		$comment->{status} = $self->query()->param('status');
 		$comment->{body} = Jaeger::Comment::Post->Allowed(
 			Jaeger::Comment::Post->Unescape(
-				$self->{request}->param('body')
+				$self->query()->param('body')
 			)
 		);
 
@@ -81,26 +81,29 @@ sub html {
 	} elsif($go eq 'Preview') {
 		# preview the comment
 		my $body = Jaeger::Comment::Post->Allowed(
-			$self->{request}->param('body')
+			$self->query()->param('body')
 		);
 
 		return $reply_to->html() . $self->lf()->comment_preview(
+			uri => $self->query()->uri(),
 			changelog_id => $self->{changelog}->id(),
 			response_to_id => $self->{comment} ? $self->{comment}->id() : "",
 			title => $title,
 			body => $body,
-			status => $self->{request}->param('status'),
+			status => $self->query()->param('status'),
 		) . $self->lf()->comment_edit(
+			uri => $self->query()->uri(),
 			changelog_id => $self->{changelog}->id(),
 			response_to_id => $self->{comment} ? $self->{comment}->id() : "",
 			header => $self->title(),
 			title => $title,
 			body => $body,
-			visibility => $self->visibility($self->{request}->param('status')),
+			visibility => $self->visibility($self->query()->param('status')),
 		);
 		
 	} else {
 		return $reply_to->html() . $self->lf()->comment_edit(
+			uri => $self->query()->uri(),
 			changelog_id => $self->{changelog}->id(),
 			response_to_id => $self->{comment} ? $self->{comment}->id() : "",
 			header => $self->title(),
