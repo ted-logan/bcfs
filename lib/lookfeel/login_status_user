@@ -1,7 +1,7 @@
 <tr><td bgcolor="#000000"><font color="#ffffff"><b>---user---: Logged In</b></font></a></td></tr>
 <tr><td>
 <small>
-<a href="/logout.cgi">Log Out</a>
+<a href="/logout.cgi">Log Out</a> : <a href="/user.cgi?action=edit">Edit Thyself</a>
 </small>
 </td></tr>
 
