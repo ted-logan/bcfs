@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.27 2004-11-12 23:08:45 jaeger Exp $
+# $Id: Changelog.pm,v 1.28 2005-04-02 05:08:58 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -601,11 +601,11 @@ sub handler {
 
 	} elsif($r->uri() eq '/changelog/') {
 		# Show the most recent changelog
-		$changelog = Newest Jaeger::Changelog;
+		$changelog = 'LATEST';
 
 	} else {
 		# quietly redirect to the most recent changelog
-		$changelog = '/changelog/';
+		$changelog = 'LATEST';
 	}
 
 	# Check to see if we have access to this changelog or comment
@@ -613,12 +613,15 @@ sub handler {
 
 	if(ref($changelog) && $changelog->{status} > $level) {
 		# No access -- quietly redirect
-		$changelog = '/changelog/';
+		$changelog = 'LATEST';
 	}
 
 	# Do we want to redirect to somewhere else?
 	unless(ref $changelog) {
-		warn "Redirecting to $changelog\n";
+		if($changelog eq 'LATEST') {
+			my $latest = Newest Jaeger::Changelog;
+			$changelog = $latest->url();
+		}
 
 		$r->headers_out->set(Location => $changelog);
 
