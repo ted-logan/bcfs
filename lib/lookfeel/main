@@ -1,6 +1,7 @@
 <html>
 <meta name="keywords" content="jaeger, festing, ted logan">
 <link REL="icon" HREF="/graphics/aicon.png" TYPE="image/png">
+<link rel="stylesheet" href="/jaeger.css" type="text/css">
 <head><title>j&auml;gerfesting---title---</title></head>
 
 <body bgcolor="#000000" text="#e0e0a0" alink="#ffffff" link="#20d020" vlink="#d03040">
@@ -51,7 +52,14 @@ I'm <a href="http://www.gemandted.com/">Married</a>!
 </td>
 
 <td valign="top" bgcolor="#102050">
----chatterbox---
+<table width="100%" border=0 cellspacing=0>
+<tr><td bgcolor="#000000" align="center"><font color="#ffffff"><b>Shameless Ad</b></font></td></tr>
+<tr><td>
+Need intelligent Linux hosting run by a fellow Slashdot geek?
+Try <a href="http://www.buildmeasite.com/?jaeger">Buildmeasite</a>.
+</td></tr>
+</table>
+</form>
 </td>
 </tr>
 
