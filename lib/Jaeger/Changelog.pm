@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.6 2002-09-04 15:59:04 jaeger Exp $
+# $Id: Changelog.pm,v 1.7 2002-11-02 17:14:39 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -17,36 +17,15 @@ use Jaeger::Changelog::Browse;
 
 @Jaeger::Changelog::ISA = qw(Jaeger::Base);
 
-@Jaeger::Changelog::Params = qw(id title time_begin time_end content);
-
-# returns a new object
-# call optionally with id
-sub new {
-	my $package = shift;
-
-	my $self = $package->SUPER::new();
-  
-	my $id = shift;
-	if(defined $id) {
-		$self->_db_select("where id = $id")
-			or return;
-	} else {
-		$self->_set();
-	}
-
-	return $self;
+sub table {
+	return 'changelog';
 }
 
 # returns the newest changelog
-sub newest {
+sub Newest {
 	my $package = shift;
 
-	my $self = $package->SUPER::new();
-
-	$self->_db_select("order by time_begin desc limit 1")
-		or return;
-
-	return $self;
+	return scalar $package->Select('1=1 order by time_begin desc limit 1');
 }
 
 # selects a changelog based on its old id
@@ -54,96 +33,16 @@ sub newest {
 sub old_id {
 	my $package = shift;
 
-	my $self = $package->SUPER::new();
-  
-	my $id_old = shift;
-	if(defined $id_old) {
-		$self->_db_select("where id_old = $id_old")
-			or return;
-	} else {
-		return;
-	}
-
-	return $self;
+	return $package->Select('id_old = $id_old');
 }
 
 # provides a list of changelogs by year
-sub browse {
+sub Browse {
 	my $package = shift;
 
 	my $year = shift;
 
 	return new Jaeger::Changelog::Browse($year);
-}
-
-# internal function; selects a row from the database
-sub _db_select {
-	my $self = shift;
-	my $specify = shift;
-
-	my $sql = "select * from changelog $specify";
-	my $sth = $self->{dbh}->prepare($sql);
-	$sth->execute() or warn "$sql;\n";
-
-	if(my @row = $sth->fetchrow_array()) {
-		$self->_set(@row);
-		return 1;
-	} else {
-		return;
-	}
-}
-
-sub _set {
-	my $self = shift;
-
-	foreach my $value (@Jaeger::Changelog::Params) {
-		$self->{$value} = shift;
-	}
-}
-
-sub insert {
-	my $self = shift;
-
-	my $sql = $self->{id} ? $self->_sql_update() : $self->_sql_insert();
-
-	$self->{dbh}->do($sql) or warn "$sql;\n";
-	return $sql;
-}
-
-sub _sql_insert {
-	my $self = shift;
-
-	my %insert = (
-		title => $self->{title},
-		content => $self->{content}
-	);
-
-	if($self->{time_begin}) {
-		$insert{time_begin} = $self->{time_begin};
-		if($self->{time_end}) {
-			$insert{time_end} = $self->{time_end};
-		} else {
-			$insert{time_end} = $self->{time_begin};
-		}
-	}
-
-	return 'insert into changelog (' . join(', ', keys %insert) .
-		') values (' .
-		join(', ', map {$self->{dbh}->quote($insert{$_})} keys %insert).
-		')';
-}
-
-sub _sql_update {
-	my $self = shift;
-
-	my %update = map {$_ => $self->{$_}} @Jaeger::Changelog::Params;
-	delete $update{id};
-
-	return 'update changelog set ' .
-		join(', ', map
-			{"$_ = " . $self->{dbh}->quote($update{$_})}
-			keys %update) .
-		" where id = $self->{id}";
 }
 
 # Use this only at the console
@@ -161,7 +60,7 @@ sub edit {
 		if($option eq 'y') {
 			# submit the changelog into the global Content
 			# Solutions Infrastructure
-			$self->insert();
+			$self->update();
 			return 1;
 
 		} elsif($option eq 'i') {
@@ -273,16 +172,12 @@ sub _edit_menu {
 sub _prev {
 	my $self = shift;
 
-	my $sql = "select * from changelog where time_begin = (select max(time_begin) from changelog where time_begin < '" . $self->{time_begin} . "')";
-	my $sth = $self->{dbh}->prepare($sql);
-	$sth->execute() or warn "$sql\n";
-
-	if(my @row = $sth->fetchrow_array()) {
-		$self->{prev} = new ref $self;
-		$self->{prev}->_set(@row);
-	} else {
-		$self->{prev} = undef;
+	unless($self->{time_begin}) {
+		die "Changelog is undefined; prev doesn't exist";
 	}
+
+	$self->{prev} = $self->Select("time_begin = (select max(time_begin) from changelog where time_begin < '$self->{time_begin}')");
+
 	return $self->{prev};
 }
 
@@ -290,16 +185,12 @@ sub _prev {
 sub _next {
 	my $self = shift;
 
-	my $sql = "select * from changelog where time_begin = (select min(time_begin) from changelog where time_begin > '" . $self->{time_begin} . "')";
-	my $sth = $self->{dbh}->prepare($sql);
-	$sth->execute() or warn "$sql\n";
-
-	if(my @row = $sth->fetchrow_array()) {
-		$self->{next} = new ref $self;
-		$self->{next}->_set(@row);
-	} else {
-		$self->{next} = undef;
+	unless($self->{time_begin}) {
+		die "Changelog is undefined; next doesn't exist";
 	}
+
+	$self->{next} = $self->Select("time_begin = (select min(time_begin) from changelog where time_begin > '$self->{time_begin}')");
+
 	return $self->{next};
 }
 
@@ -329,7 +220,6 @@ sub _html {
 	my $self = shift;
 
 	return $self->lf()->changelog(%$self);
-
 }
 
 sub Navbar {
@@ -345,7 +235,7 @@ sub Navbar {
 		$lf = new Jaeger::Lookfeel;
 	}
 
-	my @changelogs = All Jaeger::Changelog(undef, 'time_begin desc', 5, 1);
+	my @changelogs = Jaeger::Changelog->Select('1=1 order by time_begin desc limit 5');
 
 	my @links;
 
@@ -368,45 +258,6 @@ sub Navbar {
 		title => 'j&auml;gerfesting',
 		links => join('', @links)
 	);
-}
-
-# returns an array with all of the changelog in the database
-# optional paramaters: whereclause orderclause limit nocontent
-# call as class method
-sub All {
-	my $package = shift;
-	my ($where, $order, $limit, $nocontent) = @_;
-	my @retval;
-
-	my $sql = "select * from changelog";
-	$sql .= " where $where" if $where;
-	$sql .= " order by $order" if $order;
-	$sql .= " limit $limit" if $limit;
-	my $sth = $Jaeger::Base::Pgdbh->prepare($sql);
-	$sth->execute() or warn "$sql;\n";
-
-	while(my @row = $sth->fetchrow_array()) {
-		my $changelog = $package->new();
-		$changelog->_set(@row);
-		$changelog->{content} = undef if $nocontent;
-		push @retval, $changelog;
-	}
-
-	return @retval;
-}
-
-# returns the total number of changelog in the database
-# optional paramater: whereclause
-# call as a class method
-sub Count {
-	my $package = shift;
-	my $where = shift;
-
-	my $sql = "select count(*) from changelog";
-	$sql .= " where $where" if $where;
-	my $sth = $Jaeger::Base::Pgdbh->prepare($sql);
-	$sth->execute() or warn "$sql;\n";
-	return ($sth->fetchrow_array())[0];
 }
 
 1;
