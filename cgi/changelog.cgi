@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: changelog.cgi,v 1.1 2002-05-19 22:52:06 jaeger Exp $
+# $Id: changelog.cgi,v 1.2 2002-09-22 00:03:26 jaeger Exp $
 #
 
 # changelog.cgi: Displays a changelog, or an index of changelogs
@@ -34,6 +34,10 @@ if(my $id = $q->param('id')) {
 		$changelog->{title} = 'No changelog';
 		$changelog->{content} = 'No changelog was found with the given id';
 	}
+
+} elsif(my $year = $q->param('browse')) {
+	# browse through changelog titles by year
+	$changelog = Jaeger::Changelog->browse($year);
 
 =for later
 } elsif(my $date = $q->param('date')) {
