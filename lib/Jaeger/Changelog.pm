@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.15 2003-08-28 00:16:55 jaeger Exp $
+# $Id: Changelog.pm,v 1.16 2003-11-01 17:52:25 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -14,6 +14,7 @@ use strict;
 use Jaeger::Base;
 use Jaeger::Lookfeel;
 use Jaeger::User;
+use Jaeger::Comment;
 use Jaeger::Changelog::Browse;
 
 use Apache::Constants qw(OK DECLINED REDIRECT);
@@ -180,7 +181,7 @@ sub _prev {
 	my $self = shift;
 
 	unless($self->{time_begin}) {
-		die "Changelog is undefined; prev doesn't exist";
+		return undef;
 	}
 
 	$self->{prev} = $self->Select("time_begin = (select max(time_begin) from changelog where time_begin < '$self->{time_begin}')");
@@ -193,7 +194,7 @@ sub _next {
 	my $self = shift;
 
 	unless($self->{time_begin}) {
-		die "Changelog is undefined; next doesn't exist";
+		return undef;
 	}
 
 	$self->{next} = $self->Select("time_begin = (select min(time_begin) from changelog where time_begin > '$self->{time_begin}')");
@@ -219,7 +220,7 @@ sub _index {
 sub _url {
 	my $self = shift;
 #	return $self->{url} = "$self->{id}.html";
-	return $self->{url} = "$Jaeger::Base::BaseURL/changelog/$self->{id}.html";
+	return $self->{url} = $Jaeger::Base::BaseURL . "changelog/$self->{id}.html";
 }
 
 # returns html for this object
@@ -235,7 +236,6 @@ sub _html {
 	my %params = %$self;
 
 	# show the users who have viewed the changelog
-	my $user = Jaeger::User->Login();
 	if($user) {
 		$params{content} .= '<br><br><small>These people have read this changelog: ' . join(', ', map {$_->link()} sort {$a->{name} cmp $b->{name}} @{$self->user_views()}) . '</small>';
 	}
@@ -325,12 +325,27 @@ sub _user_views {
 	return $self->{user_views} = [Jaeger::User->Select($where)];
 }
 
+# Return all the comments attached to this changelog
+sub _comments {
+	my $self = shift;
+
+	return $self->{comments} = [Jaeger::Comment->Select(
+		changelog_id => $self->id()
+	)];
+}
+
 #
 # mod_perl handler for changelogs (so we can get urls that don't end in
 # .cgi so Google will index)
 #
 sub handler {
 	my $r = shift;
+
+	# clear the global cache of object ids in case any of them changed
+	#
+	# (There should be a better way to do this, to only the objects
+	# that actually changed, but this is the simplest for now.)
+	%Jaeger::Base::Ids = ();
 
 	# does the file being requested exist, and is it not a directory?
 	if(! -d $r->filename()) {
@@ -353,7 +368,16 @@ sub handler {
 			$changelog->{content} = 'No changelog was found with the given id';
 		}
 	
-	} elsif($r->uri() =~ m#/changelog/(\d+)(/?)#) {
+	} elsif($r->uri() =~ m#/changelog/comment/(\d+)\.html#) {
+		# show a changelog comment
+		$changelog = Jaeger::Comment->new_id($1);
+		unless($changelog) {
+			$changelog = new Jaeger::Changelog;
+			$changelog->{title} = 'No Comment';
+			$changelog->{content} = 'No comment was found with the given id';
+		}
+
+	} elsif($r->uri() =~ m#/changelog/(\d\d\d\d)(/?)#) {
 		# Browse changelogs by year
 		my $year = $1;
 
@@ -386,6 +410,17 @@ sub handler {
 		my $login = $jar{jaeger_login}->value();
 		my $password = $jar{jaeger_password}->value();
 		Jaeger::User->Login($login, $password);
+	}
+
+	# If we're Googlebot, log this view.
+	# 
+	# (Don't use the normal method, which would present the bot with
+	# the "you're now logged in" message and other stuff.)
+	my $ua = $r->headers_in->get('User-Agent');
+	if($ua =~ /googlebot/i) {
+		my $googlebot = Jaeger::User->Select(login => 'googlebot');
+		$googlebot->log_access($changelog);
+		$googlebot->update_last_visit();
 	}
 
 	print Jaeger::Base::Lookfeel()->main($changelog);
