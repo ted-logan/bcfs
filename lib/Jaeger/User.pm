@@ -1,7 +1,7 @@
 package	Jaeger::User;
 
 # 
-# $Id: User.pm,v 1.3 2003-08-25 02:32:47 jaeger Exp $
+# $Id: User.pm,v 1.4 2003-08-25 03:17:55 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -16,6 +16,8 @@ use strict;
 use Jaeger::Base;
 
 @Jaeger::User::ISA = qw(Jaeger::Base);
+
+use Jaeger::User::List;
 
 use Carp;
 
@@ -236,38 +238,26 @@ sub log_access {
 sub _title {
 	my $self = shift;
 
-	return undef;
+	return "View User: $self->{name}";
 }
 
 # returns the html for this object
 sub html {
 	my $self = shift;
 
-	return undef;
-}
-
-sub _prev {
-	my $self = shift;
-
-	return undef;
-}
-
-sub _next {
-	my $self = shift;
-
-	return undef;
-}
-
-sub _index {
-	my $self = shift;
-
-	return undef;
+	return $self->lf()->user_view(%$self);
 }
 
 sub _url {
 	my $self = shift;
 
-	return undef;
+	return $self->{url} = "http://jaeger.festing.org/user.cgi?user=$self->{login}";
+}
+
+sub _link {
+	my $self = shift;
+
+	return $self->{link} = '<a href="' . $self->url() . qq'">$self->{name}</a>';
 }
 
 1;
