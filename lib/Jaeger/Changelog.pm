@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.2 2002-06-21 02:15:51 jaeger Exp $
+# $Id: Changelog.pm,v 1.3 2002-08-26 05:33:24 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -117,6 +117,129 @@ sub insert {
 	return $sql;
 }
 
+# Use this only at the console
+# Breaks out vim to edit the current changelog and presents a short menu
+sub edit {
+	my $self = shift;
+
+	my $tempfile = shift;
+
+	$self->_edit_pipe(qq(vi "+set textwidth=72"));
+
+	while(1) {
+		my $option = $self->_edit_menu();
+
+		if($option eq 'y') {
+			# submit the changelog into the global Content
+			# Solutions Infrastructure
+			$self->insert();
+			return 1;
+
+		} elsif($option eq 'i') {
+			# ispell
+			$self->_edit_pipe('ispell');
+
+		} elsif($option eq 'e') {
+			# edit
+			$self->_edit_pipe(qq(vi "+set textwidth=72"));
+
+		} elsif($option eq 'q') {
+			# abandon the changelog
+			return 0;
+
+		} elsif($option eq 'p') {
+			# postpone, which we don't support yet
+		}
+	}
+	
+}
+
+# ensures a unique file name for each changelog we edit
+$Jaeger::Changelog::Count = 0;
+
+# breaks out vim to edit the changelog
+# returns 1 if the content has changed at all
+sub _edit_pipe {
+	my $self = shift;
+
+	my $command = shift;
+
+	# should we update the started time?
+	unless($self->{time_begin}) {
+		$self->{time_begin} = scalar localtime time;
+	}
+
+	my $tempfile = shift;
+	my $unlink_tempfile = 0;
+
+	unless($tempfile) {
+		$tempfile = "/tmp/article-$$-" . ($Jaeger::Changelog::Count++)
+			. '.html';
+		$unlink_tempfile = 1;
+	}
+
+	if($self->{content}) {
+		open TEMPFILE, ">$tempfile"
+			or die "Can't write to tempfile: $!\n";
+		print TEMPFILE $self->{content};
+		close TEMPFILE;
+	}
+
+	my $old_content = $self->{content};
+
+	system "$command $tempfile";
+
+	open TEMPFILE, $tempfile
+		or die "Can't open tempfile: $!\n";
+	local $/ = undef;
+	my $new_content = <TEMPFILE>;
+	close TEMPFILE;
+
+	# should we update the finished time?
+	unless($self->{time_end}) {
+		$self->{time_end} = scalar localtime time;
+	}
+
+	if($unlink_tempfile) {
+		unlink $tempfile;
+	}
+
+	$self->{content} = $new_content;
+
+	if($new_content eq $old_content) {
+		return 0;
+	} else {
+		return 1;
+	}
+}
+
+sub _edit_menu {
+	my $self = shift;
+
+	my %legal_options = (
+		y => 'Contribute the changelog to the Content Solutions infrastructure',
+		i => 'Sic ispell(1) on your horrible spelling',
+		e => 'Edit the changelog',
+		q => 'Abandon the changelog',
+		p => 'Postpone the changelog',
+	);
+
+	print "\nYour Changelogging options:\n";
+	while(my ($letter, $value) = each %legal_options) {
+		print "($letter) $value\n";
+	}
+
+	print "Your choice, master?\n> ";
+
+	do {
+		my $option = lc <STDIN>;
+		chomp $option;
+		if(exists $legal_options{$option}) {
+			return $option;
+		}
+	} while(1);
+}
+
 # returns an object for the previous changelog, if any
 sub _prev {
 	my $self = shift;
@@ -154,6 +277,7 @@ sub _next {
 # returns a link to the url of this changelog
 sub _url {
 	my $self = shift;
+#	return $self->{url} = "$self->{id}.html";
 	return $self->{url} = "$Jaeger::Base::BaseURL/changelog.cgi?id=$self->{id}";
 }
 
@@ -203,3 +327,5 @@ sub Count {
 	$sth->execute() or warn "$sql;\n";
 	return ($sth->fetchrow_array())[0];
 }
+
+1;
