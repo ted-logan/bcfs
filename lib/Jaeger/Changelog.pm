@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.9 2003-01-31 21:21:30 jaeger Exp $
+# $Id: Changelog.pm,v 1.10 2003-01-31 21:59:18 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -224,20 +224,39 @@ sub _html {
 	return $self->lf()->changelog(%$self);
 }
 
+# returns the Postgres-compatible date of this object so we can show related
+# content
+sub _date {
+	my $self = shift;
+
+	return $self->{date} = $self->{time_begin};
+}
+
 sub Navbar {
 	my $package = shift;
 
-	my ($lf, $id);
+	my ($lf, $id, $date);
 	# this might be a class method, or might be an instance method
 	if(ref $package) {
 		$id = $package->id();
 		$lf = $package->lf();
+		$date = $package->date();
 	} else {
 		$id = 0;
-		$lf = new Jaeger::Lookfeel;
+		$lf = Jaeger::Base::Lookfeel();
+		$date = shift;
 	}
 
-	my @changelogs = Jaeger::Changelog->Select('1=1 order by time_begin desc limit 5');
+	my @changelogs;
+	
+	if($date) {
+		@changelogs = (
+			reverse(Jaeger::Changelog->Select("time_begin >= '$date' order by time_begin limit 3")),
+			Jaeger::Changelog->Select("time_begin < '$date' order by time_begin desc limit 4"),
+		);
+	} else {
+		@changelogs = Jaeger::Changelog->Select('1=1 order by time_begin desc limit 5');
+	}
 
 	my @links;
 
