@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: changelog.pl,v 1.6 2003-04-25 19:00:11 jaeger Exp $
+# $Id: changelog.pl,v 1.7 2003-04-25 19:01:00 jaeger Exp $
 #
 
 # 28 May 2000
@@ -27,7 +27,7 @@ GetOptions(
 );
 
 if($help) {
-	print "changelog creator \$Revision: 1.6 $\n";
+	print 'changelog creator $Revision: 1.7 $', "\n";
 	print "Command-line options:\n";
 	print "\t--date=date     Specify the beginning date\n";
 	print "\t                Default: time at beginning of edit\n";
