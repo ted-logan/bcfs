@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.9 2003-01-26 12:51:46 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.10 2003-01-31 22:00:22 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -166,9 +166,9 @@ sub _main {
 	if(ref $obj[0] eq 'Jaeger::Changelog') {
 		push @navbar, $obj[0]->Navbar();
 	} else {
-		push @navbar, Jaeger::Changelog->Navbar();
+		push @navbar, Jaeger::Changelog->Navbar($obj[0]->date());
 	}
-	push @navbar, Jaeger::Journal->Navbar();
+	push @navbar, Jaeger::Journal->Navbar($obj[0]->date());
 	$params{navbar} = $self->links(linkbox => join('', @navbar));
 
 	my $q = Jaeger::Base::Query();
