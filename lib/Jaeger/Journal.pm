@@ -1,7 +1,7 @@
 package		Jaeger::Journal;
 
 #
-# $Id: Journal.pm,v 1.5 2003-01-26 12:45:05 jaeger Exp $
+# $Id: Journal.pm,v 1.6 2003-01-31 21:58:39 jaeger Exp $
 #
 
 # Journal-controlling code
@@ -117,16 +117,34 @@ sub Load {
 	}
 }
 
+sub _date {
+	my $self = shift;
+
+	return $self->{date} = $self->{entrydate};
+}
+
 # produce html for the latest ten journal entries
 # Now, it selects the entries from the database
 sub Navbar {
-	my $lf = new Jaeger::Lookfeel;
+	my $package = shift;
+
+	my $lf = Jaeger::Base::Lookfeel();
 
 	my @links;
 
-	my @entries = Jaeger::Journal->Select(
-		'1=1 order by entrydate desc limit 10'
-	);
+	my @entries;
+
+	my $date = shift;
+	if($date) {
+		@entries = (
+			reverse(Jaeger::Journal->Select("entrydate >= '$date' order by entrydate limit 3")),
+			Jaeger::Journal->Select("entrydate < '$date' order by entrydate desc limit 4"),
+		);
+	} else {
+		@entries = Jaeger::Journal->Select(
+			'1=1 order by entrydate desc limit 5'
+		);
+	}
 
 	foreach my $entry (@entries) {
 		push @links, $lf->link(
