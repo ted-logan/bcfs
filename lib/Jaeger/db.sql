@@ -1,6 +1,7 @@
 create table changelog (
 	id serial primary key,
 	title varchar(128),
+	status int4 not null,
 	time_begin datetime default now() not null,
 	time_end datetime default now() not null,
 	content text
@@ -45,6 +46,7 @@ create table comment (
 	changelog_id	int4 references changelog,
 	user_id		int4 references jaeger_user,
 	response_to_id	int4,
+	status		int4 not null,
 	title		text not null,
 	date		timestamp with time zone default now() not null,
 	body		text not null

@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.21 2003-11-13 17:32:59 jaeger Exp $
+# $Id: Changelog.pm,v 1.22 2004-02-16 02:57:21 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -23,6 +23,15 @@ use Apache::Cookie;
 
 @Jaeger::Changelog::ISA = qw(Jaeger::Base);
 
+%Jaeger::Changelog::Status = (
+	0	=> 'World-readable',
+	10	=> 'Logged-in users only',
+	20	=> 'Elite users only',
+	25	=> 'Castor and Pollux only',
+	30	=> 'Jaeger himself',
+	100	=> 'Postponed'
+);
+
 sub table {
 	return 'changelog';
 }
@@ -31,7 +40,14 @@ sub table {
 sub Newest {
 	my $package = shift;
 
-	return scalar $package->Select('1=1 order by time_begin desc limit 1');
+	my $level;
+	if(my $user = Jaeger::User->Login()) {
+		$level = $user->{status};
+	} else {
+		$level = 0;
+	}
+
+	return scalar $package->Select("status <= $level order by time_begin desc limit 1");
 }
 
 # selects a changelog based on its old id
@@ -79,12 +95,19 @@ sub edit {
 			# edit
 			$self->_edit_pipe(qq(vi "+set textwidth=72"));
 
+		} elsif($option eq 'a') {
+			# Set the access level for the changelog
+			$self->_edit_level();
+
 		} elsif($option eq 'q') {
 			# abandon the changelog
 			return 0;
 
 		} elsif($option eq 'p') {
-			# postpone, which we don't support yet
+			# postpone this changelog for later viewing
+			$self->{status} = 100;
+			$self->update();
+			return 1;
 		}
 	}
 	
@@ -158,6 +181,7 @@ sub _edit_menu {
 		e => 'Edit the changelog',
 		q => 'Abandon the changelog',
 		p => 'Postpone the changelog',
+		a => 'Set the access level',
 	);
 
 	print "\nYour Changelogging options:\n";
@@ -176,6 +200,36 @@ sub _edit_menu {
 	} while(1);
 }
 
+sub _edit_level {
+	my $self = shift;
+
+	$self->{status} = 0 unless $self->{status};
+
+	print "\n";
+	print "Access level is currently $self->{status}: $Jaeger::Changelog::Status{$self->{status}}\n";
+
+	while(1) {
+		print "New status: [$self->{status}] ";
+
+		my $status = <STDIN>;
+		chomp $status;
+
+		if($status) {
+			if($Jaeger::Changelog::Status{$status}) {
+				$self->{status} = $status;
+				last;
+			} else {
+				print "Invalid status!\n";
+			}
+		} else {
+			# status is unchanged
+			last;
+		}
+	}
+
+	return $self->{status};
+}
+
 # returns an object for the previous changelog, if any
 sub _prev {
 	my $self = shift;
@@ -184,7 +238,14 @@ sub _prev {
 		return undef;
 	}
 
-	$self->{prev} = $self->Select("time_begin = (select max(time_begin) from changelog where time_begin < '$self->{time_begin}')");
+	my $level;
+	if(my $user = Jaeger::User->Login()) {
+		$level = $user->{status};
+	} else {
+		$level = 0;
+	}
+
+	$self->{prev} = $self->Select("status <= $level and time_begin = (select max(time_begin) from changelog where time_begin < '$self->{time_begin}')");
 
 	return $self->{prev};
 }
@@ -197,7 +258,14 @@ sub _next {
 		return undef;
 	}
 
-	$self->{next} = $self->Select("time_begin = (select min(time_begin) from changelog where time_begin > '$self->{time_begin}')");
+	my $level;
+	if(my $user = Jaeger::User->Login()) {
+		$level = $user->{status};
+	} else {
+		$level = 0;
+	}
+
+	$self->{next} = $self->Select("status <= $level and time_begin = (select min(time_begin) from changelog where time_begin > '$self->{time_begin}')");
 
 	return $self->{next};
 }
@@ -282,15 +350,22 @@ sub Navbar {
 		$date = shift;
 	}
 
+	my $level;
+	if(my $user = Jaeger::User->Login()) {
+		$level = $user->{status};
+	} else {
+		$level = 0;
+	}
+
 	my @changelogs;
 	
 	if($date) {
 		@changelogs = (
-			reverse(Jaeger::Changelog->Select("time_begin >= '$date' order by time_begin limit 3")),
-			Jaeger::Changelog->Select("time_begin < '$date' order by time_begin desc limit 4"),
+			reverse(Jaeger::Changelog->Select("status <= $level and time_begin >= '$date' order by time_begin limit 3")),
+			Jaeger::Changelog->Select("status <= $level and time_begin < '$date' order by time_begin desc limit 4"),
 		);
 	} else {
-		@changelogs = Jaeger::Changelog->Select('1=1 order by time_begin desc limit 5');
+		@changelogs = Jaeger::Changelog->Select("status <= $level order by time_begin desc limit 5");
 	}
 
 	# these are the changelog ids that haven't yet been read by the user
@@ -358,9 +433,16 @@ sub _user_views {
 sub _comments {
 	my $self = shift;
 
-	return $self->{comments} = [Jaeger::Comment->Select(
-		changelog_id => $self->id()
-	)];
+	my $level;
+	if(my $user = Jaeger::User->Login()) {
+		$level = $user->{status};
+	} else {
+		$level = 0;
+	}
+
+	my $where = "status <= $level and changelog_id = " . $self->id();
+
+	return $self->{comments} = [Jaeger::Comment->Select($where)];
 }
 
 # returns html listing a changelog's comments
@@ -414,6 +496,22 @@ sub handler {
 		}
 	}
 
+	# Are we a logged-in user?
+	my $user = undef;
+	my %jar = Apache::Cookie->new($r)->parse();
+	if($jar{jaeger_login} && $jar{jaeger_password}) {
+		my $login = $jar{jaeger_login}->value();
+		my $password = $jar{jaeger_password}->value();
+		$user = Jaeger::User->Login($login, $password);
+		if($user) {
+			# send updated cookies
+			$user->cookies();
+			foreach my $c (@{Jaeger::Base::Lookfeel()->{cookies}}) {
+				$r->headers_out->set('Set-Cookie' => $c);
+			}
+		}
+	}
+
 	my $changelog;
 
 	if($r->uri() =~ m#/changelog/(\d+)\.html$#) {
@@ -424,12 +522,29 @@ sub handler {
 			$changelog->{title} = 'No changelog';
 			$changelog->{content} = 'No changelog was found with the given id';
 		}
-	
+
+		# Check to see if we have access to this changelog
+		my $level = $user ? $user->{status} : 0;
+
+		if($changelog->{status} > $level) {
+			# No access -- quietly redirect
+			$r->headers_out->set(Location => "/changelog/");
+			return REDIRECT;
+		}
+
 	} elsif($r->uri() =~ m#/changelog/(\d+)\.html/reply#) {
 		# Post a reply to the changelog
 		my $replyto = Jaeger::Changelog->new_id($1);
 		if($replyto) {
 			$changelog = new Jaeger::Comment::Post($r, $replyto);
+
+			# Are we logged in?
+			unless($user) {
+				# Redirect to the login page
+				$r->headers_out->set(Location => "/login.cgi?redirect=/changelog/$1.html/reply");
+				return REDIRECT;
+			}
+
 		} else {
 			$changelog = new Jaeger::Changelog;
 			$changelog->{title} = 'No changelog';
@@ -443,6 +558,14 @@ sub handler {
 			$changelog = new Jaeger::Comment::Post(
 				$r, $replyto->changelog(), $replyto
 			);
+
+			# Are we logged in?
+			unless($user) {
+				# Redirect to the login page
+				$r->headers_out->set(Location => "/login.cgi?redirect=/changelog/comment/$1.html/reply");
+				return REDIRECT;
+			}
+
 		} else {
 			$changelog = new Jaeger::Changelog;
 			$changelog->{title} = 'No comment';
@@ -456,6 +579,16 @@ sub handler {
 			$changelog = new Jaeger::Changelog;
 			$changelog->{title} = 'No Comment';
 			$changelog->{content} = 'No comment was found with the given id';
+		}
+
+		# Check to see if we have access to this changelog
+		my $level = $user ? $user->{status} : 0;
+
+		if($changelog->{status} > $level) {
+			# No access -- quietly redirect
+			$r->headers_out->set(Location => "/changelog/");
+
+			return REDIRECT;
 		}
 
 	} elsif($r->uri() =~ m#/changelog/(\d\d\d\d)(/?)#) {
@@ -483,16 +616,6 @@ sub handler {
 		return REDIRECT;
 	}
 
-	$r->send_http_header('text/html');
-
-	# Are we a logged-in user?
-	my %jar = Apache::Cookie->new($r)->parse();
-	if($jar{jaeger_login} && $jar{jaeger_password}) {
-		my $login = $jar{jaeger_login}->value();
-		my $password = $jar{jaeger_password}->value();
-		Jaeger::User->Login($login, $password);
-	}
-
 	# If we're Googlebot, log this view.
 	# 
 	# (Don't use the normal method, which would present the bot with
@@ -503,6 +626,8 @@ sub handler {
 		$googlebot->log_access($changelog);
 		$googlebot->update_last_visit();
 	}
+
+	$r->send_http_header('text/html');
 
 	print Jaeger::Base::Lookfeel()->main($changelog);
 

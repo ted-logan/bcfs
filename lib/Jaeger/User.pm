@@ -1,7 +1,7 @@
 package	Jaeger::User;
 
 # 
-# $Id: User.pm,v 1.6 2003-11-05 04:20:08 jaeger Exp $
+# $Id: User.pm,v 1.7 2004-02-16 02:57:21 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -31,6 +31,8 @@ use Carp;
 
 	20 => 'Elite',		# The select group of people who have access
 				# to hidden changelogs.
+
+	25 => 'Goddess',	# Gem
 
 	30 => 'God',		# Jaeger himself.
 );

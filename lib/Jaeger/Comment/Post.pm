@@ -1,7 +1,7 @@
 package Jaeger::Comment::Post;
 
 #
-# $Id: Post.pm,v 1.3 2003-12-04 22:41:07 jaeger Exp $
+# $Id: Post.pm,v 1.4 2004-02-16 02:57:30 jaeger Exp $
 #
 
 # Code to allow a user to post a comment
@@ -48,6 +48,8 @@ sub html {
 
 	my $go = $self->{request}->param('go');
 
+	warn "Go is $go\n";
+
 	my $reply_to = $self->{comment} ? $self->{comment} : $self->{changelog};
 
 	my $title = $self->{request}->param('title');
@@ -61,6 +63,7 @@ sub html {
 		$comment->{changelog} = $self->{changelog};
 		$comment->{response_to} = $self->{comment};
 		$comment->{title} = $title;
+		$comment->{status} = $self->{request}->param('status');
 		$comment->{body} = Jaeger::Comment::Post->Allowed(
 			Jaeger::Comment::Post->Unescape(
 				$self->{request}->param('body')
@@ -86,12 +89,14 @@ sub html {
 			response_to_id => $self->{comment} ? $self->{comment}->id() : "",
 			title => $title,
 			body => $body,
+			status => $self->{request}->param('status'),
 		) . $self->lf()->comment_edit(
 			changelog_id => $self->{changelog}->id(),
 			response_to_id => $self->{comment} ? $self->{comment}->id() : "",
 			header => $self->title(),
 			title => $title,
 			body => $body,
+			visibility => $self->visibility($self->{request}->param('status')),
 		);
 		
 	} else {
@@ -99,10 +104,41 @@ sub html {
 			changelog_id => $self->{changelog}->id(),
 			response_to_id => $self->{comment} ? $self->{comment}->id() : "",
 			header => $self->title(),
+			visibility => $self->visibility(),
 		);
 	}
 
 	return undef;
+}
+
+sub visibility {
+	my $self = shift;
+
+	my $stat = shift;
+
+	my $level;
+
+	if($self->{comment}) {
+		$level = $self->{comment}->{status};
+	} else {
+		$level = $self->{changelog}->{status};
+	}
+
+	my $user = Jaeger::User->Login();
+
+	my @html;
+
+	foreach my $status (sort {$a <=> $b} keys %Jaeger::Changelog::Status) {
+		next if $status < $level;
+		next if $status > $user->{status};
+		push @html, '<option ';
+		if($stat == $status) {
+			push @html, 'selected ';
+		}
+		push @html, qq'value="$status">$Jaeger::Changelog::Status{$status}</option>\n';
+	}
+
+	return join('', @html);
 }
 
 sub _title {

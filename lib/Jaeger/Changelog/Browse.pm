@@ -1,7 +1,7 @@
 package		Jaeger::Changelog::Browse;
 
 #
-# $Id: Browse.pm,v 1.3 2003-05-15 00:06:24 jaeger Exp $
+# $Id: Browse.pm,v 1.4 2004-02-16 02:57:27 jaeger Exp $
 #
 
 # package to allow browsing by years of changelogs
@@ -49,7 +49,15 @@ sub changelogs_by_year {
 	my $year = shift;
 	my $next_year = $year + 1;
 
+	my $level;
+	if(my $user = Jaeger::User->Login()) {
+		$level = $user->{status};
+	} else {
+		$level = 0;
+	}
+
 	return Jaeger::Changelog->Select(
+		"status <= $level and " .
 		"time_begin>='$year-01-01' and time_begin<'$next_year-01-01' ".
 		'order by time_begin asc'
 	);

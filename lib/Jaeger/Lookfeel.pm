@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.15 2003-11-13 17:29:45 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.16 2004-02-16 02:57:21 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -92,7 +92,8 @@ sub _changelog {
 			($params{time_begin} ne $params{time_end})) {
 		$params{timestamp} = $self->changelog_timeboth(
 			time_begin => $params{time_begin},
-			time_end => $params{time_end}
+			time_end => $params{time_end},
+			visibility => $Jaeger::Changelog::Status{$params{status}},
 		);
 	} elsif($params{time_begin}) {
 		$params{timestamp} = $self->changelog_timebegin(

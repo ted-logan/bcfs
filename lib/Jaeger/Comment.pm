@@ -1,7 +1,7 @@
 package Jaeger::Comment;
 
 #
-# $Id: Comment.pm,v 1.2 2003-11-05 04:19:00 jaeger Exp $
+# $Id: Comment.pm,v 1.3 2004-02-16 02:57:21 jaeger Exp $
 #
 
 # Code to show and create user comments
@@ -151,9 +151,16 @@ sub Navbar {
 
 	my $lf = Jaeger::Base::Lookfeel();
 
+	my $level;
+	if(my $user = Jaeger::User->Login()) {
+		$level = $user->{status};
+	} else {
+		$level = 0;
+	}
+
 	my @links;
 
-	my @comments = $package->Select('1=1 order by date desc limit 8');
+	my @comments = $package->Select("status <= $level order by date desc limit 8");
 	foreach my $comment (@comments) {
 		push @links, $lf->comment_link(
 			link => $comment->link(),
@@ -185,6 +192,7 @@ sub html {
 		id => $self->id(),
 		title => $self->title(),
 		user => $self->user()->link(),
+		visibility => $Jaeger::Changelog::Status{$self->{status}},
 		date => $self->date(),
 		content => $self->body(),
 		navigation => $self->changelog()->comment_list_html($self)
