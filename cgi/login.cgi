@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: login.cgi,v 1.2 2003-08-24 20:54:27 jaeger Exp $
+# $Id: login.cgi,v 1.3 2003-09-29 16:16:36 jaeger Exp $
 #
 
 # login.cgi: Logs a user in
@@ -22,7 +22,7 @@ my $message;
 my $user = Jaeger::User->Login();
 
 # Has a user attempted to log in?
-my $login = $q->param('login');
+my $login = lc $q->param('login');
 my $password = $q->param('password');
 if(($login && $password) || $user) {
 	unless($user) {
@@ -36,12 +36,12 @@ if(($login && $password) || $user) {
 		# Redirect somewhere
 		my $redirect = $q->param('redirect');
 		unless($redirect) {
-			$redirect = 'http://jaeger.festing.org/changelog/';
+			$redirect = 'changelog/';
 		}
 
 		# confirm the account if status == 0
 		if($user->{status} == 0) {
-			$redirect = 'http://jaeger.festing.org/create.cgi?step=2';
+			$redirect = 'create.cgi?step=2';
 		}
 
 		$user->redirect($redirect);
