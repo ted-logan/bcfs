@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.14 2003-11-05 04:19:49 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.15 2003-11-13 17:29:45 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -108,7 +108,7 @@ sub _comment {
 
 	my %params = @_;
 
-	$params{date} =~ s/\.*//;
+	$params{date} =~ s/\..*//;
 
 	return %params;
 }
