@@ -1,7 +1,7 @@
 package Jaeger::Comment::Post;
 
 #
-# $Id: Post.pm,v 1.2 2003-11-05 04:21:39 jaeger Exp $
+# $Id: Post.pm,v 1.3 2003-12-04 22:41:07 jaeger Exp $
 #
 
 # Code to allow a user to post a comment
@@ -52,6 +52,7 @@ sub html {
 
 	my $title = $self->{request}->param('title');
 	$title =~ s/<.*?>//g;
+	$title =~ s/"/&quot;/g;
 
 	if($go eq 'Submit') {
 		# submit the comment
