@@ -1,7 +1,7 @@
 package		Jaeger::Yoda;
 
 #
-# $Id: Yoda.pm,v 1.2 2003-01-20 20:07:04 jaeger Exp $
+# $Id: Yoda.pm,v 1.3 2003-10-01 01:23:23 jaeger Exp $
 #
 
 # For voyerstic pleasure, shows Yoda's gas mileage
@@ -81,7 +81,10 @@ sub _html {
 			$last_row = $row;
 		}
 
-		push @content, $self->lf()->yoda_main();
+		my $user = Jaeger::User->Login();
+		if($user && $user->login() eq 'jaeger') {
+			push @content, $self->lf()->yoda_main();
+		}
 
 		return join '', @content;
 	}
