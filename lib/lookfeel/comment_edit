@@ -1,0 +1,9 @@
+<form action="/changelog/---changelog_id---.html/reply" method="post">
+<input type="hidden" name="changelog_id" value="---changelog_id---">
+<input type="hidden" name="response_to_id" value="---response_to_id---">
+<tr><td bgcolor="#000000" colspan="2"><font color="#ffffff" size="+2"><b>Create ---header---</b></font></td></tr>
+<tr><td><b>Title</b></td> <td><input name="title" value="---title---" width="40"></td></tr>
+<tr><td colspan="2"><textarea name="body" rows="12" cols="60">---body---</textarea></td></tr>
+<tr><td colspan="2"><small>You're posting as html. Allowed formatting tags: a b br em i p small strong</small></td></tr>
+<tr><td colspan="2" align="right"><input type="submit" name="go" value="Preview"></td></tr>
+</form>

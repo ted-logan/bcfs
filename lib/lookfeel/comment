@@ -1,0 +1,13 @@
+<tr><td bgcolor="#000000" colspan="2"><font color="#ffffff" size="+2"><b>---title---</b></font></td></tr>
+<tr><td colspan="2">
+<i><small>Posted by ---user--- on ---date---</small></i>
+</td></tr>
+<tr><td colspan="2">
+---content---
+<hr noshade>
+<small>
+<p><a href="/changelog/comment/---id---.html/reply">Reply</a></p>
+---navigation---
+</small>
+<hr noshade>
+</td></tr>
