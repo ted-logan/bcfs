@@ -1,0 +1,22 @@
+<form action="/user.cgi" method="post">
+<input type="hidden" name="action" value="edit">
+<input type="hidden" name="go" value="yep">
+
+<tr><td bgcolor="#000000" colspan="2"><font color="#ffffff" size="+2"><b>Edit Thyself</b></font></td></tr>
+
+<tr><td colspan="2">
+<font color="#d03040"><b>---message---</b></font>
+</td></tr>
+
+<tr><td><b>Login:</b></td> <td>---login---</td></tr>
+<tr><td><b>Name/Alias:</b></td> <td><input name="name" value="---name---"></td></tr>
+<tr><td><b>e-mail:</b></td> <td><input name="email" value="---email---"></td></tr>
+<tr><td><b>Password:</b></td> <td><input type="password" name="password1"></td></tr>
+<tr><td><b>Password (again):</b></td> <td><input type="password" name="password2"></td></tr>
+<tr><td><b>Webpage:</b></td> <td><input name="webpage" value="---webpage---"></td></tr>
+<tr><td><b>About:</b></td></tr>
+<tr><td colspan="2">
+<textarea name="about" cols="40" rows="10">---about---</textarea>
+</td></tr>
+<tr><td colspan="2"><input value="Update" type="submit"></td></tr>
+</form>
