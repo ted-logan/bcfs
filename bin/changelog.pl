@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: changelog.pl,v 1.2 2002-06-03 01:48:19 jaeger Exp $
+# $Id: changelog.pl,v 1.3 2002-08-26 06:22:36 jaeger Exp $
 #
 
 # 28 May 2000
@@ -31,38 +31,16 @@ unless($title) {
 	print "Title: ";
 	$title = <>;
 	chomp $title;
-
+}
 
 $changelog->title($title);
 
-unless($tempfile) {
-	$tempfile = "/tmp/article-$$.html";
-}
-
-system qq(vi $tempfile "+set textwidth=72");
-if(-s $tempfile) {
-	$time_end = timestamp($time_end);
-
-	# spellcheck it
-	system "ispell $tempfile";
-
-	open TF, $tempfile;
-	undef $/;
-	my $content = <TF>;
-
-	print "Inserting changelog entry\n";
-	$changelog->content($content);
-	$changelog->insert();
-} else {
-	print "Aborting zero-length entry\n";
-}
-close TF;
-unlink $tempfile;
+$changelog->edit($tempfile);
 
 sub timestamp {
 	my $time = shift;
 
 	return scalar localtime($time ?
-			`date --date="$time_begin" +"%s"` :
+			`date --date="$time" +"%s"` :
 			time);
 }
