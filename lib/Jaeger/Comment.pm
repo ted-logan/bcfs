@@ -1,0 +1,170 @@
+package Jaeger::Comment;
+
+#
+# $Id: Comment.pm,v 1.1 2003-11-03 04:06:55 jaeger Exp $
+#
+
+# Code to show and create user comments
+
+# 31 August 2003
+# Ted Logan
+# jaeger@festing.org
+
+use strict;
+
+use Jaeger::Base;
+use Jaeger::Lookfeel;
+
+use Jaeger::Comment::Post;
+
+use Jaeger::Changelog;
+use Jaeger::User;
+
+use Carp;
+
+@Jaeger::Comment::ISA = qw(Jaeger::Base);
+
+#
+# Data-control functions
+#
+
+sub table {
+	return 'comment';
+}
+
+sub update {
+	my $self = shift;
+
+	unless($self->{changelog_id}) {
+		if($self->{changelog}) {
+			$self->{changelog_id} = $self->{changelog}->id();
+		} else {
+			carp "Jaeger::Comment->update(): changelog must be set";
+			return undef;
+		}
+	}
+
+	unless($self->{user_id}) {
+		if($self->{user}) {
+			$self->{user_id} = $self->{user}->id();
+		} else {
+			carp "Jaeger::Comment->update(): user must be set";
+			return undef;
+		}
+	}
+
+	if(!$self->{response_to_id} && $self->{response_to}) {
+		$self->{response_to_id} = $self->{response_to}->id();
+	}
+
+	unless($self->{title}) {
+		carp "Jaeger::Comment->update(): title must be set";
+		return undef;
+	}
+
+	unless($self->{body}) {
+		carp "Jaeger::Comment->update(): body must be set";
+		return undef;
+	}
+
+	$self->SUPER::update();
+}
+
+sub columns {
+	my $self = shift;
+
+	my @columns = $self->SUPER::columns();
+
+	unless($self->{date}) {
+		@columns = grep !/date/, @columns;
+	}
+
+	return @columns;
+}
+
+sub _changelog {
+	my $self = shift;
+
+	return $self->{changelog} =
+		Jaeger::Changelog->new_id($self->{changelog_id});
+}
+
+sub _user {
+	my $self = shift;
+
+	return $self->{user} =
+		Jaeger::User->new_id($self->{user_id});
+}
+
+sub _response_to {
+	my $self = shift;
+
+	if($self->{response_to_id}) {
+		return $self->{response_to} =
+			Jaeger::Comment->new_id($self->{response_to_id});
+	} else {
+		return $self->{response_to} = undef;
+	}
+}
+
+# Returns the comments that are direct responses to this comment
+sub _responses {
+	my $self = shift;
+
+	return $self->{responses} = [grep {$_->{response_to_id} == $self->id()}
+		@{$self->changelog()->comments()}
+	];
+
+#	return $self->{responses} = [Jaeger::Comment->Select(
+#		response_to_id => $self->id()
+#	)];
+}
+
+sub responses_list_html {
+	my $self = shift;
+
+	my $indent = shift;
+
+	my @html;
+
+	push @html, '&nbsp;&nbsp;' x $indent,
+		"&#149; " . $self->link() . "<br>\n";
+
+	foreach my $response (@{$self->responses()}) {
+		push @html, $response->responses_list_html($indent + 1);
+	}
+
+	return @html;
+}
+
+#
+# Display functions
+#
+
+sub _html {
+	my $self = shift;
+
+	return $self->lf()->comment(
+		id => $self->id(),
+		title => $self->title(),
+		user => $self->user()->link(),
+		date => $self->date(),
+		content => $self->body(),
+		navigation => $self->changelog()->comment_list_html($self)
+	);
+}
+
+sub _url {
+	my $self = shift;
+
+	return $self->{url} = $Jaeger::Base::BaseURL . 'changelog/comment/' .
+		$self->id() . '.html';
+}
+
+sub _link {
+	my $self = shift;
+
+	return $self->{link} = '<a href="' . $self->url() . '">' . $self->title() . '</a>';
+}
+
+1;
