@@ -1,7 +1,7 @@
 package		Jaeger::Journal;
 
 #
-# $Id: Journal.pm,v 1.3 2002-08-27 03:15:44 jaeger Exp $
+# $Id: Journal.pm,v 1.4 2002-09-02 05:14:03 jaeger Exp $
 #
 
 # Journal-controlling code
@@ -17,9 +17,6 @@ use Jaeger::Lookfeel;
 use Time::Local;
 
 @Jaeger::Journal::ISA = qw(Jaeger::Base);
-
-@Jaeger::Journal::Months = qw(blah January February March April May June July August September October November December);
-@Jaeger::Journal::Weekdays = qw(Sunday Monday Tuesday Wednesday Thursday Friday Saturday);
 
 $Jaeger::Journal::Dir = '/home/jaeger/journal';
 
@@ -46,8 +43,8 @@ sub Navbar {
 		$date_local[0] -= 1900;
 		$date_local[1]--;
 		my $time = timelocal(0, 0, 0, reverse @date_local);
-		my $weekday = $Jaeger::Journal::Weekdays[(localtime $time)[6]];
-		my $title = "$weekday $date[2] $Jaeger::Journal::Months[$date[1]] $date[0]";
+		my $weekday = $Jaeger::Base::Weekdays[(localtime $time)[6]];
+		my $title = "$weekday $date[2] $Jaeger::Base::Months[$date[1]] $date[0]";
 
 		push @links, $lf->link(url => $url, title => $title);
 	}

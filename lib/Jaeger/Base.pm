@@ -1,7 +1,7 @@
 package Jaeger::Base;
 
 #
-# $Id: Base.pm,v 1.1 2002-05-19 22:54:55 jaeger Exp $
+# $Id: Base.pm,v 1.2 2002-09-02 05:14:03 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -38,10 +38,14 @@ use Carp qw(cluck carp confess);
 
 use Jaeger::Lookfeel;
 
-$Jaeger::Base::BaseURL = 'http://ziyal.festing.org';
+#$Jaeger::Base::BaseURL = 'http://jaeger.festing.org';
+$Jaeger::Base::BaseURL = '';
 
 $Jaeger::Base::Pgdbh = DBI->connect("DBI:Pg:dbname=jaeger", "", "")
     	or warn "unable to connect to pg database";
+
+@Jaeger::Base::Months = qw(blah January February March April May June July August September October November December);
+@Jaeger::Base::Weekdays = qw(Sunday Monday Tuesday Wednesday Thursday Friday Saturday);
 
 sub new {
 	my $package = shift;
