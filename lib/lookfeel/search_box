@@ -1,6 +1,6 @@
 <table width="100%">
 <tr><td bgcolor="#000000"><a href="search.cgi"><font color="#ffffff"><b>Search</b></font></a></td></tr>
-<form action="search.cgi" method="get">
+<form action="/search.cgi" method="get">
 <tr><td><input name="q" value="---q---"></td></tr>
 <tr><td>
 <select name="search">
