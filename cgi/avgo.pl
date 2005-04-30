@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: avgo.pl,v 1.2 2002-11-02 17:08:28 jaeger Exp $
+# $Id: avgo.pl,v 1.3 2005-04-30 18:05:51 jaeger Exp $
 
 # Plain-text output of jaegerfesting for avantgo chanel
 # 09 September 2000
@@ -28,6 +28,20 @@ if(my $id = $q->param('changelog')) {
         print "$content\n";
         print "<hr>\n";
 
+	# Show the changelog's comments
+	my $comments = $changelog->comments();
+	if(@$comments) {
+		foreach my $comment (sort {$a->{date} cmp $b->{date}} @$comments) {
+			print "<h3>Comment: ", $comment->user()->name(), ": ",
+				$comment->title(), "</h3>\n";
+			print "<h4>", $comment->date(), "</h4>\n";
+			my $content = $comment->body();
+			$content =~ s/<\/?a.*?>//g;
+			print "$content\n";
+		}
+		print "<hr>\n";
+	}
+
         if(my $prev = $changelog->prev()) {
                 print "&lt;- <a href=\"avgo.pl?changelog=", $prev->id(), "\">", $prev->title(), "</a> | ";
         }
@@ -49,7 +63,14 @@ if(my $id = $q->param('changelog')) {
 
         print "<h2>Changelogs</h2>\n";
         foreach my $changelog (@changelogs) {
-                print "<a href=\"avgo.pl?changelog=", $changelog->id(), "\">", $changelog->title(), "</a><br>\n";
+                print "<a href=\"avgo.pl?changelog=", $changelog->id(), "\">", $changelog->title(), "</a>\n";
+		my $ccount = @{$changelog->comments()};
+		if($ccount == 1) {
+			print " ($ccount comment)";
+		} elsif($ccount) {
+			print " ($ccount comments)";
+		}
+		print "<br>\n";
         }
 =for later
         if(@chatter) {
@@ -62,5 +83,7 @@ if(my $id = $q->param('changelog')) {
 =cut
 }
 
-print "<hr><i>\&copy; 1999-2002 Ted Logan. All rights reserved.</i>\n";
+my $year = 1900 + (localtime)[5];
+
+print "<hr><i>\&copy; 1999-$year Theodore Logan. All rights reserved.</i>\n";
 print "</body></html>\n";
