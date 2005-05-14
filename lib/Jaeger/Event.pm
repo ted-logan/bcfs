@@ -1,7 +1,7 @@
 package Jaeger::Event;
 
 #
-# $Id: Event.pm,v 1.1 2005-04-02 06:22:30 jaeger Exp $
+# $Id: Event.pm,v 1.2 2005-05-14 00:10:09 jaeger Exp $
 #
 
 # Jaeger::Event: Allows tracking of upcoming events
@@ -67,11 +67,11 @@ sub Upcoming {
 	}
 
 	# These events are easy: non-recurring events
-	my @events = Jaeger::Event->Select("user_id = " . $user->id() . " and recurring is false and date >= now() and date <= now() + '$n days'");
+	my @events = Jaeger::Event->Select("user_id = " . $user->id() . " and recurring is false and date >= date 'today' and date <= now() + '$n days'");
 
 	# Recurring events are harder; fortunately, the hard work has
 	# been done for us in the SQL view.
-	my @recurring = Jaeger::Event::Recurring->Select("user_id = " . $user->id() . " and date >= now() and date <= now() + '$n days'");
+	my @recurring = Jaeger::Event::Recurring->Select("user_id = " . $user->id() . " and date >= date 'today' and date <= now() + '$n days'");
 #	my @recurring = ();
 
 	return sort {$a->{date} <=> $b->{date}} (@events, @recurring);
