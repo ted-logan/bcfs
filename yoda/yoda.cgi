@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: yoda.cgi,v 1.3 2003-10-01 01:27:15 jaeger Exp $
+# $Id: yoda.cgi,v 1.4 2005-06-12 15:02:16 jaeger Exp $
 #
 
 # yoda.cgi: For voyeristic pleasure, display Yoda's gas mileage
@@ -44,6 +44,6 @@ if($q->param('go') eq 'nope' && $user && $user->login() eq 'jaeger') {
 	$yoda->{submit} = 1;
 }
 
-print "content-type: text/html\n\n";
+print "content-type: text/html; charset=UTF-8\n\n";
 
 print $lf->main($yoda);
