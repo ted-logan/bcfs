@@ -1,7 +1,7 @@
 package	Jaeger::Photo::List;
 
 # 
-# $Id: List.pm,v 1.3 2003-01-26 12:45:36 jaeger Exp $
+# $Id: List.pm,v 1.4 2005-06-15 04:08:21 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -37,6 +37,8 @@ sub html {
 
 	my $photos = $self->photos();
 
+	push @html, "<td>\n";
+	push @html, "<table>\n";
 	push @html, "<tr><td>", scalar(@$photos), " photo",
 		(@$photos == 1 ? '' : 's'), "</td></tr>\n";
 
@@ -48,6 +50,9 @@ sub html {
 			date => $photo->date_format()
 		);
 	}
+
+	push @html, "</table>\n";
+	push @html, "</td>\n";
 
 	return join('', @html);
 }
