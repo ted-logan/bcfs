@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: photos.pl,v 1.3 2004-11-12 23:26:10 jaeger Exp $
+# $Id: photos.pl,v 1.4 2005-10-22 17:23:37 jaeger Exp $
 #
 
 # Eventually, this will allow importing completely new rounds into the
@@ -42,20 +42,24 @@ sub annotate_round {
 	my $round = shift;
 	my $new = shift;
 
-	my @photos = Jaeger::Photo->Select("round = '$round' order by number");
+	my %photos = map { ("$_->{round}/$_->{number}", $_) }
+		Jaeger::Photo->Select("round = '$round' order by number");
 
-	# if this round doesn't already exist, we'll need to import it wholesale
-	unless(@photos) {
-		@photos = import_round($round);
+	# Check to see if there are extra photos (if the import was aborted)
+	foreach my $new_photo (import_round($round)) {
+		my $desc = "$new_photo->{round}/$new_photo->{number}";
+		unless($photos{$desc}) {
+			$photos{$desc} = $new_photo;
+		}
 	}
 
-	print "Round $round: ", scalar(@photos), " photos\n";
+	print "Round $round: ", scalar(keys %photos), " photos\n";
 
-	foreach my $photo (@photos) {
-		if($new && !$photo->{hidden}) {
+	foreach my $p (sort keys %photos) {
+		if($new && !$photos{$p}->{hidden} && $photos{$p}->{id}) {
 			next;
 		}
-		annotate_photo($photo);
+		annotate_photo($photos{$p});
 	}
 }
 
