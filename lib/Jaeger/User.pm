@@ -1,7 +1,7 @@
 package	Jaeger::User;
 
 # 
-# $Id: User.pm,v 1.10 2004-03-12 21:47:38 jaeger Exp $
+# $Id: User.pm,v 1.11 2005-12-17 04:18:19 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -283,6 +283,35 @@ sub _link {
 	} else {
 		return $self->{link} = $self->{name};
 	}
+}
+
+# The cookie uniquely identifies the user for purposes of remote headlines.
+# It will be generated if it doesn't already exist.
+sub cookie {
+	my $self = shift;
+
+	if($self->{cookie}) {
+		return $self->{cookie};
+	}
+
+	# Generate a random, 128-bit number, encoded into 32 hex digits
+	# (Code borrowed from BMAS::Session, dated 6 September 2002)
+	do {
+		$self->{cookie} = '';
+		for(my $i = 0; $i < 32; $i++) {
+			$self->{cookie} .= sprintf '%01x', int(rand(16));
+		}
+		# the odds of getting two identical cookies keys are
+		# astronomically small (say, 2^-128), but if I don't add
+		# this loop, we will inevetibally get a matching one
+		# the first time a customer tries to use it
+	} while(Jaeger::User->Count(cookie => $self->{cookie}));
+
+	warn "Jaeger::User->cookie(): Created cookie $self->{cookie} for $self->{login}\n";
+
+	$self->update();
+
+	return $self->{cookie};
 }
 
 1;
