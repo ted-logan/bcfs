@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.28 2005-04-02 05:08:58 jaeger Exp $
+# $Id: Changelog.pm,v 1.29 2005-12-17 04:19:47 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -612,8 +612,8 @@ sub handler {
 	my $level = $user ? $user->{status} : 0;
 
 	if(ref($changelog) && $changelog->{status} > $level) {
-		# No access -- quietly redirect
-		$changelog = 'LATEST';
+		# No access -- redirect to login page
+		$changelog = "/login.cgi?redirect=/changelog/$changelog->{id}.html";
 	}
 
 	# Do we want to redirect to somewhere else?
