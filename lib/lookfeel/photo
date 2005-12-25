@@ -1,3 +1,4 @@
 <tr><td class="header">---title---</td></tr>
 <tr><td><i>---date---</i></td></tr>
 <tr><td><img src="/digitalpics/---round---/---size---/---number---.jpg"></td></tr>
+<tr><td align="center"><form name="slideshow"><!-- <input name="delay" value="7" size="2"> --><input type="button" value="Slideshow" onClick="window.open('photo.cgi?round=---round---&number=---number---&slideshow=10', 'newwin', 'toolbar=no,location=no,directories=no,status=no,menubar=no,resizable=yes')"></form></td></tr>
