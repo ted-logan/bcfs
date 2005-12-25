@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.21 2005-12-17 04:18:50 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.22 2005-12-25 01:43:20 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -229,6 +229,23 @@ sub _main {
 	if($user) {
 		$params{rsscookie} = '?' . $user->cookie();
 	}
+
+	return %params;
+}
+
+sub _slideshow {
+	my $self = shift;
+	my $obj = shift;
+
+	my %params;
+
+	$params{title} = $obj->description();
+	$params{round} = $obj->round();
+	$params{number} = $obj->number();
+	$params{size} = $obj->size();
+
+	$params{next} = $obj->next()->url();
+	$params{delay} = $self->query()->param('slideshow');
 
 	return %params;
 }
