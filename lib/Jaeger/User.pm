@@ -1,7 +1,7 @@
 package	Jaeger::User;
 
 # 
-# $Id: User.pm,v 1.11 2005-12-17 04:18:19 jaeger Exp $
+# $Id: User.pm,v 1.12 2005-12-31 19:20:13 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -30,7 +30,9 @@ use Carp;
 	10 => 'Normal',		# Most users; can post, but can't see hidden
 				# content.
 
-	20 => 'Elite',		# The select group of people who have access
+	20 => 'Friends &amp; Family', # The first level of elite users
+
+	22 => 'Elite',		# The select group of people who have access
 				# to hidden changelogs.
 
 	25 => 'Goddess',	# Gem

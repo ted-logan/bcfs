@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.29 2005-12-17 04:19:47 jaeger Exp $
+# $Id: Changelog.pm,v 1.30 2005-12-31 19:20:13 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -27,7 +27,8 @@ use Apache::Request;
 %Jaeger::Changelog::Status = (
 	0	=> 'World-readable',
 	10	=> 'Logged-in users only',
-	20	=> 'Elite users only',
+	20	=> 'Friends &amp; Family only',
+	22	=> 'Elite users only',
 	25	=> 'Castor and Pollux only',
 	30	=> 'Jaeger himself',
 	100	=> 'Postponed'
