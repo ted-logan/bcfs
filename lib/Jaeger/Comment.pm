@@ -1,7 +1,7 @@
 package Jaeger::Comment;
 
 #
-# $Id: Comment.pm,v 1.4 2004-05-16 16:16:33 jaeger Exp $
+# $Id: Comment.pm,v 1.5 2005-12-31 20:02:57 jaeger Exp $
 #
 
 # Code to show and create user comments
@@ -192,6 +192,12 @@ sub html {
 		$user->log_access($self);
 	}
 
+	my $navigation = $self->changelog()->comment_list_html($self);
+	if($user) {
+		# show the users who have viewed the comment
+		$navigation = '<p>These people have read this comment: ' . join(', ', map {$_->link()} sort {$a->{name} cmp $b->{name}} @{$self->user_views()}) . "</p>\n" . $navigation;
+	}
+
 	return $self->lf()->comment(
 		id => $self->id(),
 		title => $self->title(),
@@ -199,7 +205,7 @@ sub html {
 		visibility => $Jaeger::Changelog::Status{$self->{status}},
 		date => $self->date(),
 		content => $self->body(),
-		navigation => $self->changelog()->comment_list_html($self)
+		navigation => $navigation
 	);
 }
 
@@ -215,5 +221,17 @@ sub _link {
 
 	return $self->{link} = '<a href="' . $self->url() . '">' . $self->title() . '</a>';
 }
+
+# returns the identities of those who have viewed this comment
+sub _user_views {
+	my $self = shift;
+
+	return [] unless $self->id();
+
+	my $where = 'id in (select distinct user_id from user_comment_view where comment_id = ' . $self->id() . ')';
+
+	return $self->{user_views} = [Jaeger::User->Select($where)];
+}
+
 
 1;
