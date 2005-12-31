@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.22 2005-12-25 01:43:20 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.23 2005-12-31 19:49:50 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -386,6 +386,28 @@ sub _user_view {
 
 	$params{last_visit} =~ s/\..*//;
 
+	# Select the user's comments
+	my $status = 0;
+	my $logged_in_user = Jaeger::User->Login();
+	if($logged_in_user) {
+		$status = $logged_in_user->status();
+	}
+
+	my @comments = Jaeger::Comment->Select("user_id = $params{id} and status <= $status order by date");
+	if(@comments) {
+		$params{comments} = "<small>\n" .
+			join('', map {$self->user_comment_link(
+				comment_url => $_->url(),
+				comment_title => $_->title(),
+				date => $_->date(),
+				changelog_url => $_->changelog()->url(),
+				changelog_title => $_->changelog()->title()
+				)} @comments) .
+			"</small>\n";
+	} else {
+		$params{comments} = '<i>(None)</i>';
+	}
+
 	return %params;
 }
 
@@ -395,6 +417,15 @@ sub _user_list_item {
 	my %params = @_;
 
 	$params{last_visit} =~ s/\..*//;
+
+	return %params;
+}
+
+sub _user_comment_link {
+	my $self = shift;
+	my %params = @_;
+
+	$params{date} =~ s/\..*//;
 
 	return %params;
 }
