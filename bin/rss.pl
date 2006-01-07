@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: rss.pl,v 1.5 2005-05-14 00:04:44 jaeger Exp $
+# $Id: rss.pl,v 1.6 2006-01-07 18:41:38 jaeger Exp $
 #
 
 #
@@ -24,7 +24,7 @@ use LWP::UserAgent;
 
 # Kiesa's page used to be http://kiesa.diaryland.com/index.rss
 # But that doesn't work. 13 May 2005
-my @links = qw();
+my @links = qw(http://kiesa.festing.org/serendipity/index.php?/feeds/index.rss2);
 
 my $lf = new Jaeger::Lookfeel;
 
