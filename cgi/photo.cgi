@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: photo.cgi,v 1.3 2004-10-20 14:53:05 jaeger Exp $
+# $Id: photo.cgi,v 1.4 2006-01-07 18:41:24 jaeger Exp $
 #
 
 # photo.cgi: displays a photo
@@ -51,4 +51,8 @@ if(my $round = $q->param('round')) {
 }
 
 print "content-type: text/html; charset=UTF-8\n\n";
-print $lf->main($page);
+if($q->param('slideshow')) {
+	print $lf->slideshow($page);
+} else {
+	print $lf->main($page);
+}
