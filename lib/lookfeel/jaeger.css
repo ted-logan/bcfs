@@ -1,4 +1,4 @@
-/* $Id: jaeger.css,v 1.1 2006-02-03 04:36:13 jaeger Exp $ */
+/* $Id: jaeger.css,v 1.2 2006-02-03 04:50:54 jaeger Exp $ */
 td {
 	background: #102050;
 }
@@ -19,4 +19,14 @@ td.header {
 }
 .linkbox_body {
 	font-size: small;
+}
+.code {
+	font-family: monospace;
+	margin-left: 2em;
+	margin-right: 2em;
+	background: #172e73;
+	padding: 4px;
+	border-style: solid;
+	border-color: black;
+	border-width: 2px;
 }
