@@ -1,14 +1,16 @@
 #!/usr/bin/perl
 
 #
-# $Id: loader.pl,v 1.1 2002-05-19 22:56:54 jaeger Exp $
+# $Id: loader.pl,v 1.2 2006-02-04 16:44:54 jaeger Exp $
 #
 
 # loader.pl: venerable script to do useful stuf
 
 use strict;
 
-use lib '/home/jaeger/programming/webpage/lib';
+die "\$BCFS must be set!\n" unless $ENV{BCFS};
+
+use lib "$ENV{BCFS}/lib";
 use Jaeger::Base;
 
 my $dbh = $Jaeger::Base::Pgdbh;
