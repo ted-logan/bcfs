@@ -1,6 +1,6 @@
 package Fortune;
 
-# $Id: Fortune.pm,v 1.1 2002-05-19 22:54:05 jaeger Exp $
+# $Id: Fortune.pm,v 1.2 2006-02-17 04:11:31 jaeger Exp $
 #
 # Reads fortune-encapsulated files and spits them out as requested
 #
@@ -10,6 +10,7 @@ package Fortune;
 use strict;
 
 use Byteorder qw(ntohl);
+use Carp;
 
 sub new {
 	return bless [], shift;
@@ -25,13 +26,19 @@ sub read {
 		$datfile = $filename . '.dat';
 	}
 
-	open F, $filename;
+	unless(open F, $filename) {
+		carp "Fortune->read(): Can't read fortune file $filename: $!";
+		return undef;
+	}
 	# read the contents of the file
 	local $/ = undef;
 	my $content = <F>;
 	close F;
 
-	open DAT, $datfile;
+	unless(open DAT, $datfile) {
+		carp "Fortune->read(): Can't read data file $filename: $!";
+		return undef;
+	}
 
 	# read the header
 	seek DAT, 4, 0;
