@@ -1,10 +1,10 @@
+<h1>---title---</h1>
+---body---
 <form action="---uri---" method="post">
 <input type="hidden" name="changelog_id" value="---changelog_id---">
 <input type="hidden" name="response_to_id" value="---response_to_id---">
 <input type="hidden" name="title" value="---title---">
 <input type="hidden" name="body" value="---body_submit---">
 <input type="hidden" name="status" value="---status---">
-<tr><td class="header" colspan="2"><span class="header">---title---</span></td></tr>
-<tr><td colspan="2">---body---</td></tr>
-<tr><td colspan="2" align="right"><input type="submit" name="go" value="Submit"></td></tr>
+<div style="text-align: right;"><input type="submit" name="go" value="Submit"></div>
 </form>
