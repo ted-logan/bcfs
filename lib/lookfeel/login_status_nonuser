@@ -1,3 +1,6 @@
 <h2>[not logged in]</h2>
-<a href="/login.cgi">Log In</a> : <a href="/create.cgi">Create Account</a>
+<ul>
+<li><a href="/login.cgi">Log In</a></li>
+<li><a href="/create.cgi">Create Account</a></li>
+</ul>
 
