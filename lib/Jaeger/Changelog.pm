@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.30 2005-12-31 19:20:13 jaeger Exp $
+# $Id: Changelog.pm,v 1.31 2006-02-17 16:57:56 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -466,11 +466,13 @@ sub comment_list_html {
 
 	my @comments = sort {$a->date() cmp $b->date()}
 		@{$self->comments()};
+	push @html, "<ul>\n";
 	foreach my $comment (@comments) {
 		unless($comment->response_to()) {
-			push @html, $comment->responses_list_html(0);
+			push @html, $comment->responses_list_html();
 		}
 	}
+	push @html, "</ul>\n";
 
 	return join('', @html);
 }

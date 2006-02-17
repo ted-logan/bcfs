@@ -1,7 +1,7 @@
 package Jaeger::Comment;
 
 #
-# $Id: Comment.pm,v 1.5 2005-12-31 20:02:57 jaeger Exp $
+# $Id: Comment.pm,v 1.6 2006-02-17 16:57:56 jaeger Exp $
 #
 
 # Code to show and create user comments
@@ -123,12 +123,9 @@ sub _responses {
 sub responses_list_html {
 	my $self = shift;
 
-	my $indent = shift;
-
 	my @html;
 
 	push @html, $self->lf()->comment_link(
-		indent => $indent,
 		link => $self->link(),
 		user => $self->user()->link(),
 		date => $self->date(),
@@ -137,7 +134,9 @@ sub responses_list_html {
 	my @responses = sort {$a->date() cmp $b->date()}
 		@{$self->responses()};
 	foreach my $response (@responses) {
-		push @html, $response->responses_list_html($indent + 1);
+		push @html, "<ul>\n";
+		push @html, $response->responses_list_html();
+		push @html, "</ul>\n";
 	}
 
 	return @html;
