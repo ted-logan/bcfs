@@ -1,5 +1,6 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head profile="http://gmpg.org/xfn/1">
 <link REL="icon" HREF="/graphics/aicon.png" TYPE="image/png"/>
 <link rel="stylesheet" href="/jaeger.css" type="text/css"/>
@@ -11,23 +12,59 @@
 <title>j&auml;gerfesting---title---</title>
 </head>
 
-<body bgcolor="#000000" text="#e0e0a0" alink="#ffffff" link="#20d020" vlink="#d03040">
+<body>
 
-<table cellpadding="5">
-<tr>
-<td class="header"></td>
-<td>
-<a href="/changelog/"><img src="/graphics/jaegerfesting.png" width="283" height="46" border="0" alt="jaegerfesting"></a>
-</td>
+<div style="position: relative;">
+<div id="graphic">
+<div class="article">
+<a href="http://jaeger.festing.org/changelog/"><img src="/graphics/jaegerfesting.png" alt="jaegerfesting" border="0" height="46" width="283"/></a>
+</div>
+</div>
 
-<td valign="bottom" class="header">
-<a href="http://www.catb.org/hacker-emblem/"><img src="/graphics/glider.png" alt="hacker emblem" border="0" width="35" height="35"></a>
-</td>
+<div id="hacker">
+<div class="hackerblack">
+<a href="http://www.catb.org/hacker-emblem/"><img src="/graphics/glider.png" alt="hacker emblem" border="0" height="35" width="35"/></a>
+</div>
+</div>
+</div>
 
-</tr>
+<div style="position: relative;">
+<div id="main">
+<div class="article">
 
-<tr>
-<td valign="top">
+---content---
+
+<div class="articlenav">
+---navlinks---
+</div>
+
+</div>
+
+<div class="quote">
+<div class="lyric">
+---quote---
+</div>
+</div>
+
+<div class="copyright"><!-- copyright, footer -->
+<i>
+&copy; 1998-2006 Theodore Logan. All Rights Reserved.<br/>
+<a href="mailto:jaeger@festing.org">jaeger@festing.org</a><br/>
+</i>
+<div class="screenfooter">
+<a href="http://jaeger.festing.org/theodore_logan.asc">PGP key</a><br/>
+<a href="http://jaeger.festing.org/rss.cgi?a8920c64cbb6c0da058580d40ac85cff">RSS feed</a>
+</div>
+<div class="printfooter">
+Downloaded ---date--- from ---url---
+</div>
+
+</div>
+</div><!-- id=main -->
+
+<div id="leftbar">
+<div class="navbar">
+
 <font size="+1">
 Want to <a href="http://tedlogan.com/Ted_Logan_Resume.pdf">hire</a> a computer engineer?
 <p>
@@ -38,76 +75,44 @@ I'm <a href="/content.cgi?page=Wife">Married</a>!
 <p>
 ---navbar---
 ---links---
-</td>
 
-<td valign="top">
+</div>
+</div>
 
-<table width="100%">
----content---
-<tr><td>
-<center>
----navlinks---
-</center>
-</td></tr>
-</table>
-
-</td>
-
-<td valign="top">
+<div id="rightbar">
+<div class="navbar">
 <img src="/graphics/logo.png" width=118 height=206 alt="">
-&nbsp;
 
-<table width="100%" border="0" cellspacing="0">
-<tr><td class="header"><font color="#ffffff"><b>Quick Links</b></font></td></tr>
-<tr><td>
+<h2>Quick Links</h2>
 
-&#149;&nbsp;<a href="http://bitscape.org/" rel="friend met">Bitscape</a><br>
-&#149;&nbsp;<a href="http://yanthor.net/" rel="friend met">Yanthor</a><br>
-&#149;&nbsp;<a href="http://randomworks.com/" rel="friend met">Swinyar</a><br>
-&#149;&nbsp;<a href="http://www.gaijin.com/journal/current.html" rel="acquaintance">Gaijin</a><br>
-&#149;&nbsp;<a href="http://www.bakterium.com/" rel="friend">bakterium.</a><br>
-&#149;&nbsp;<a href="http://njivy.org/" rel="friend met">Nic&nbsp;Ivy</a><br>
-&#149;&nbsp;<a href="http://www.wilhelm-aerospace.org/captainlogan.shtml" rel="friend sibbling met">Captain&nbsp;Logan</a><br>
-&#149;&nbsp;<a href="http://www.maddhatt.net/" rel="friend met">Maddhatt</a><br>
-&#149;&nbsp;<a href="http://blog.srparish.net/" rel="friend met">srp</a><br>
-&#149;&nbsp;<a href="http://kenkinder.com/" rel="friend met">Ken&nbsp;Kinder</a><br>
-&#149;&nbsp;<a href="http://www.mfdh.ca/mfdh/" rel="acquaintance">mfdh</a><br>
-&#149;&nbsp;<a href="http://www.spookstermusic.com/" rel="co-worker met">Spookster</a><br>
-&#149;&nbsp;<a href="http://riddoch.livejournal.com/" rel="friend met">Syntactic&nbsp;Sugar</a><br>
-&#149;&nbsp;<a href="http://tedlogan.com/" rel="friend met">Ted Logan</a><br>
-<br>
-&#149;&nbsp;<a href="http://slashdot.org/">Slashdot</a><br>
-&#149;&nbsp;<a href="http://www.imdb.com/">IMDb</a><br>
-&#149;&nbsp;<a href="http://www.tvtorrents.com/">TvTorrents</a><br>
-&#149;&nbsp;<a href="http://www.google.com/">Google</a><br>
-&#149;&nbsp;<a href="http://news.google.com/">Google News</a><br>
-&#149;&nbsp;<a href="http://maps.google.com/">Google Maps</a><br>
+<ul>
+<li><a href="http://bitscape.org/" rel="friend met">Bitscape</a></li>
+<li><a href="http://yanthor.net/" rel="friend met">Yanthor</a></li>
+<li><a href="http://randomworks.com/" rel="friend met">Swinyar</a></li>
+<li><a href="http://www.gaijin.com/journal/current.html" rel="acquaintance">Gaijin</a></li>
+<li><a href="http://www.bakterium.com/" rel="friend">bakterium.</a></li>
+<li><a href="http://njivy.org/" rel="friend met">Nic&nbsp;Ivy</a></li>
+<li><a href="http://www.wilhelm-aerospace.org/captainlogan.shtml" rel="friend sibbling met">Captain&nbsp;Logan</a></li>
+<li><a href="http://www.maddhatt.net/" rel="friend met">Maddhatt</a></li>
+<li><a href="http://blog.srparish.net/" rel="friend met">srp</a></li>
+<li><a href="http://kenkinder.com/" rel="friend met">Ken&nbsp;Kinder</a></li>
+<li><a href="http://www.mfdh.ca/mfdh/" rel="acquaintance">mfdh</a></li>
+<li><a href="http://www.spookstermusic.com/" rel="co-worker met">Spookster</a></li>
+<li><a href="http://riddoch.livejournal.com/" rel="friend met">Syntactic&nbsp;Sugar</a></li>
+<li><a href="http://tedlogan.com/" rel="friend met">Ted Logan</a></li>
+</ul>
 
-</td></tr>
-</table>
-</td>
-</tr>
+<ul>
+<li><a href="http://slashdot.org/">Slashdot</a></li>
+<li><a href="http://www.imdb.com/">IMDb</a></li>
+<li><a href="http://www.tvtorrents.com/">TvTorrents</a></li>
+<li><a href="http://www.google.com/">Google</a></li>
+<li><a href="http://news.google.com/">Google News</a></li>
+<li><a href="http://maps.google.com/">Google Maps</a></li>
+</ul>
 
-<tr>
-<td class="header"></td>
-<td class="lyric">
----quote---
-</td>
-</tr>
+</div>
+</div>
+</div>
 
-<tr>
-<td class="header"></td>
-<td>
-<i>
-&copy; 1998-2005 Theodore Logan. All Rights Reserved.<br>
-<a href="mailto:jaeger@festing.org">jaeger@festing.org</a><br>
-</i>
-<small>
-<a href="/theodore_logan.asc">PGP key</a><br>
-<a href="http://jaeger.festing.org/rss.cgi---rsscookie---">RSS feed</a>
-</small>
-</td>
-</tr>
-</table>
-</body>
-</html>
+</body></html>

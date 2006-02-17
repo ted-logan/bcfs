@@ -1,4 +1,5 @@
-<tr><td class="header">Search</td></tr>
+<h2>Search</h2>
+<table>
 <form action="search.cgi" method="get">
 <tr><td><input name="q" value="---q---"></td></tr>
 <tr><td>Search criterion are ORed together. Put quotes around phrases.
@@ -12,3 +13,4 @@ Not responsible for searches returning too many queries or not enough.</td></tr>
 <tr><td><input type="checkbox" name="search" value="journal"> Journals</td></tr>
 <tr><td align="right"><input type="submit" value="Search!"></td></tr>
 </form>
+</table>

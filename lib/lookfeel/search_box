@@ -1,8 +1,6 @@
-<table width="100%">
-<tr><td class="header"><a href="/search.cgi" class="header">Search</a></td></tr>
+<h2><a href="/search.cgi">Search</a></h2>
 <form action="/search.cgi" method="get">
-<tr><td><input name="q" value="---q---"></td></tr>
-<tr><td>
+<input name="q" value="---q---">
 <select name="search">
 <option value="all" selected>Everything</option>
 <option value="photo">Photos</option>
@@ -10,7 +8,4 @@
 <option value="comment">Comments</option>
 <option value="journal">Journals</option>
 </select>
-</td></tr>
-<tr><td align="right"><input type="submit" value="Search!"></td></tr>
-</form>
-</table>
+<input type="submit" value="Search!">

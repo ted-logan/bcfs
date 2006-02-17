@@ -1,20 +1,16 @@
-<tr><td class="header"><span class="header">---user---: Logged In</span></td></tr>
-<tr><td>
-<small>
-<a href="/logout.cgi">Log Out</a> : <a href="/user.cgi?action=edit">Edit Thyself</a> : <a href="/user.cgi">User List</a>
-</small>
-</td></tr>
+<h2>---user---: Logged In</h2>
+<ul>
+<li><a href="/logout.cgi">Log Out</a></li>
+<li><a href="/user.cgi?action=edit">Edit Thyself</a></li>
+<li><a href="/user.cgi">User List</a></li>
+</ul>
 
-<tr><td class="header"><span class="header">Calender (beta)</span></td></tr>
-<tr><td>
-<small>
+<h2>Calender (beta)</h2>
+<ul>
 ---calender---
-</small>
-</td></tr>
+</ul>
 
-<tr><td class="header"><span class="header">Recent Visitors</span></td></tr>
-<tr><td>
-<small>
+<h2>Recent Visitors</h2>
+<ul>
 ---recent---
-</small>
-</td></tr>
+</ul>

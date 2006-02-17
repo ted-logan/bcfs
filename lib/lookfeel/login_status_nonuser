@@ -1,7 +1,3 @@
-<tr><td class="header">[not logged in]</td></tr>
-<tr><td>
-<small>
+<h2>[not logged in]</h2>
 <a href="/login.cgi">Log In</a> : <a href="/create.cgi">Create Account</a>
-</small>
-</td></tr>
 

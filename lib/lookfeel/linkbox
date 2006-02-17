@@ -1,5 +1,5 @@
-<tr><td class="header"><a href="---url---" class="header">---title---</a></td></tr>
-<tr><td class="linkbox_body">
+<h2><a href="---url---">---title---</a></h2>
+<ul>
 ---links---
-</td></tr>
+</ul>
 

@@ -2,7 +2,9 @@
 <input type="hidden" name="action" value="edit">
 <input type="hidden" name="go" value="yep">
 
-<tr><td class="header" colspan="2">Edit Thyself</td></tr>
+<h1>Edit Thyself</h1>
+
+<table>
 
 <tr><td colspan="2">
 <font color="#d03040"><b>---message---</b></font>
@@ -19,4 +21,6 @@
 <textarea name="about" cols="40" rows="10">---about---</textarea>
 </td></tr>
 <tr><td colspan="2"><input value="Update" type="submit"></td></tr>
+</table>
+
 </form>

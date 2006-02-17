@@ -1,14 +1,9 @@
-<tr><td class="header" colspan="2"><span class="header">---title---</span></td></tr>
-<tr><td colspan="2">
-<i><small>Posted by ---user--- on ---date---<br>
----visibility---</small></i>
-</td></tr>
-<tr><td colspan="2">
+<h1>---title---</h1>
+<h3>Posted by ---user--- on ---date---</h3>
+<h3>---visibility---</h3>
 ---content---
 <hr noshade>
 <small>
 <p><a href="/changelog/comment/---id---.html/reply" rel="nofollow">Reply</a></p>
 ---navigation---
 </small>
-<hr noshade>
-</td></tr>

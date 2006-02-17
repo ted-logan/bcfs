@@ -1,7 +1,4 @@
-<tr><td class="header">---title---</td></tr>
-<tr><td>
-<i>Last updated: ---timestamp---</i><br>
-</td></tr>
-<tr><td>
+<h1>---title---</h1>
+<h3>Last updated: ---timestamp---</h3>
+
 ---body---
-</td></tr>
