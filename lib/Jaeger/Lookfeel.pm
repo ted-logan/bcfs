@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.23 2005-12-31 19:49:50 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.24 2006-02-17 04:09:43 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -161,7 +161,7 @@ sub _main {
 
 	# get a quote
 	my $fortune = new Fortune;
-	$fortune->read('/home/jaeger/text/quotes/quotes');
+	$fortune->read("$ENV{BCFS}/lib/quotes");
 
 	my $quote = $fortune->quote();
 	$quote =~ s/$/<br>/mg;
@@ -180,11 +180,6 @@ sub _main {
 	}
 
 	# populate the navigation links
-	if((ref $obj[0]) eq 'Jaeger::Content') {
-		push @navbar, $obj[0]->Navbar();
-	} else {
-		push @navbar, Jaeger::Content->Navbar();
-	}
 
 	if(ref $obj[0] eq 'Jaeger::Changelog') {
 		push @navbar, $obj[0]->Navbar();
@@ -193,6 +188,12 @@ sub _main {
 	}
 
 	push @navbar, Jaeger::Comment->Navbar();
+
+	if((ref $obj[0]) eq 'Jaeger::Content') {
+		push @navbar, $obj[0]->Navbar();
+	} else {
+		push @navbar, Jaeger::Content->Navbar();
+	}
 
 	push @navbar, $self->rss_links();
 
@@ -289,21 +290,20 @@ sub _content_link {
 	my $self = shift;
 	my %params = @_;
 
-	$params{indent} = '&nbsp;&nbsp;&nbsp;' x $params{level};
-
 	if($params{current} eq $params{title}) {
-		$params{title} = '<font color="#ffffff">' . $params{title} . '</font>';
+		$params{class} = ' class="current"';
 	}
 
 	if(ref $params{children}) {
 		my @children;
+		push @children, "<ul>\n";
 		foreach my $child (@{$params{children}}) {
 			push @children, $self->content_link(
-				level => $params{level} + 1,
 				current => $params{current},
 				%$child
 			);
 		}
+		push @children, "</ul>\n";
 		$params{children} = join('', @children);
 	}
 

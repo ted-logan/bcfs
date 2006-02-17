@@ -1,7 +1,7 @@
 package		Jaeger::Content;
 
 #
-# $Id: Content.pm,v 1.3 2003-11-02 21:14:29 jaeger Exp $
+# $Id: Content.pm,v 1.4 2006-02-17 04:09:43 jaeger Exp $
 #
 
 # Content-controlling code
@@ -137,7 +137,10 @@ sub Navbar {
 		);
 	}
 
-	return @content;
+	return $lf->linkbox(
+		title => 'Content',
+		links => join('', @content),
+	);
 }
 
 # runs the specified command with this content as the file argument
