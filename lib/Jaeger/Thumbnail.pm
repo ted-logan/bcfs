@@ -1,7 +1,7 @@
 package Jaeger::Thumbnail;
 
 #
-# $Id: Thumbnail.pm,v 1.2 2005-04-01 02:46:02 jaeger Exp $
+# $Id: Thumbnail.pm,v 1.3 2006-02-18 04:20:04 jaeger Exp $
 #
 
 # Generates a month thumbnail, or an array of month thumbnails for a year,
@@ -26,7 +26,7 @@ sub month_thumbnail {
 
 	my @html;
 
-	push @html, "<div class=\"header\" align=\"center\">$Jaeger::Thumbnail::Months[$month - 1] $year</div>\n";
+	push @html, "<h2>$Jaeger::Thumbnail::Months[$month - 1] $year</h2>\n";
 	push @html, "<pre>";
 	push @html, " S  M Tu  W Th  F  S\n";
 
@@ -60,8 +60,8 @@ sub year_thumbnail {
 
 	my @html;
 
+	push @html, "<h1>$year</h1>\n";
 	push @html, "<table>\n";
-	push @html, qq'<tr><td colspan=3 class=\"header\" align=\"center">$year</td></tr>\n';
 	for(my $month = 1; $month < 13; $month++) {
 		if(($month % 3) == 1) {
 			push @html, "<tr>";
