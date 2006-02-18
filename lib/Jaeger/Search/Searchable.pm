@@ -1,7 +1,7 @@
 package Jaeger::Search::Searchable;
 
 #
-# $Id: Searchable.pm,v 1.2 2004-05-16 16:20:40 jaeger Exp $
+# $Id: Searchable.pm,v 1.3 2006-02-18 22:34:16 jaeger Exp $
 #
 
 # Module containing utility functions for searchable objects
@@ -76,6 +76,7 @@ sub html {
 		page => $self->{page},
 		what => $self->what(),
 		q => $self->query()->param('q'),
+		start => $self->{page} * 10 + 1,
 	);
 }
 
