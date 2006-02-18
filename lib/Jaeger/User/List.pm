@@ -1,7 +1,7 @@
 package Jaeger::User::List;
 
 #
-# $Id: List.pm,v 1.1 2003-08-25 03:16:54 jaeger Exp $
+# $Id: List.pm,v 1.2 2006-02-18 22:43:55 jaeger Exp $
 #
 
 # Shows a list of users
@@ -37,9 +37,7 @@ sub html {
 
 	my @html;
 
-	push @html, $self->lf()->user_list();
-
-	my @users = sort {$a->{name} cmp $b->{name}} Jaeger::User->Select();
+	my @users = sort {lc $a->{name} cmp lc $b->{name}} Jaeger::User->Select();
 
 	foreach my $user (@users) {
 		next unless $user->{status};
@@ -49,7 +47,9 @@ sub html {
 		);
 	}
 
-	return join '', @html;
+	return $self->lf()->user_list(
+		users => join('', @html),
+	);
 }
 
 1;
