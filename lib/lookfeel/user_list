@@ -1,2 +1,5 @@
-<tr><td class="header" colspan="2">User List</td></tr>
+<h1>User List</h1>
+<table border="2" cellspacing="0" cellpadding="3">
 <tr><th>User</th> <th>Last Visit</th></tr>
+---users---
+</table>

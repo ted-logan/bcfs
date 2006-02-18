@@ -1,9 +1,5 @@
-<form action="/create.cgi" method="post">
-<input type="hidden" name="step" value="1">
+<h1>Create User: Step 1</h1>
 
-<tr><td colspan="2">Create User: Step 1</td></tr>
-
-<tr><td colspan="2">
 <p>
 Becoming an officially-registered j&auml;gerfesting user has many advantages.
 At least, that's what the marketing department told me to put here.
@@ -20,10 +16,14 @@ instructions and your account will be officially verified.
 <b>---message---</b>
 </p>
 
-</td></tr>
+<form action="/create.cgi" method="post">
+<input type="hidden" name="step" value="1">
 
+<table>
 <tr><td><b>Login:</b></td> <td><input name="login" value="---login---"></td></tr>
 <tr><td><b>Name/Alias:</b></td> <td><input name="name" value="---name---"></td></tr>
 <tr><td><b>e-mail:</b></td> <td><input name="email" value="---email---"></td></tr>
 <tr><td colspan="2"><input value="Create" type="submit"></td></tr>
+</table>
+
 </form>

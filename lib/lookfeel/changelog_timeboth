@@ -1,5 +1,3 @@
-<tr><td colspan="2">
-<i>Started: ---time_begin---</i><br>
-<i>Submitted: ---time_end---</i><br>
-<i>Visibility: ---visibility---</i>
-</td></tr>
+<h3>Started: ---time_begin---</h3>
+<h3>Submitted: ---time_end---</h3>
+<h3>Visibility: ---visibility---</h3>
