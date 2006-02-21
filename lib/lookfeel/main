@@ -15,17 +15,19 @@
 <body>
 
 <div style="position: relative;">
+
+<div id="hacker">
+<div class="hackerblack">
+<a href="http://www.catb.org/hacker-emblem/"><img src="/graphics/glider.png" alt="hacker emblem" border="0" height="35" width="35"/></a>
+</div>
+
+</div>
 <div id="graphic">
 <div class="article">
 <a href="http://jaeger.festing.org/changelog/"><img src="/graphics/jaegerfesting.png" alt="jaegerfesting" border="0" height="46" width="283"/></a>
 </div>
 </div>
 
-<div id="hacker">
-<div class="hackerblack">
-<a href="http://www.catb.org/hacker-emblem/"><img src="/graphics/glider.png" alt="hacker emblem" border="0" height="35" width="35"/></a>
-</div>
-</div>
 </div>
 
 <div style="position: relative;">
