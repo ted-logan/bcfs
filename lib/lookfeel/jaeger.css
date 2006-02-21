@@ -1,4 +1,4 @@
-/* $Id: jaeger.css,v 1.3 2006-02-17 04:08:32 jaeger Exp $ */
+/* $Id: jaeger.css,v 1.4 2006-02-21 05:10:24 jaeger Exp $ */
 BODY {
 	background: #000;
 	color: #eea;
@@ -18,7 +18,10 @@ div#rightbar {
 	right: 0;
 	width: 20%;
 }
+div.navbar, div.rightbar { display: none; }
+div#hacker { float: right; }
 @media screen {
+	div.navbar, div.rightbar { display: block; }
 	div#main {
 		position: absolute;
 		left: 20%;
@@ -85,7 +88,6 @@ h3 {
 }
 div.printfooter { display: none; }
 @media print {
-	div.navbar, div.rightbar { display: none; }
 	div.printfooter { display: block; }
 	div.screenfooter { display: none; }
 	div#graphic { float: right; }
