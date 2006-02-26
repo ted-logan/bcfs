@@ -1,7 +1,7 @@
 package		Jaeger::Yoda;
 
 #
-# $Id: Yoda.pm,v 1.3 2003-10-01 01:23:23 jaeger Exp $
+# $Id: Yoda.pm,v 1.4 2006-02-26 21:57:26 jaeger Exp $
 #
 
 # For voyerstic pleasure, shows Yoda's gas mileage
@@ -86,7 +86,9 @@ sub _html {
 			push @content, $self->lf()->yoda_main();
 		}
 
-		return join '', @content;
+		return $self->lf()->yoda_table(
+			data => join('', @content),
+		);
 	}
 }
 
