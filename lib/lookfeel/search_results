@@ -3,4 +3,4 @@
 <ol start="---start---">
 ---content---
 </ol>
-<div style="text-align: center;">---pages---</div>
+<div style="text-align: center; clear: left;">---pages---</div>
