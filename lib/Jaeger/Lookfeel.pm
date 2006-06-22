@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.25 2006-02-18 04:35:34 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.26 2006-06-22 03:00:44 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -528,6 +528,16 @@ sub _comment_link {
 
 	$params{indent} = '&nbsp;&nbsp;&nbsp;' x $params{indent};
 	$params{date} =~ s/\..*//;
+
+	return %params;
+}
+
+sub _flight_row {
+	my $self = shift;
+
+	my %params = @_;
+
+	$params{international} = $params{international} ? "Yes" : "No";
 
 	return %params;
 }
