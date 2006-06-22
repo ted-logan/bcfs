@@ -1,14 +1,16 @@
 #!/usr/bin/perl
 
 #
-# $Id: photo.cgi,v 1.4 2006-01-07 18:41:24 jaeger Exp $
+# $Id: photo.cgi,v 1.5 2006-06-22 03:49:22 jaeger Exp $
 #
 
 # photo.cgi: displays a photo
 
 use strict;
 
-use lib '/home/jaeger/programming/webpage/lib';
+die "\$BCFS must be set!\n" unless $ENV{BCFS};
+
+use lib "$ENV{BCFS}/lib";
 
 use Jaeger::Photo;
 use Jaeger::Lookfeel;
@@ -54,5 +56,9 @@ print "content-type: text/html; charset=UTF-8\n\n";
 if($q->param('slideshow')) {
 	print $lf->slideshow($page);
 } else {
-	print $lf->main($page);
+	if(ref($page) eq 'Jaeger::Photo') {
+		print $lf->photo_main($page);
+	} else {
+		print $lf->main($page);
+	}
 }

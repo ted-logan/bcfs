@@ -1,4 +1,4 @@
-/* $Id: jaeger.css,v 1.4 2006-02-21 05:10:24 jaeger Exp $ */
+/* $Id: jaeger.css,v 1.5 2006-06-22 03:49:05 jaeger Exp $ */
 BODY {
 	background: #000;
 	color: #eea;
@@ -54,6 +54,9 @@ div.navbar ul {
 	margin-top: 0;
 }
 div.articlenav {
+	text-align: center;
+}
+div#photo_main {
 	text-align: center;
 }
 h1 {

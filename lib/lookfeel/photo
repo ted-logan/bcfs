@@ -1,6 +1,6 @@
 <h1>---title---</h1>
 <h3>---date---</h3>
 <p>
-<a href="/digitalpics/---round---/---size---/---number---.jpg"><img src="/digitalpics/---round---/---size---/---number---.jpg" width="100%" border="0"></a>
+<a href="/digitalpics/---round---/---size---/---number---.jpg"><img src="/digitalpics/---round---/---size---/---number---.jpg" border="0"></a>
 </p>
 <div style="text-align: center"><form name="slideshow"><!-- <input name="delay" value="7" size="2"> --><input type="button" value="Slideshow" onClick="window.open('photo.cgi?round=---round---&number=---number---&slideshow=10', 'newwin', 'toolbar=no,location=no,directories=no,status=no,menubar=no,resizable=yes')"></form></div>

@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.26 2006-06-22 03:00:44 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.27 2006-06-22 03:49:05 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -230,6 +230,53 @@ sub _main {
 	if($user) {
 		$params{rsscookie} = '?' . $user->cookie();
 	}
+
+	return %params;
+}
+
+sub _photo_main {
+	my $self = shift;
+	my $obj = shift;
+
+	my %params;
+
+	if(my $title = $obj->title()) {
+		$params{title} = ": $title";
+	}
+
+	# set human-readable navigation links
+	$params{navlinks} = $self->navlinks(
+		prev => $obj->prev(),
+		index => $obj->index(),
+		next => $obj->next(),
+	);
+
+	# set machine-readable navigation links
+	my @navlink;
+	if(my $prev = $obj->prev()) {
+		push @navlink, $self->navlink(
+			type => 'prev',
+			url => $prev->url(),
+			title => $prev->title(),
+		);
+	}
+	if(my $next = $obj->next()) {
+		push @navlink, $self->navlink(
+			type => 'next',
+			url => $next->url(),
+			title => $next->title(),
+		);
+	}
+	if(my $index = $obj->index()) {
+		push @navlink, $self->navlink(
+			type => 'parent',
+			url => $index->url(),
+			title => $index->title(),
+		);
+	}
+	$params{navlink} = join('', @navlink);
+
+	$params{content} = $obj->html();
 
 	return %params;
 }

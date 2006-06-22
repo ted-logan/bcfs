@@ -1,7 +1,7 @@
 package	Jaeger::Photo::Search;
 
 # 
-# $Id: Search.pm,v 1.1 2003-01-26 12:48:01 jaeger Exp $
+# $Id: Search.pm,v 1.2 2006-06-22 03:49:05 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -60,7 +60,7 @@ sub _html {
 
 	foreach my $photo (@$photos) {
 		next unless $photo;
-		push @html, $self->lf()->photo_list(
+		push @html, $self->lf()->photo_search_list(
 			url => $photo->url(),
 			thumbnail => "/digitalpics/$photo->{round}/thumbnail/$photo->{number}.jpg",
 			description => $photo->description(),
@@ -68,5 +68,7 @@ sub _html {
 		);
 	}
 
-	return join('', @html);
+	return $self->lf()->photo_search(
+		photos => join('', @html)
+	);
 }

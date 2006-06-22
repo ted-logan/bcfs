@@ -1,7 +1,7 @@
 package	Jaeger::Photo;
 
 # 
-# $Id: Photo.pm,v 1.2 2003-01-31 21:58:15 jaeger Exp $
+# $Id: Photo.pm,v 1.3 2006-06-22 03:49:05 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -197,12 +197,25 @@ sub _title {
 		$self->{description};
 }
 
+sub _exif {
+	my $self = shift;
+
+	my $path = $self->file();
+	my $exif = `exiftags $path`;
+	if($exif) {
+		return $self->{exif} = $exif;
+	} else {
+		return undef;
+	}
+}
+
 # returns the html for this object
 sub html {
 	my $self = shift;
 
 	return $self->lf()->photo(
 		title => $self->{description},
+#		exif => $self->exif(),
 		date => $self->date_format(),
 		round => $self->{round},
 		size => $self->size(),
