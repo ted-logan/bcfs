@@ -1,7 +1,7 @@
 package	Jaeger::Photo;
 
 # 
-# $Id: Photo.pm,v 1.3 2006-06-22 03:49:05 jaeger Exp $
+# $Id: Photo.pm,v 1.4 2006-06-23 03:12:56 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -24,11 +24,15 @@ use Jaeger::Timezone;
 use Jaeger::Photo::List;
 use Jaeger::Photo::Year;
 
+use Image::Magick;
+
 sub table {
 	return 'photo';
 }
 
 $Jaeger::Photo::Dir = '/home/jaeger/graphics/photos/dc';
+
+@Jaeger::Photo::Sizes = qw(640x480 800x600 1024x768 1280x960 1600x1200 2048x1536 3000x2000);
 
 # makes sure timezone_id and location_id are set
 sub update {
@@ -99,6 +103,13 @@ sub _date_format {
 # returns the physical path to the jpeg
 sub _file {
 	my $self = shift;
+
+	if($self->{size}) {
+		my $file = "$Jaeger::Photo::Dir/$self->{round}/$self->{size}/$self->{number}.jpg";
+		if(-f $file) {
+			return $self->{file} = $file;
+		}
+	}
 
 	if($self->file_crop()) {
 		return $self->{file} = $self->file_crop();
@@ -184,6 +195,31 @@ sub size {
 
 	# The photo doesn't seem to exist. This could be bad.
 	return undef;
+}
+
+# Return the native size of this image in the format 640x480
+sub _native {
+	my $self = shift;
+
+	my $img = new Image::Magick;
+	$img->Read($self->file());
+
+	my ($width, $height) = $img->Get('width', 'height');
+
+	return $self->{native} = "${width}x${height}";
+}
+
+# Make sure the photo exists for the desired size
+sub resize {
+	my $self = shift;
+
+	if($self->{size}) {
+		my $file = "$Jaeger::Photo::Dir/$self->{round}/$self->{size}/$self->{number}.jpg";
+
+		unless(-f $file) {
+			system "$ENV{BCFS}/bin/resize_photo.pl $self->{round} $self->{number} $self->{size}";
+		}
+	}
 }
 
 #

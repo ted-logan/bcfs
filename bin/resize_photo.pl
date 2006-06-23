@@ -1,7 +1,7 @@
-#!/usr/bin/perl -T
+#!/usr/bin/suidperl -T
 
 #
-# $Id: resize_photo.pl,v 1.1 2006-06-23 02:50:10 jaeger Exp $
+# $Id: resize_photo.pl,v 1.2 2006-06-23 03:12:56 jaeger Exp $
 #
 
 # Resize a photo
