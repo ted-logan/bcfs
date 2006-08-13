@@ -1,7 +1,7 @@
 #!/usr/bin/suidperl -T
 
 #
-# $Id: resize_photo.pl,v 1.2 2006-06-23 03:12:56 jaeger Exp $
+# $Id: resize_photo.pl,v 1.3 2006-08-13 02:25:56 jaeger Exp $
 #
 
 # Resize a photo
@@ -33,6 +33,25 @@ unless($photo) {
 	die "Photo $round/$number doesn't exist!\n";
 }
 
+# Make the correct directory, if it doesn't already exist
+my $newdir = "$Jaeger::Photo::Dir/$round/${width}x${height}";
+unless(-d $newdir) {
+	mkdir $newdir;
+}
+
+my $newfile = "$newdir/$number.jpg";
+
+if($photo->native() eq "${width}x${height}") {
+	my $oldfile = $photo->file_crop();
+	warn "Symlinking $newfile ($oldfile)\n";
+
+	unless(symlink $oldfile, $newfile) {
+		die "Symlink failed: $!\n";
+	}
+
+	exit;
+}
+
 # Determine the size of the photo
 my $img = new Image::Magick;
 $img->Read($photo->file());
@@ -57,14 +76,6 @@ if($aspect > ($width / $height)) {
 if(($nwidth > $owidth) || ($nheight > $oheight)) {
 	die "New size is larger than original size\n";
 }
-
-# Make the correct directory, if it doesn't already exist
-my $newdir = "$Jaeger::Photo::Dir/$round/${width}x${height}";
-unless(-d $newdir) {
-	mkdir $newdir;
-}
-
-my $newfile = "$newdir/$number.jpg";
 
 $img->Resize(width => $nwidth, height => $nheight);
 
