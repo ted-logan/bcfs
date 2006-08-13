@@ -1,7 +1,7 @@
 package	Jaeger::Photo;
 
 # 
-# $Id: Photo.pm,v 1.4 2006-06-23 03:12:56 jaeger Exp $
+# $Id: Photo.pm,v 1.5 2006-08-13 02:23:41 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -197,23 +197,35 @@ sub size {
 	return undef;
 }
 
-# Return the native size of this image in the format 640x480
+# Return the photo size closest to the actual size, in 640x480
 sub _native {
 	my $self = shift;
 
 	my $img = new Image::Magick;
-	$img->Read($self->file());
+	$img->Read($self->file_crop() ? $self->file_crop() : $self->file_raw());
 
 	my ($width, $height) = $img->Get('width', 'height');
 
-	return $self->{native} = "${width}x${height}";
+	my $lastsize;
+
+	foreach my $size (@Jaeger::Photo::Sizes) {
+		my ($w, $h) = $size =~ /(\d+)x(\d+)/;
+		if(($w > $width) && ($h > $height)) {
+			return $self->{native} = $lastsize;
+		}
+		$lastsize = $size;
+	}
+
+	return $lastsize;
+
+#	return $self->{native} = "${width}x${height}";
 }
 
 # Make sure the photo exists for the desired size
 sub resize {
 	my $self = shift;
 
-	if($self->{size}) {
+	if($self->size()) {
 		my $file = "$Jaeger::Photo::Dir/$self->{round}/$self->{size}/$self->{number}.jpg";
 
 		unless(-f $file) {
@@ -245,6 +257,35 @@ sub _exif {
 	}
 }
 
+# If we did not specify a size, select the size closest to the native size
+sub size {
+	my $self = shift;
+
+	if($self->{size} && $self->{size} ne 'new') {
+		return $self->{size};
+	}
+
+	return $self->{size} = $self->native();
+}
+
+sub _sizelinks {
+	my $self = shift;
+
+	my @html;
+
+	my $url = $self->url();
+
+	foreach my $size (@Jaeger::Photo::Sizes) {
+		if($size eq $self->size()) {
+			push @html, $size;
+		} elsif($size <= $self->native()) {
+			push @html, qq'<a href="$url&size=$size">$size</a>';
+		}
+	}
+
+	return join ' | ', @html;
+}
+
 # returns the html for this object
 sub html {
 	my $self = shift;
@@ -255,6 +296,7 @@ sub html {
 		date => $self->date_format(),
 		round => $self->{round},
 		size => $self->size(),
+		sizelinks => $self->sizelinks(),
 		number => $self->{number}
 	);
 }
