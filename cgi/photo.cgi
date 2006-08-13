@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: photo.cgi,v 1.6 2006-06-23 03:12:56 jaeger Exp $
+# $Id: photo.cgi,v 1.7 2006-08-13 02:24:29 jaeger Exp $
 #
 
 # photo.cgi: displays a photo
@@ -31,10 +31,12 @@ if(my $round = $q->param('round')) {
 
 		if($page) {
 			# Good. The photo exists.
-			$page->{size} = $q->param('size');
-			if($page->{size}) {
-				$page->resize();
+			if($q->param('size')) {
+				$page->{size} = $q->param('size');
+			} elsif($page->native() > 800) {
+				$page->{size} = '800x600';
 			}
+			$page->resize();
 
 		} else {
 			# the photo doesn't exist
