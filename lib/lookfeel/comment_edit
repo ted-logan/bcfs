@@ -6,7 +6,7 @@
 <tr><td><b>Title</b></td> <td><input name="title" value="---title---" width="40"></td></tr>
 <tr><td><b>Visibility</b></td> <td><select name="status">---visibility---</select></td></tr>
 <tr><td colspan="2"><textarea name="body" rows="12" cols="60">---body---</textarea></td></tr>
-<tr><td colspan="2"><small>You're posting as html. Allowed formatting tags: a b blockquote br em li i p ol small strong ul</small></td></tr>
+<tr><td colspan="2"><small>You're posting as html. Allowed formatting tags: a b blockquote br em li i p ol small strike strong ul</small></td></tr>
 <tr><td colspan="2" align="right"><input type="submit" name="go" value="Preview"></td></tr>
 </table>
 </form>

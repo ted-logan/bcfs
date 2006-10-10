@@ -1,7 +1,7 @@
 package Jaeger::Comment::Post;
 
 #
-# $Id: Post.pm,v 1.6 2004-02-29 19:35:37 jaeger Exp $
+# $Id: Post.pm,v 1.7 2006-10-10 03:25:48 jaeger Exp $
 #
 
 # Code to allow a user to post a comment
@@ -165,7 +165,7 @@ sub _title {
 #
 
 my %allowed_html = map {$_, 1}
-	qw(a b blockquote br em i li p ol small strong ul);
+	qw(a b blockquote br em i li p ol small strike strong ul);
 
 sub Allowed {
 	my $package = shift;
