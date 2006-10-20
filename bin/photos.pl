@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: photos.pl,v 1.4 2005-10-22 17:23:37 jaeger Exp $
+# $Id: photos.pl,v 1.5 2006-10-20 02:11:52 jaeger Exp $
 #
 
 # Eventually, this will allow importing completely new rounds into the
@@ -14,10 +14,14 @@
 
 use strict;
 
-use lib '/home/jaeger/programming/webpage/lib';
+die "\$BCFS must be set!\n" unless $ENV{BCFS};
+
+use lib "$ENV{BCFS}/lib";
 use Jaeger::Photo;
 
-use Image::Magick;
+use FileHandle;
+
+autoflush STDOUT 1;
 
 unless(@ARGV) {
 	die "What rounds to import?\n";
@@ -57,6 +61,13 @@ sub annotate_round {
 
 	foreach my $p (sort keys %photos) {
 		if($new && !$photos{$p}->{hidden} && $photos{$p}->{id}) {
+			my $photo = $photos{$p};
+			print "\n";
+			print $photo->{round}, '/', $photo->{number}, ': ',
+				$photo->date_format(), "\n";
+			if($photo->{description}) {
+				print $photo->{description}, "\n";
+			}
 			next;
 		}
 		annotate_photo($photos{$p});
@@ -94,17 +105,12 @@ sub annotate_photo {
 		die "Fork failed! $!\n";
 	}
 	if($child_pid == 0) {
-		# child process
+		system "eog \"" . $photo->file() . "\" >/dev/null";
 
-		# show the photo
-		my $img = new Image::Magick;
-		$img->Read($photo->file());
-
-		# this function will block until it's killed by the parent
-		$img->Display();
-
-		# we should never, ever get here
-		die "Child process: braindamage! display() returned?\n";
+		# Wait to be killed by the parent
+		while(1) {
+			sleep 600;
+		}
 	}
 
 	# parent process
@@ -150,9 +156,13 @@ sub import_round {
 
 	# read the uncropped photos
 	if(-d "$Jaeger::Photo::Dir/$round/raw") {
+		print "Round $round: Scanning raw photos ";
+
 		opendir DIR, "$Jaeger::Photo::Dir/$round/raw";
 
 		foreach my $file (grep /\.jpg/, readdir DIR) {
+			print '.';
+
 			my ($number) = $file =~ /(.*)\.jpg/;
 
 			my $photo = new Jaeger::Photo;
@@ -166,13 +176,19 @@ sub import_round {
 		}
 
 		closedir DIR;
+
+		print "\n";
 	}
 
 	# read the cropped photos
 	if(-d "$Jaeger::Photo::Dir/$round/new") {
+		print "Round $round: Scanning cropped photos ";
+
 		opendir DIR, "$Jaeger::Photo::Dir/$round/new";
 
 		foreach my $file (grep /\.jpg/, readdir DIR) {
+			print '.';
+
 			my ($number) = $file =~ /(.*)\.jpg/;
 
 			unless($photos{$number}) {
@@ -184,6 +200,8 @@ sub import_round {
 		}
 
 		closedir DIR;
+
+		print "\n";
 	}
 
 	return sort {$a->{number} <=> $b->{number}} values %photos;
