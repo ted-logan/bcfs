@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.31 2006-02-17 16:57:56 jaeger Exp $
+# $Id: Changelog.pm,v 1.32 2006-10-22 01:30:44 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -247,7 +247,7 @@ sub _prev {
 		$level = 0;
 	}
 
-	$self->{prev} = $self->Select("status <= $level and time_begin = (select max(time_begin) from changelog where time_begin < '$self->{time_begin}')");
+	$self->{prev} = $self->Select("time_begin = (select max(time_begin) from changelog where time_begin < '$self->{time_begin}' and status <= $level)");
 
 	return $self->{prev};
 }
@@ -267,7 +267,7 @@ sub _next {
 		$level = 0;
 	}
 
-	$self->{next} = $self->Select("status <= $level and time_begin = (select min(time_begin) from changelog where time_begin > '$self->{time_begin}')");
+	$self->{next} = $self->Select("time_begin = (select min(time_begin) from changelog where time_begin > '$self->{time_begin}' and status <= $level)");
 
 	return $self->{next};
 }
