@@ -1,7 +1,11 @@
 <tr>
-<td colspan="3" align="right">---year--- Total:</td>
+<td colspan="3" rowspan="2" align="right" valign="top">---year--- Total:</td>
 <td align="right">---distance---</td>
 <td align="right">---flights---</td>
+</tr>
+<tr>
+<td align="right">---percent_distance---</td>
+<td align="right">---percent_flights---</td>
 </tr>
 <tr>
 <td colspan="5">&nbsp;</td>

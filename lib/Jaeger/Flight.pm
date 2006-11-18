@@ -1,7 +1,7 @@
 package		Jaeger::Flight;
 
 #
-# $Id: Flight.pm,v 1.1 2006-06-22 03:00:44 jaeger Exp $
+# $Id: Flight.pm,v 1.2 2006-11-18 18:27:06 jaeger Exp $
 #
 
 # A list of all flights I've taken
@@ -70,7 +70,8 @@ sub html {
 	# Append the totals and resort the array
 	foreach my $year (keys %total) {
 		push @flights, Jaeger::Flight::Total->new($year,
-			$total{$year}->{miles}, $total{$year}->{flights});
+			$total{$year}->{miles}, $total{$year}->{flights},
+			$total{9999}->{miles}, $total{9999}->{flights});
 	}
 	@flights = sort {$a->month() cmp $b->month()} @flights;
 
@@ -92,12 +93,24 @@ sub new {
 	my $year = shift;
 	my $miles = shift;
 	my $flights = shift;
+	my $total_miles = shift;
+	my $total_flights = shift;
 
 	my $self = {
 		month => "$year-13-01",
 		distance => $miles,
 		flights => $flights
 	};
+
+	if($total_miles > 0) {
+		$self->{percent_distance} = sprintf "%.2f%%",
+			$miles / $total_miles * 100;
+	}
+
+	if($total_flights > 0) {
+		$self->{percent_flights} = sprintf "%.2f%%",
+			$flights / $total_flights * 100;
+	}
 
 	if($year == '9999') {
 		$self->{year} = "Grand";
