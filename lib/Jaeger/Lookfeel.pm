@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.27 2006-06-22 03:49:05 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.28 2006-12-31 04:24:17 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -20,6 +20,7 @@ use Jaeger::Journal;
 use Jaeger::Changelog;
 use Jaeger::Content;
 use Jaeger::Event;
+use Jaeger::Slideshow;
 use Jaeger::User;
 
 use Fortune;
@@ -585,6 +586,35 @@ sub _flight_row {
 	my %params = @_;
 
 	$params{international} = $params{international} ? "Yes" : "No";
+
+	return %params;
+}
+
+sub _photo {
+	my $self = shift;
+
+	my %params = @_;
+
+	my $user = Jaeger::User->Login();
+
+	if($user && $user->status() >= 30) {
+		$params{add_to_slideshow} = $self->add_to_slideshow(
+			photo_id => $params{id}
+		);
+	}
+
+	return %params;
+}
+
+sub _add_to_slideshow {
+	my $self = shift;
+
+	my %params = @_;
+
+	my @slideshows = sort {$a->id() <=> $b->id()}
+		Jaeger::Slideshow->Select();
+
+	$params{slideshow} = join('', map {'<option value="' . $_->id() . '">' . $_->{title} . "</option>\n"} @slideshows);
 
 	return %params;
 }

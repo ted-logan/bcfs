@@ -1,7 +1,7 @@
 package	Jaeger::Photo;
 
 # 
-# $Id: Photo.pm,v 1.5 2006-08-13 02:23:41 jaeger Exp $
+# $Id: Photo.pm,v 1.6 2006-12-31 04:24:17 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -291,6 +291,7 @@ sub html {
 	my $self = shift;
 
 	return $self->lf()->photo(
+		id => $self->{id},
 		title => $self->{description},
 #		exif => $self->exif(),
 		date => $self->date_format(),

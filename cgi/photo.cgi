@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: photo.cgi,v 1.7 2006-08-13 02:24:29 jaeger Exp $
+# $Id: photo.cgi,v 1.8 2006-12-31 04:24:17 jaeger Exp $
 #
 
 # photo.cgi: displays a photo
@@ -13,6 +13,7 @@ die "\$BCFS must be set!\n" unless $ENV{BCFS};
 use lib "$ENV{BCFS}/lib";
 
 use Jaeger::Photo;
+use Jaeger::Slideshow;
 use Jaeger::Lookfeel;
 
 my $q = Jaeger::Base::Query();
@@ -20,6 +21,23 @@ my $q = Jaeger::Base::Query();
 my $lf = Jaeger::Base::Lookfeel();
 
 my $page;
+
+if(my $photo_id = $q->param('photo_id')) {
+	my $slideshow_id = $q->param('slideshow_id');
+
+	my $photo = Jaeger::Photo->new_id($photo_id);
+	my $slideshow = Jaeger::Slideshow->new_id($slideshow_id);
+
+	if($photo && $slideshow) {
+		$slideshow->add_photo($photo, $q->param('index'),
+			$q->param('description'));
+
+		print $q->redirect($photo->url());
+		exit;
+	} else {
+		die "Could not find photo by id $photo_id or slideshow by id $slideshow_id\n";
+	}
+}
 
 if(my $round = $q->param('round')) {
 	if(my $number = $q->param('number')) {
@@ -51,6 +69,15 @@ if(my $round = $q->param('round')) {
 	# display photos on a specific date
 	$page = new Jaeger::Photo::List::Date($date);
 
+} elsif(my $slideshow = $q->param('slideshow_id')) {
+	# Show a specific slide show
+	my $slideshow = Jaeger::Slideshow->new_id($slideshow);
+	if(defined($slideshow) && (my $index = $q->param('index'))) {
+		$page = $slideshow->photo_hash()->{$index};
+	} else {
+		$page = $slideshow;
+	}
+
 } else {
 	# display a thumbnail for a year, or the current year
 	$page = new Jaeger::Photo::Year($q->param('year'));
@@ -61,7 +88,8 @@ print "content-type: text/html; charset=UTF-8\n\n";
 if($q->param('slideshow')) {
 	print $lf->slideshow($page);
 } else {
-	if(ref($page) eq 'Jaeger::Photo') {
+	if(ref($page) eq 'Jaeger::Photo' or
+			ref($page) eq 'Jaeger::Slideshow::Photo') {
 		print $lf->photo_main($page);
 	} else {
 		print $lf->main($page);

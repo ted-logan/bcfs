@@ -1,7 +1,7 @@
 package Jaeger::Base;
 
 #
-# $Id: Base.pm,v 1.9 2004-03-12 16:35:45 jaeger Exp $
+# $Id: Base.pm,v 1.10 2006-12-31 04:24:17 jaeger Exp $
 #
 # Copyright (c) 1999, 2000 x13.com
 # Copyright (c) 2001, 2002 Buildmeasite.com
@@ -199,7 +199,9 @@ sub columns {
 
 	my @columns;
 	while(my ($c) = $sth->fetchrow_array()) {
-		push @columns, $c;
+		unless($c =~ /pg\.dropped/) {
+			push @columns, $c;
+		}
 	}
 
 	return @columns;
