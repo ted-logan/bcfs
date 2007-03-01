@@ -1,7 +1,7 @@
 package		Jaeger::Lookfeel;
 
 #
-# $Id: Lookfeel.pm,v 1.28 2006-12-31 04:24:17 jaeger Exp $
+# $Id: Lookfeel.pm,v 1.29 2007-03-01 02:58:00 jaeger Exp $
 #
 
 #	Copyright (c) 1999-2002 Ted Logan (jaeger@festing.org)
@@ -585,7 +585,12 @@ sub _flight_row {
 
 	my %params = @_;
 
-	$params{international} = $params{international} ? "Yes" : "No";
+	$params{business} = $params{business} ? "Yes" : "No";
+
+	if($params{comment}) {
+		$params{comment} =
+			$self->flight_comment(comment => $params{comment});
+	}
 
 	return %params;
 }
@@ -600,6 +605,58 @@ sub _photo {
 	if($user && $user->status() >= 30) {
 		$params{add_to_slideshow} = $self->add_to_slideshow(
 			photo_id => $params{id}
+		);
+	}
+
+	if(defined($params{longitude}) && defined($params{latitude})) {
+		$params{location} = $self->photo_coordinates(
+			longitude => $params{longitude},
+			latitude => $params{latitude},
+		);
+	}
+
+	return %params;
+}
+
+sub _photo_coordinates {
+	my $self = shift;
+
+	my %params = @_;
+
+	my $lat_dir = '';
+	if($params{latitude} > 0) {
+		$lat_dir = 'N';
+	}
+	if($params{latitude} < 0) {
+		$lat_dir = 'S';
+	}
+	$params{lat_dsp} = sprintf "%s%d&deg;%6.3f",
+		$lat_dir, int(abs($params{latitude})),
+		POSIX::fmod(abs($params{latitude}) * 60, 60);
+
+	my $lon_dir = '';
+	if($params{longitude} > 0) {
+		$lon_dir = 'E';
+	}
+	if($params{longitude} < 0) {
+		$lon_dir = 'W';
+	}
+	$params{lon_dsp} = sprintf "%s%d&deg;%6.3f",
+		$lon_dir, int(abs($params{longitude})),
+		POSIX::fmod(abs($params{longitude}) * 60, 60);
+
+	return %params;
+}
+
+sub _photo_list {
+	my $self = shift;
+
+	my %params = @_;
+
+	if(defined($params{longitude}) && defined($params{latitude})) {
+		$params{location} = $self->photo_coordinates(
+			longitude => $params{longitude},
+			latitude => $params{latitude},
 		);
 	}
 

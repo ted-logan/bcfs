@@ -1,7 +1,7 @@
 package	Jaeger::Photo::List;
 
 # 
-# $Id: List.pm,v 1.4 2005-06-15 04:08:21 jaeger Exp $
+# $Id: List.pm,v 1.5 2007-03-01 02:58:00 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -47,7 +47,9 @@ sub html {
 			url => $photo->url(),
 			thumbnail => "/digitalpics/$photo->{round}/thumbnail/$photo->{number}.jpg",
 			description => $photo->description(),
-			date => $photo->date_format()
+			date => $photo->date_format(),
+			latitude => $photo->latitude(),
+			longitude => $photo->longitude(),
 		);
 	}
 

@@ -1,4 +1,6 @@
 <tr>
 <td><a href="---url---"><img src="---thumbnail---" border="0"></a></td>
-<td>---description---<br><i>---date---</i></td>
+<td>---description---
+---location---
+<h3>---date---</h3></td>
 </tr>

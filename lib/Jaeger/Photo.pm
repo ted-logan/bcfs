@@ -1,7 +1,7 @@
 package	Jaeger::Photo;
 
 # 
-# $Id: Photo.pm,v 1.6 2006-12-31 04:24:17 jaeger Exp $
+# $Id: Photo.pm,v 1.7 2007-03-01 02:58:00 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -298,7 +298,9 @@ sub html {
 		round => $self->{round},
 		size => $self->size(),
 		sizelinks => $self->sizelinks(),
-		number => $self->{number}
+		number => $self->{number},
+		latitude => $self->{latitude},
+		longitude => $self->{longitude},
 	);
 }
 
