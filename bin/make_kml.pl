@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: make_kml.pl,v 1.1 2007-02-27 03:43:34 jaeger Exp $
+# $Id: make_kml.pl,v 1.2 2007-03-01 02:57:06 jaeger Exp $
 #
 # Makes a Google Earth .kml file from a GPS track log
 #
@@ -10,6 +10,7 @@ use strict;
 
 use lib '/home/jaeger/src/bcfs/lib';
 use Jaeger::GPS;
+use Jaeger::Photo;
 
 use POSIX qw(strftime);
 
@@ -28,6 +29,13 @@ print <<XML;
         <color>c00000ff</color>
       </PolyStyle>
     </Style>
+    <Style id="photo">
+      <IconStyle>
+        <Icon>
+          <href>http://maps.google.com/mapfiles/kml/pal4/icon61.png</href>
+        </Icon>
+      </IconStyle>
+    </Style>
 XML
 
 my $last_date = undef;
@@ -45,8 +53,9 @@ foreach my $point (Jaeger::GPS->Select("1=1 order by date asc")) {
 	if($this_date ne $last_date) {
 		if(defined $last_date) {
 			print <<XML;
-        </coordinates>
-      </LineString>
+          </coordinates>
+        </LineString>
+      </MultiGeometry>
     </Placemark>
 XML
 		}
@@ -57,11 +66,12 @@ XML
       <name>$this_date</name>
       <description>Jaeger was here on $long_date</description>
       <styleUrl>#track</styleUrl>
-      <LineString>
-        <extrude>0</extrude>
-        <tessellate>1</tessellate>
-        <altitudeMode>clampToGround</altitudeMode>
-        <coordinates>
+      <MultiGeometry>
+        <LineString>
+          <extrude>0</extrude>
+          <tessellate>1</tessellate>
+          <altitudeMode>clampToGround</altitudeMode>
+          <coordinates>
 XML
 		$last_point = undef;
 		$last_date = $this_date;
@@ -75,13 +85,13 @@ XML
 		# away, start a new track.
 		if(($timespan > 300) || (($point - $last_point) > 5)) {
 			print <<XML;
-        </coordinates>
-      </LineString>
-      <LineString>
-        <extrude>0</extrude>
-        <tessellate>1</tessellate>
-        <altitudeMode>clampToGround</altitudeMode>
-        <coordinates>
+          </coordinates>
+        </LineString>
+        <LineString>
+          <extrude>0</extrude>
+          <tessellate>1</tessellate>
+          <altitudeMode>clampToGround</altitudeMode>
+          <coordinates>
 XML
 		}
 	}
@@ -92,6 +102,30 @@ XML
 }
 
 term_track();
+
+# Show photos that have been geotagged
+my @photos = Jaeger::Photo->Select("latitude is not null and longitude is not null");
+foreach my $photo (@photos) {
+	my $date = $photo->date_format();
+	my $url = $Jaeger::Base::BaseURL . $photo->url();
+	my $thumbnail = "${Jaeger::Base::BaseURL}digitalpics/$photo->{round}/thumbnail/$photo->{number}.jpg";
+	print <<XML;
+    <Placemark>
+      <name>$photo->{round}/$photo->{number}</name>
+      <styleUrl>#photo</styleUrl>
+      <description>
+        <![CDATA[
+          <p>$photo->{description}</p>
+          <p><i>$date</i></p>
+	  <a href="$url"><img src="$thumbnail" /></a>
+        ]]>
+      </description>
+      <Point>
+        <coordinates>$photo->{longitude},$photo->{latitude}</coordinates>
+      </Point>
+    </Placemark>
+XML
+}
 
 print <<XML;
   </Document>
@@ -106,18 +140,20 @@ sub init_track {
       <name>$date</name>
       <description>Jaeger was here on $date</description>
       <styleUrl>#track</styleUrl>
-      <LineString>
-        <extrude>0</extrude>
-        <tessellate>1</tessellate>
-        <altitudeMode>clampToGround</altitudeMode>
-        <coordinates>
+      <MultiGeometry>
+        <LineString>
+          <extrude>0</extrude>
+          <tessellate>1</tessellate>
+          <altitudeMode>clampToGround</altitudeMode>
+          <coordinates>
 XML
 }
 
 sub term_track {
 	print <<XML;
-        </coordinates>
-      </LineString>
+          </coordinates>
+        </LineString>
+      </MultiGeometry>
     </Placemark>
 XML
 }
