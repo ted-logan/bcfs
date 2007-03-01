@@ -21,7 +21,7 @@ distances reflect Denver International Airport's current location.
 <tr>
 <th>Date</th>
 <th>Route</th>
-<th>International?</th>
+<th>Business?</th>
 <th>Distance (nm)</th>
 <th>Total Flights</th>
 </tr>
