@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: make_kml.pl,v 1.2 2007-03-01 02:57:06 jaeger Exp $
+# $Id: make_kml.pl,v 1.3 2007-03-10 02:41:55 jaeger Exp $
 #
 # Makes a Google Earth .kml file from a GPS track log
 #
@@ -104,7 +104,7 @@ XML
 term_track();
 
 # Show photos that have been geotagged
-my @photos = Jaeger::Photo->Select("latitude is not null and longitude is not null");
+my @photos = Jaeger::Photo->Select("latitude is not null and longitude is not null and not hidden");
 foreach my $photo (@photos) {
 	my $date = $photo->date_format();
 	my $url = $Jaeger::Base::BaseURL . $photo->url();
