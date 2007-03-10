@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 #
-# $Id: photos.pl,v 1.5 2006-10-20 02:11:52 jaeger Exp $
+# $Id: photos.pl,v 1.6 2007-03-10 02:42:06 jaeger Exp $
 #
 
 # Eventually, this will allow importing completely new rounds into the
@@ -132,6 +132,12 @@ sub annotate_photo {
 	}
 
 	if($descript) {
+		# Try to geotag the photo
+		my $point = $photo->geotag();
+		if($point) {
+			print "Coordinates: $point\n";
+		}
+
 		$photo->{description} = $descript;
 		$photo->update();
 	}
