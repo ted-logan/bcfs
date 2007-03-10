@@ -1,7 +1,7 @@
 package	Jaeger::Photo;
 
 # 
-# $Id: Photo.pm,v 1.7 2007-03-01 02:58:00 jaeger Exp $
+# $Id: Photo.pm,v 1.8 2007-03-10 02:43:17 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -20,6 +20,7 @@ use Carp;
 
 use Jaeger::Location;
 use Jaeger::Timezone;
+use Jaeger::GPS;
 
 use Jaeger::Photo::List;
 use Jaeger::Photo::Year;
@@ -347,4 +348,64 @@ sub _url {
 
 	return $self->{url} =
 		"photo.cgi?round=$self->{round}&number=$self->{number}";
+}
+
+# If this photo does not have a longitude and latitude set, attempt
+# to add them by determining the nearest track points and performing
+# a linear regression between them.
+#
+# This function does not update the database, only this object in memory.
+#
+# Returns the Jaeger::GPS point added, or undef.
+sub geotag {
+	my $self = shift;
+
+	# If the photo already has a geotag, return it.
+	if(defined($self->{longitude}) && defined($self->{latitude})) {
+		my $point = new Jaeger::GPS;
+		$point->{longitude} = $self->{longitude};
+		$point->{latitude} = $self->{latitude};
+		$point->{date} = $self->{date};
+		return $point;
+	}
+
+	# Try to locate the track points before and after this photo
+	my $before = Jaeger::GPS->Select(
+		"date <= $self->{date} order by date desc limit 1"
+	);
+	my @after = Jaeger::GPS->Select(
+		"date >= $self->{date} order by date asc limit 2"
+	);
+
+	# If the before and after points are equal, use the second after point
+	if($before->date() == $after[0]->date()) {
+		shift @after;
+	}
+	my $after = $after[0];
+
+	# Don't geotag if the points are more than 5 km apart, or more than
+	# 5 minutes apart, or are exactly the same.
+	return undef if $before == $after;
+	return undef if ($after->date() - $before->date()) > 300;
+	return undef if ($before - $after) > 5;
+
+	# Perform a linear regression between the two points
+	my $delta_t = ($after->date() - $before->date());
+	my $factor = $self->{date} - $before->date();
+
+	my $latitude = $before->latitude() +
+		($after->latitude() - $before->latitude()) * $factor / $delta_t;
+	my $longitude = $before->longitude() +
+		($after->longitude() - $before->longitude()) *
+			$factor / $delta_t;
+
+	$self->{latitude} = $latitude;
+	$self->{longitude} = $longitude;
+
+	my $point = new Jaeger::GPS;
+	$point->{date} = $self->{date};
+	$point->{latitude} = $latitude;
+	$point->{longitude} = $longitude;
+
+	return $point;
 }
