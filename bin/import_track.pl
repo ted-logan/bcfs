@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: import_track.pl,v 1.1 2007-03-02 04:14:32 jaeger Exp $
+# $Id: import_track.pl,v 1.2 2007-03-10 02:41:30 jaeger Exp $
 #
 # Imports GPS track data into my database
 #
@@ -14,6 +14,7 @@ use XML::DOM;
 
 use lib '/home/jaeger/src/bcfs/lib';
 use Jaeger::GPS;
+use Jaeger::Photo::List::Date;
 
 # Assume that the points are imported in chronological order
 # Discard points that are not newer than the most recent import.
@@ -24,6 +25,8 @@ my $min_date = do {
 };
 
 my $parser = new XML::DOM::Parser;
+
+my %new_dates;
 
 foreach my $file (@ARGV) {
 	my $import_date = strftime("%Y-%m-%d %H:%M:%S %z",
@@ -61,13 +64,15 @@ foreach my $file (@ARGV) {
 			$point->{date} = timegm(reverse @date);
 		}
 
-		print "$point\n";
-
 		next unless $point->date() > $min_date;
+
+		print "$point\n";
 
 		$point->update();
 		$min_date = $point->date();
 		$imported++;
+
+		$new_dates{strftime("%Y-%m-%d", localtime $point->date())}++;
 	}
 
 	$doc->dispose();
@@ -75,4 +80,19 @@ foreach my $file (@ARGV) {
 	close FILE;
 
 	print "$file: $imported points imported\n";
+}
+
+# Try to geotag photos for the new dates provided
+foreach my $date (sort keys %new_dates) {
+	my $list = new Jaeger::Photo::List::Date($date);
+	foreach my $photo (@{$list->photos()}) {
+		next if defined($photo->longitude()) &&
+			defined($photo->latitude());
+		my $point = $photo->geotag();
+		if($point) {
+			print "$photo->{round}/$photo->{number}: $photo->{description}\n";
+			print "\t$point\n";
+			$photo->update();
+		}
+	}
 }
