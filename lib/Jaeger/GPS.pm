@@ -1,7 +1,7 @@
 package Jaeger::GPS;
 
 #
-# $Id: GPS.pm,v 1.2 2007-03-01 02:58:00 jaeger Exp $
+# $Id: GPS.pm,v 1.3 2007-03-10 02:42:57 jaeger Exp $
 #
 
 # Jaeger::GPS: GPS tracking wrapper
@@ -64,10 +64,16 @@ sub distance {
 sub toString {
 	my $self = shift;
 
-	return sprintf "[%s] %.5f, %.5f",
+	my $elevation = "";
+	if(defined $self->elevation()) {
+		$elevation = sprintf " %.2f m", $self->elevation();
+	}
+
+	return sprintf "[%s] %.5f, %.5f%s",
 		scalar(localtime $self->date()),
 		$self->longitude(),
-		$self->latitude();
+		$self->latitude(),
+		$elevation;
 }
 
 1;
