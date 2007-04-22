@@ -1,7 +1,7 @@
 package	Jaeger::Photo;
 
 # 
-# $Id: Photo.pm,v 1.9 2007-04-22 00:16:08 jaeger Exp $
+# $Id: Photo.pm,v 1.10 2007-04-22 00:17:07 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -376,6 +376,11 @@ sub geotag {
 	my @after = Jaeger::GPS->Select(
 		"date >= $self->{date} order by date asc limit 2"
 	);
+
+	unless(defined $before && @after) {
+		# No points before or after this date
+		return undef;
+	}
 
 	# If the before and after points are equal, use the second after point
 	if($before->date() == $after[0]->date()) {
