@@ -1,7 +1,7 @@
 package	Jaeger::Photo;
 
 # 
-# $Id: Photo.pm,v 1.8 2007-03-10 02:43:17 jaeger Exp $
+# $Id: Photo.pm,v 1.9 2007-04-22 00:16:08 jaeger Exp $
 #
 # Copyright (c) 2002 Buildmeasite.com
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
@@ -280,7 +280,7 @@ sub _sizelinks {
 		if($size eq $self->size()) {
 			push @html, $size;
 		} elsif($size <= $self->native()) {
-			push @html, qq'<a href="$url&size=$size">$size</a>';
+			push @html, qq'<a href="$url&size=$size" rel="nofollow">$size</a>';
 		}
 	}
 
