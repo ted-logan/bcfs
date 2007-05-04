@@ -1,7 +1,7 @@
 package	Jaeger::Search;
 
 # 
-# $Id: Search.pm,v 1.2 2004-05-16 16:19:16 jaeger Exp $
+# $Id: Search.pm,v 1.3 2007-05-04 01:54:20 jaeger Exp $
 #
 # Copyright (c) 2003 Ted Logan (jaeger@festing.org)
 
@@ -73,14 +73,24 @@ sub like {
 
 	my @where;
 
-	foreach my $column (@_) {
-		foreach my $term (keys %$terms) {
-			next if $terms->{$term} eq '-';
-			push @where, "lower($column) like '\%$term\%'";
+	foreach my $term (keys %$terms) {
+		next if $terms->{$term} eq '-';
+		$term =~ s/ /%/g;
+#		$term =~ s/\s+/[ \\\\t\\\\n]+/g;
+
+		my @colwhere;
+
+		foreach my $column (@_) {
+			push @colwhere, "$column ilike '\%$term\%'";
+#			push @colwhere, "$column ~* '$term'";
 		}
+
+		push @where, '(' . join(' or ', @colwhere) . ')';
 	}
 
-	return join(' or ', @where);
+	my $where = join(' and ', @where);
+	warn "Where clause: $where\n";
+	return $where;
 }
 
 # Return a similar SQL where clause to like() above, except with
