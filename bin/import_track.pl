@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: import_track.pl,v 1.2 2007-03-10 02:41:30 jaeger Exp $
+# $Id: import_track.pl,v 1.3 2007-05-23 01:09:22 jaeger Exp $
 #
 # Imports GPS track data into my database
 #
@@ -65,6 +65,7 @@ foreach my $file (@ARGV) {
 		}
 
 		next unless $point->date() > $min_date;
+		next unless $point->date() <= time;
 
 		print "$point\n";
 
