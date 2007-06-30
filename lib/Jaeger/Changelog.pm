@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.32 2006-10-22 01:30:44 jaeger Exp $
+# $Id: Changelog.pm,v 1.33 2007-06-30 18:33:25 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -87,6 +87,7 @@ sub edit {
 			# submit the changelog into the global Content
 			# Solutions Infrastructure
 			$self->update();
+			print "Committed changelog: id=", $self->id(), "\n";
 			return 1;
 
 		} elsif($option eq 'i') {
@@ -109,6 +110,7 @@ sub edit {
 			# postpone this changelog for later viewing
 			$self->{status} = 100;
 			$self->update();
+			print "Postponed changelog: id=", $self->id(), "\n";
 			return 1;
 		}
 	}
@@ -228,6 +230,8 @@ sub _edit_level {
 			last;
 		}
 	}
+
+	print "Set status: $self->{status}: $Jaeger::Changelog::Status{$self->{status}}\n";
 
 	return $self->{status};
 }
