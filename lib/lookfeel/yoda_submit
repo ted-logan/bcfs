@@ -5,6 +5,11 @@
 <table>
 
 <tr>
+<td><b>Vehicle:</b></td>
+<td><input name="vehicle_id" value="---vehicle_id---" type="hidden" />---vehicle_name---</td>
+</tr>
+
+<tr>
 <td><b>Date:</b></td>
 <td><input name="date" value="---date---"></td>
 </tr>
