@@ -144,3 +144,29 @@ create table kohan_schedule (
 	available_begin	timestamp,
 	available_end	timestamp
 );
+
+create table gps_track (
+	date		int4 not null unique,
+	latitude	float not null,
+	longitude	float not null,
+	downloaded	timestamp not null default now()
+);
+
+create table vehicle (
+	id		serial primary key,
+	name		text not null,
+	description	text
+);
+
+create table mileage (
+	vehicle_id	int4 references vehicle,
+	date		date not null,
+	station		text not null,
+	city		text not null,
+	state		text not null,
+	mileage		int4 not null,
+	ppg		float not null,
+	gal		float not null,
+	total		float not null,
+	valid		boolean not null default(true)
+);
