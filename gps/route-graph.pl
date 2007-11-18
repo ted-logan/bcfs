@@ -7,7 +7,11 @@ use strict;
 
 use lib '/home/jaeger/src/bcfs-local/lib';
 
+use Geo::Coordinates::UTM;
 use waypoints;
+
+# How large of a circle to draw around each point?
+my $radius = 10;
 
 # load the waypoints
 my %waypoints = waypoints::load_waypoints("waypoints-2007-11-11.gpx");
@@ -51,8 +55,8 @@ print KML <<XML;
         </Icon>
       </IconStyle>
       <LineStyle>
-        <color>40c00000</color>
-        <width>1</width>
+        <color>c0c04000</color>
+        <width>3.5</width>
       </LineStyle>
     </Style>
     <Folder>
@@ -63,13 +67,31 @@ XML
 
 foreach my $waypoint (sort keys %waypoints_of_interest) {
 	my $point = $waypoints_of_interest{$waypoint};
-	print KML <<XML
+	my @circle = circle($point->{latitude}, $point->{longitude}, $radius);
+	print KML <<XML;
       <Placemark>
         <name>$waypoint</name>
         <styleUrl>#junction</styleUrl>
-	<Point>
-	  <coordinates>$point->{longitude},$point->{latitude}</coordinates>
-	</Point>
+	<MultiGeometry>
+	  <Point>
+	    <coordinates>$point->{longitude},$point->{latitude}</coordinates>
+	  </Point>
+          <LineString>
+            <extrude>0</extrude>
+            <tessellate>1</tessellate>
+            <altitudeMode>clampToGround</altitudeMode>
+            <coordinates>
+XML
+
+	foreach my $point (@circle) {
+		print KML "              $point->[1],$point->[0]\n";
+	}
+	print KML "              $circle[0]->[1],$circle[0]->[0]\n";
+
+	print KML <<XML;
+	    </coordinates>
+          </LineString>
+	</MultiGeometry>
       </Placemark>
 XML
 }
@@ -111,3 +133,31 @@ print KML <<XML;
 XML
 
 close KML;
+
+exit;
+
+# Returns points corresponding to a circle centered at lat, long with radius r
+sub circle {
+	my ($lat, $lon, $r, $points) = @_;
+
+	my @center = latlon_to_utm('wgs-84', $lat, $lon);
+
+	unless(defined $points) {
+		$points = 30;
+	}
+
+	my @points;
+
+	for(my $i = 0; $i < $points; $i++) {
+		my $rad = $i * 6.28 / $points;
+
+		my $easting = $center[1] + $r * sin($rad);
+		my $northing = $center[2] + $r * cos($rad);
+
+		$points[$i] = [utm_to_latlon("wgs-84",
+			$center[0], $easting, $northing)];
+
+	}
+
+	return @points;
+}
