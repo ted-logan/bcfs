@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $Id: make_kml.pl,v 1.3 2007-03-10 02:41:55 jaeger Exp $
+# $Id: make_kml.pl,v 1.4 2008-04-07 00:50:01 jaeger Exp $
 #
 # Makes a Google Earth .kml file from a GPS track log
 #
@@ -32,13 +32,15 @@ print <<XML;
     <Style id="photo">
       <IconStyle>
         <Icon>
-          <href>http://maps.google.com/mapfiles/kml/pal4/icon61.png</href>
+          <href>http://maps.google.com/mapfiles/kml/pal4/icon46.png</href>
         </Icon>
       </IconStyle>
     </Style>
 XML
 
 my $last_date = undef;
+my $last_month = undef;
+my $last_year = undef;
 
 my $last_point = undef;
 
@@ -48,7 +50,9 @@ foreach my $point (Jaeger::GPS->Select("1=1 order by date asc")) {
 		next;
 	}
 
-	my $this_date = strftime("%Y-%m-%d", localtime($point->date()));
+	my $this_date = strftime("%Y-%m-%d (%A)", localtime($point->date()));
+	my $this_month = strftime("%B %Y", localtime($point->date()));
+	my $this_year = strftime("%Y", localtime($point->date()));
 
 	if($this_date ne $last_date) {
 		if(defined $last_date) {
@@ -59,12 +63,37 @@ foreach my $point (Jaeger::GPS->Select("1=1 order by date asc")) {
     </Placemark>
 XML
 		}
-		my $long_date = strftime("%A, %d %B %Y",
-			localtime($point->date()));
+
+		if($this_month ne $last_month) {
+			if(defined $last_month) {
+				print <<XML;
+    </Folder> <!-- month -->
+XML
+			}
+			if($this_year ne $last_year) {
+				if(defined $last_year) {
+					print <<XML;
+    </Folder> <!-- year -->
+XML
+				}
+
+				print <<XML;
+    <Folder>
+      <name>$this_year</name>
+XML
+				$last_year = $this_year;
+			}
+
+			print <<XML;
+    <Folder>
+      <name>$this_month</name>
+XML
+			$last_month = $this_month;
+		}
+
 		print <<XML;
     <Placemark>
       <name>$this_date</name>
-      <description>Jaeger was here on $long_date</description>
       <styleUrl>#track</styleUrl>
       <MultiGeometry>
         <LineString>
@@ -104,7 +133,11 @@ XML
 term_track();
 
 # Show photos that have been geotagged
-my @photos = Jaeger::Photo->Select("latitude is not null and longitude is not null and not hidden");
+print <<XML;
+    <Folder>
+      <name>Geotagged photos</name>
+XML
+my @photos = Jaeger::Photo->Select("latitude is not null and longitude is not null and not hidden order by date");
 foreach my $photo (@photos) {
 	my $date = $photo->date_format();
 	my $url = $Jaeger::Base::BaseURL . $photo->url();
@@ -128,26 +161,10 @@ XML
 }
 
 print <<XML;
+  </Folder> <!-- photos -->
   </Document>
 </kml>
 XML
-
-sub init_track {
-	my $date = shift;
-
-	print <<XML;
-    <Placemark>
-      <name>$date</name>
-      <description>Jaeger was here on $date</description>
-      <styleUrl>#track</styleUrl>
-      <MultiGeometry>
-        <LineString>
-          <extrude>0</extrude>
-          <tessellate>1</tessellate>
-          <altitudeMode>clampToGround</altitudeMode>
-          <coordinates>
-XML
-}
 
 sub term_track {
 	print <<XML;
@@ -155,5 +172,7 @@ sub term_track {
         </LineString>
       </MultiGeometry>
     </Placemark>
+    </Folder> <!-- month -->
+    </Folder> <!-- year -->
 XML
 }
