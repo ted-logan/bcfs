@@ -1,7 +1,7 @@
 package		Jaeger::Changelog;
 
 #
-# $Id: Changelog.pm,v 1.33 2007-06-30 18:33:25 jaeger Exp $
+# $Id: Changelog.pm,v 1.34 2008-06-28 19:07:33 jaeger Exp $
 #
 
 # changelog package for jaegerfesting
@@ -16,6 +16,7 @@ use Jaeger::Lookfeel;
 use Jaeger::User;
 use Jaeger::Comment;
 use Jaeger::Changelog::Browse;
+use Jaeger::Photo;
 
 use Apache::Constants qw(OK DECLINED REDIRECT);
 use Apache::File;
@@ -330,7 +331,39 @@ sub _html {
 	# show the comments attached to this changelog
 	$params{navigation} .= $self->comment_list_html();
 
+	$params{content} =~ s/(<photo .*?\/>)/$self->inline_photo($1)/ge;
+
 	return $self->lf()->changelog(%params);
+}
+
+# Renders an inline photo based on the <photo> pseudo-tag in the changelog body.
+sub inline_photo {
+	my $self = shift;
+	my $tag = shift;
+
+	my ($round) = $tag =~ /round="(\w+)"/;
+	my ($number) = $tag =~ /number="(\w+)"/;
+
+	my $photo = Jaeger::Photo->Select(
+		round => $round,
+		number => $number
+	);
+
+	if($photo) {
+		# Make sure an appropiate thumbnail exists
+		$photo->{size} = "320x240";
+		$photo->resize();
+
+		return $self->lf()->changelog_inline_photo(
+			url => $photo->url(),
+			round => $photo->round(),
+			size => $photo->size(),
+			number => $photo->number(),
+			caption => $photo->description(),
+		);
+	}
+
+	return undef;
 }
 
 # returns the Postgres-compatible date of this object so we can show related
