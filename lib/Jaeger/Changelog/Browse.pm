@@ -1,7 +1,7 @@
 package		Jaeger::Changelog::Browse;
 
 #
-# $Id: Browse.pm,v 1.5 2004-05-13 21:30:50 jaeger Exp $
+# $Id: Browse.pm,v 1.6 2008-06-28 19:08:23 jaeger Exp $
 #
 
 # package to allow browsing by years of changelogs
@@ -113,8 +113,31 @@ sub _html {
 
 	return $lf->changelog(
 		title => $self->title(),
-		content => join('', @list)
+		content => join('', @list),
+		navigation => $self->navigation(),
 	);
+}
+
+sub navigation {
+	my $self = shift;
+
+	my $sql = "select extract(year from time_begin) from changelog " .
+		"group by date_part order by date_part";
+
+	my $sth = $self->dbh()->prepare($sql);
+	$sth->execute()
+		or warn "$sql;\n";
+
+	my @years;
+	while(my @row = $sth->fetchrow_array()) {
+		if($row[0] == $self->{year}) {
+			push @years, "<b>$row[0]</b>";
+		} else {
+			push @years, "<a href=\"$Jaeger::Base::BaseURL/changelog/$row[0]/\">$row[0]</a>";
+		}
+	}
+
+	return "<center>" . join(' | ', @years) . "</center>";
 }
 
 1;
