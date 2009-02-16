@@ -11,7 +11,9 @@ use strict;
 use POSIX qw(floor);
 use Getopt::Long;
 
-use lib '/home/jaeger/programming/webpage/lib';
+die "\$BCFS must be set!\n" unless $ENV{BCFS};
+
+use lib "$ENV{BCFS}/lib";
 use Jaeger::Changelog;
 
 my ($time_begin, $time_end); # temporary varible

@@ -207,7 +207,7 @@ sub _native {
 
 	my ($width, $height) = $img->Get('width', 'height');
 
-	my $lastsize;
+	my $lastsize = $Jaeger::Photo::Sizes[0];
 
 	foreach my $size (@Jaeger::Photo::Sizes) {
 		my ($w, $h) = $size =~ /(\d+)x(\d+)/;

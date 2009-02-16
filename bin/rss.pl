@@ -14,7 +14,9 @@
 
 use strict;
 
-use lib '/home/jaeger/programming/webpage/lib';
+die "\$BCFS must be set!\n" unless $ENV{BCFS};
+
+use lib "$ENV{BCFS}/lib";
 
 use Jaeger::Lookfeel;
 use Jaeger::UserBox;
@@ -22,9 +24,11 @@ use Jaeger::UserBox;
 use XML::RSS;
 use LWP::UserAgent;
 
-# Kiesa's page used to be http://kiesa.diaryland.com/index.rss
-# But that doesn't work. 13 May 2005
-my @links = qw(http://kiesa.festing.org/serendipity/index.php?/feeds/index.rss2);
+my @links = qw(
+	http://kiesa.festing.org/serendipity/index.php?/feeds/index.rss2
+	http://mega.festing.org/script/index.php?title=Special:Recentchanges&feed=rss
+	http://www.willylogan.com/?feed=rss2
+);
 
 my $lf = new Jaeger::Lookfeel;
 

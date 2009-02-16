@@ -8,7 +8,9 @@
 
 use strict;
 
-use lib '/home/jaeger/programming/webpage/lib';
+die "\$BCFS must be set!\n" unless $ENV{BCFS};
+
+use lib "$ENV{BCFS}/lib";
 
 use Jaeger::User::Create;
 

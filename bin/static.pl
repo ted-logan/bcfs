@@ -6,14 +6,16 @@
 
 # Statically exports changelogs into html files
 
-use lib '/home/jaeger/programming/webpage/lib';
+die "\$BCFS must be set!\n" unless $ENV{BCFS};
+
+use lib "$ENV{BCFS}/lib";
 
 use Jaeger::Changelog;
 use Jaeger::Lookfeel;
 
 my $lf = new Jaeger::Lookfeel;
 
-my $dir = '/home/jaeger/programming/webpage/html';
+my $dir = "$ENV{BCFS}/html";
 
 my @changelogs = Jaeger::Changelog->Select();
 

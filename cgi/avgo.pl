@@ -5,7 +5,9 @@
 # Plain-text output of jaegerfesting for avantgo chanel
 # 09 September 2000
 
-use lib '/home/jaeger/programming/webpage/lib';
+die "\$BCFS must be set!\n" unless $ENV{BCFS};
+
+use lib "$ENV{BCFS}/lib";
 
 use strict;
 
