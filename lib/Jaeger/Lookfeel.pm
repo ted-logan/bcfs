@@ -207,7 +207,9 @@ sub _main {
 	my $q = Jaeger::Base::Query();
 
 	# populate content solutions data: links, chatterbox
-	$params{links} = $self->search_box(q => $q->param('q'));
+	if(ref $q eq 'CGI') {
+		$params{links} = $self->search_box(q => $q->param('q'));
+	}
 	$params{chatterbox} = $self->chatterbox(
 		chatter => 'Coming soon, we hope'
 	);

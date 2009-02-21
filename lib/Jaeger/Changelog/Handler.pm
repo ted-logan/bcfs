@@ -25,8 +25,8 @@ use Jaeger::Comment::Post;
 
 use Apache::Constants qw(OK DECLINED REDIRECT);
 use Apache::File;
-use Apache::Request;
-use Apache::Cookie;
+#use Apache::Request;
+use Apache2::Cookie;
 
 #
 # mod_perl handler for changelogs (so we can get urls that don't end in
@@ -60,15 +60,16 @@ sub handler {
 		}
 	}
 
-	$Jaeger::Base::Query = new Apache::Request($r);
+	$Jaeger::Base::Query = $r;
 
 	# Are we a logged-in user?
 	my $user = undef;
-	my %jar = Apache::Cookie->new($r)->parse();
-	if($jar{jaeger_login} && $jar{jaeger_password}) {
-		my $login = $jar{jaeger_login}->value();
-		my $password = $jar{jaeger_password}->value();
-		$user = Jaeger::User->Login($login, $password);
+	my $jar = Apache2::Cookie::Jar->new($r);
+	if($jar->cookies('jaeger_login') && $jar->cookies('jaeger_password')) {
+		$user = Jaeger::User->Login(
+			$jar->cookies('jaeger_login'),
+			$jar->cookies('jaeger_password') 
+		);
 		if($user) {
 			# send updated cookies
 			$user->cookies();
