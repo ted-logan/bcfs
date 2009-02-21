@@ -18,16 +18,27 @@ use strict;
 use DBI;
 use Carp;
 
-use Jaeger::Lookfeel;
 use CGI;
 
-$Jaeger::Base::Pgdbh = DBI->connect("DBI:Pg:dbname=jaeger", "", "");
+# Depending on the hostname, connect either to the local database or to the
+# database tunneled via ssh. (It'd also be nice to detect when we have a
+# VPN up and running and use that as well.)
+
+# By default, connect to the TCP port tunneled via ssh.
+my $connection = "host=localhost;port=1284;user=jaeger;";
+$Jaeger::Base::BaseURL = 'http://localhost/';
+if(`hostname` =~ /^honor/) {
+	# If we're on Honor, connect locally.
+	$connection = "";
+	$Jaeger::Base::BaseURL = 'http://jaeger.festing.org/';
+}
+
+$Jaeger::Base::Pgdbh =
+	DBI->connect("DBI:Pg:${connection}dbname=jaeger", "", "");
 
 unless($Jaeger::Base::Pgdbh) {
 	die "Jaeger::Base: Unable to connect to pg database\n";
 }
-
-$Jaeger::Base::BaseURL = 'http://jaeger.festing.org/';
 
 #
 # global data to keep track of child modules
