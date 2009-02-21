@@ -1,4 +1,4 @@
-<h1>Create ---header---</h2>
+<h1>Create ---header---</h1>
 <form action="---uri---" method="post">
 <input type="hidden" name="changelog_id" value="---changelog_id---">
 <input type="hidden" name="response_to_id" value="---response_to_id---">
