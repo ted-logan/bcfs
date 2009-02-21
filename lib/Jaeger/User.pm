@@ -19,7 +19,6 @@ use Jaeger::Base;
 
 use Jaeger::User::List;
 
-use Apache::Cookie;
 use Carp;
 
 # What the various status codes mean

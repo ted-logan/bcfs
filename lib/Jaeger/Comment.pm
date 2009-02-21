@@ -13,9 +13,6 @@ package Jaeger::Comment;
 use strict;
 
 use Jaeger::Base;
-use Jaeger::Lookfeel;
-
-use Jaeger::Comment::Post;
 
 use Jaeger::Changelog;
 use Jaeger::User;
