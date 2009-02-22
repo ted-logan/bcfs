@@ -8,6 +8,8 @@
 
 use strict;
 
+BEGIN { $ENV{PATH} = '/bin:/usr/bin:/usr/local/bin'; };
+
 use lib '/home/jaeger/src/bcfs/lib';
 use Jaeger::Photo;
 
