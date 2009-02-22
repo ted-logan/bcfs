@@ -274,26 +274,6 @@ sub AUTOLOAD {
 	}
 }
 
-# determine the id of the current object
-sub id {
-	my $self = shift;
-
-	unless($self->{id}) {
-		if($self->{oid} && $self->{table}) {
-			my $sql = "select id from $self->{table} " .
-				"where oid = $self->{oid}";
-			my $sth = $self->{dbh}->prepare($sql);
-			$sth->execute();
-			$self->{id} = ($sth->fetchrow_array())[0];
-		} else {
-			# data hasn't been inserted
-			return undef;
-		}
-	}
-
-	return $self->{id};
-}
-
 # commit the data to the database
 # (executes an INSERT or UPDATE as necessary)
 sub update {
@@ -325,12 +305,14 @@ sub update {
 				map {$self->{dbh}->quote($self->{$_})}
 				@columns) . ')';
 
-		my $sth = $self->{dbh}->prepare($sql);
-		$rv = $sth->execute();
-		unless($rv) {
+		$rv = $self->{dbh}->do($sql);
+		if($rv) {
+			$self->{id} = $self->{dbh}->last_insert_id(
+				undef, undef, $self->table(), undef
+			);
+		} else {
 			warn "$sql;\n";
 		}
-		$self->{oid} = $sth->{pg_oid_status};
 	}
 
 	return $rv;
