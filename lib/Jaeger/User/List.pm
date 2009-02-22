@@ -37,7 +37,11 @@ sub html {
 
 	my @html;
 
-	my @users = sort {lc $a->{name} cmp lc $b->{name}} Jaeger::User->Select();
+	# Show only validated users who have logged in during the past
+	# month.
+	my @users = sort {lc $a->{name} cmp lc $b->{name}}
+		Jaeger::User->Select("last_visit >= now() - interval '1 month' "
+			. "and status >= 10");
 
 	foreach my $user (@users) {
 		next unless $user->{status};
