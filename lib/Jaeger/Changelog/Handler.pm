@@ -24,8 +24,7 @@ use Jaeger::Comment;
 use Jaeger::Comment::Post;
 
 use Apache::Constants qw(OK DECLINED REDIRECT);
-use Apache::File;
-#use Apache::Request;
+use Apache2::Request;
 use Apache2::Cookie;
 
 #
@@ -42,33 +41,21 @@ sub handler {
 	%Jaeger::Base::Ids = ();
 
 	# does the file being requested exist, and is it not a directory?
-	if(! -d $r->filename()) {
-		my $fh = Apache::File->new($r->filename());
-		if($fh) {
-			if((my $rc = $r->meets_conditions()) != OK) {
-				return $rc;
-			}
-
-			# Set useful http/1.1 headers
-			$r->set_content_length();
-			$r->set_etag();
-			$r->set_last_modified((stat $r->finfo)[9]);
-
-			$r->send_http_header();
-			$r->send_fd($fh);
-			return OK;
-		}
+	if(-f $r->filename()) {
+		# TODO This doesn't seem to send the relevant headers for
+		# client-side caching
+		return $r->sendfile($r->filename());
 	}
 
-	$Jaeger::Base::Query = $r;
+	$Jaeger::Base::Query = Apache2::Request->new($r);
 
 	# Are we a logged-in user?
 	my $user = undef;
 	my $jar = Apache2::Cookie::Jar->new($r);
 	if($jar->cookies('jaeger_login') && $jar->cookies('jaeger_password')) {
 		$user = Jaeger::User->Login(
-			$jar->cookies('jaeger_login'),
-			$jar->cookies('jaeger_password') 
+			$jar->cookies('jaeger_login')->value(),
+			$jar->cookies('jaeger_password')->value() 
 		);
 		if($user) {
 			# send updated cookies

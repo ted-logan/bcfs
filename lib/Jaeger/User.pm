@@ -226,10 +226,10 @@ sub cookies {
 			$c->bake();
 		}
 
-	} elsif(ref($q) eq 'Apache2::Request') {
+	} elsif(ref($q) =~ /^Apache2::Request/) {
 		foreach my $cookie (@cookies) {
-			my $c = Apache::Cookie2->new($q, %$cookie);
-			$c->bake();
+			my $c = Apache2::Cookie->new($q, %$cookie);
+			$c->bake($q);
 		}
 
 	} else {

@@ -207,9 +207,7 @@ sub _main {
 	my $q = Jaeger::Base::Query();
 
 	# populate content solutions data: links, chatterbox
-	if(ref $q eq 'CGI') {
-		$params{links} = $self->search_box(q => $q->param('q'));
-	}
+	$params{links} = $self->search_box(q => $q->param('q'));
 	$params{chatterbox} = $self->chatterbox(
 		chatter => 'Coming soon, we hope'
 	);
@@ -503,6 +501,7 @@ sub _login_status_user {
 
 	my %params = @_;
 
+=for later
 	# Show upcoming calender events
 	my @calender;
 
@@ -519,6 +518,7 @@ sub _login_status_user {
 	}
 
 	$params{calender} = join '', @calender;
+=cut
 
 	# Assemble a list of recent visitors
 	my $where = "last_visit > now() + '-1h' order by last_visit desc";
