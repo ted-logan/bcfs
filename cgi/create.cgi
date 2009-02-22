@@ -13,6 +13,7 @@ die "\$BCFS must be set!\n" unless $ENV{BCFS};
 use lib "$ENV{BCFS}/lib";
 
 use Jaeger::User::Create;
+use Jaeger::Lookfeel;
 
 my $lf = Jaeger::Base->Lookfeel();
 
