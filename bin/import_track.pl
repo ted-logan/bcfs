@@ -14,6 +14,7 @@ use XML::DOM;
 
 use lib '/home/jaeger/src/bcfs/lib';
 use Jaeger::GPS;
+use Jaeger::Photo::List;
 use Jaeger::Photo::List::Date;
 
 # Assume that the points are imported in chronological order
