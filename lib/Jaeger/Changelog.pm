@@ -43,7 +43,7 @@ sub Newest {
 		$level = 0;
 	}
 
-	return scalar $package->Select("status <= $level order by time_begin desc limit 1");
+	return scalar $package->Select("status <= $level order by time_end desc limit 1");
 }
 
 # selects a changelog based on its old id
