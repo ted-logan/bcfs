@@ -1,8 +1,10 @@
 ---title---
 ---timestamp---
 ---content---
+<div class="articlefooter">
 <hr noshade>
 <small>
 ---navigation---
 </small>
 <hr noshade>
+</div>

@@ -18,10 +18,10 @@ div#rightbar {
 	right: 0;
 	width: 20%;
 }
-div.navbar, div.rightbar { display: none; }
-div#hacker { float: right; }
+div.navbar, div.rightbar, div.articlenav, div.articlefooter, div.quote { display: none; }
+div#hacker { float: right; display: none; }
 @media screen {
-	div.navbar, div.rightbar { display: block; }
+	div.navbar, div.rightbar, div.articlenav, div.articlefooter, div.quote { display: block; }
 	div#main {
 		position: absolute;
 		left: 20%;
@@ -33,6 +33,7 @@ div#hacker { float: right; }
 		left: 20%;
 	}
 	div#hacker {
+		display: block;
 		position: absolute;
 		vertical-align: bottom;
 		top: 0;

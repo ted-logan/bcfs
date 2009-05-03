@@ -24,7 +24,7 @@ use Jaeger::Slideshow;
 use Jaeger::User;
 
 use Fortune;
-use POSIX qw(ceil);
+use POSIX qw(ceil strftime);
 
 @Jaeger::Lookfeel::ISA = qw(Jaeger::Base);
 
@@ -230,6 +230,18 @@ sub _main {
 
 	if($user) {
 		$params{rsscookie} = '?' . $user->cookie();
+	}
+
+	# These parameters are shown in the printable footer
+	$params{date} = strftime "%H:%M %e %B %Y", localtime;
+	if(ref $self->query() eq 'CGI') {
+		$params{url} = $self->query()->url(-query => 1);
+	}
+	if(ref $self->query() eq 'Apache2::Request') {
+		# There has to be a better way to get the full URL, right?
+		my $baseurl = $Jaeger::Base::BaseURL;
+		$baseurl =~ s#/$##;
+		$params{url} = $baseurl . $self->query()->unparsed_uri();
 	}
 
 	return %params;
