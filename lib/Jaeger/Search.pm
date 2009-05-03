@@ -89,7 +89,6 @@ sub like {
 	}
 
 	my $where = join(' and ', @where);
-	warn "Where clause: $where\n";
 	return $where;
 }
 

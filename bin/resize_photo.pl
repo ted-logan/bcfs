@@ -45,7 +45,7 @@ my $newfile = "$newdir/$number.jpg";
 
 if($photo->native() eq "${width}x${height}") {
 	my $oldfile = $photo->file_crop();
-	warn "Symlinking $newfile ($oldfile)\n";
+#	warn "Symlinking $newfile ($oldfile)\n";
 
 	unless(symlink $oldfile, $newfile) {
 		die "Symlink failed: $!\n";
@@ -83,4 +83,4 @@ $img->Resize(width => $nwidth, height => $nheight);
 
 $img->Write($newfile);
 
-warn "Writing $newfile (${nwidth}x${nheight})\n";
+#warn "Writing $newfile (${nwidth}x${nheight})\n";
