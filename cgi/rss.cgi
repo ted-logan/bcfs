@@ -21,7 +21,7 @@ print "<rss version=\"0.91\">\n";
 print "\t<channel>\n";
 print "\t\t<title>jaegerfesting</title>\n";
 print "\t\t<link>http://jaeger.festing.org/changelog/</link>\n";
-print "\t\t<description>Random content from a hacker in Louisville, Colorado. (That's pronounced \"lewis-ville\", in case you were wondering.)</description>\n";
+print "\t\t<description>Random content from a hacker in Longmont, Colorado. I still claim Boulder as my home.</description>\n";
 print "\t\t<language>en-us</language>\n";
 
 my $status = 0;
