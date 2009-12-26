@@ -16,6 +16,8 @@ use Jaeger::Comment;
 use Jaeger::Changelog::Browse;
 use Jaeger::Photo;
 
+use POSIX;
+
 @Jaeger::Changelog::ISA = qw(Jaeger::Base);
 
 %Jaeger::Changelog::Status = (
@@ -324,9 +326,21 @@ sub _html {
 	# show the comments attached to this changelog
 	$params{navigation} .= $self->comment_list_html();
 
-	$params{content} =~ s/(<photo .*?\/>)/$self->inline_photo($1)/ge;
+	$params{content} = $self->content();
 
 	return $self->lf()->changelog(%params);
+}
+
+# Perform any last-minute text manipulations necessary to render the changelog
+# as html.
+sub content {
+	my $self = shift;
+
+	my $content = $self->{content};
+
+	$content =~ s/(<photo .*?\/>)/$self->inline_photo($1)/ge;
+
+	return $content;
 }
 
 # Renders an inline photo based on the <photo> pseudo-tag in the changelog body.
@@ -505,6 +519,14 @@ sub comment_list_html {
 	push @html, "</ul>\n";
 
 	return join('', @html);
+}
+
+# Returns an RFC 822 date for the publication date (time_end)
+sub _pubDate {
+	my $self = shift;
+
+	return $self->{pubDate} = POSIX::strftime("%a, %d %b %Y %H:%M:%S %z",
+		localtime $self->parsetimestamp($self->time_end()));
 }
 
 1;
