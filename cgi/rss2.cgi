@@ -43,9 +43,39 @@ foreach my $changelog (@changelogs) {
 	print "\t\t\t<guid isPermaLink=\"true\">", $changelog->url(),
 		"</guid>\n";
 	print "\t\t\t<pubDate>", $changelog->pubDate(), "</pubDate>\n";
+
+	# Some RSS aggregators (*cough* Bloglines *cough*) have funny ideas
+	# about what should be done with a "private" RSS feed. I carefully
+	# restrict access to content to keep Google from finding out too much
+	# about me, but I want to grant _some_ access through RSS. So here are
+	# my content rules:
+	#
+	# (1) Publically-readable articles (status == 0) are shown in their
+	#     entirety.
+	# (2) Logged-in-user-only articles (status == 10) have their first
+	#     paragraph shown, with a link to read the rest of the article on
+	#     my website.
+	# (3) More-secure articles (status > 10) are not shown at all; instead,
+	#     a link is provided.
+	my $content;
 	if($changelog->status() == 0) {
-		print "\t\t\t<description><![CDATA[", $changelog->content(), "]]></description>\n";
+		$content = $changelog->content();
+	} elsif($changelog->status() == 10) {
+		# Show only the first paragraph. Hope the first paragraph is
+		# meaningful.
+		$content = $changelog->content();
+		$content =~ s/(^$).*//ms;
+		$content .= "<p><i>Read more of this " .
+			$Jaeger::Changelog::Status{$changelog->status()} .
+			" entry: " . $changelog->link() . "</i></p>";
+	} else {
+		# Show only a link to read further.
+		$content = "<p><i>Read more of this " .
+			$Jaeger::Changelog::Status{$changelog->status()} .
+			" entry: " . $changelog->link() . "</i></p>";
 	}
+	print "\t\t\t<description><![CDATA[", $content, "]]></description>\n";
+
 	print "\t\t</item>\n";
 }
 
