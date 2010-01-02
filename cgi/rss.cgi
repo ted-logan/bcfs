@@ -52,7 +52,7 @@ print "\t<channel>\n";
 print "\t\t<title>", $feed->{title}, "</title>\n";
 print "\t\t<link>http://jaeger.festing.org/changelog/</link>\n";
 print "\t\t<description>$feed->{description}</description>\n";
-print "\t\t<copyright>Copyright 1999-2009 Theodore Logan</copyright>\n";
+print "\t\t<copyright>Copyright 1999-2010 Theodore Logan</copyright>\n";
 print "\t\t<language>en-us</language>\n";
 print "\t\t<docs>http://blogs.law.harvard.edu/tech/rss</docs>\n";
 
