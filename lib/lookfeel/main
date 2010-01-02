@@ -5,6 +5,7 @@
 <link REL="icon" HREF="/graphics/aicon.png" TYPE="image/png"/>
 <link rel="stylesheet" href="/jaeger.css" type="text/css"/>
 <link href="/rss.cgi---rsscookie---" rel="alternate" type="application/rss+xml" title="rss" />
+<link href="/rss_comment.cgi---rsscookie---" rel="alternate" type="application/rss+xml" title="rss (comments)" />
 <meta name="ICBM" content="39.98778,-105.13008"/>
 <meta name="DC.title" content="jaegerfesting"/>
 <meta name="keywords" content="jaeger, festing"/>
@@ -55,7 +56,9 @@
 </i>
 <div class="screenfooter">
 <a href="http://jaeger.festing.org/theodore_logan.asc">PGP key</a><br/>
-<a href="http://jaeger.festing.org/rss.cgi?a8920c64cbb6c0da058580d40ac85cff">RSS feed</a>
+RSS:
+<a href="http://jaeger.festing.org/rss.cgi?a8920c64cbb6c0da058580d40ac85cff">Entries</a>
+<a href="http://jaeger.festing.org/rss_comment.cgi?a8920c64cbb6c0da058580d40ac85cff">Comments</a>
 </div>
 <div class="printfooter">
 <hr noshade>
