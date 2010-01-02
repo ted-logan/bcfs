@@ -11,8 +11,6 @@ use lib "$ENV{BCFS}/lib";
 use Jaeger::Changelog;
 use Jaeger::User;
 
-use POSIX qw(strftime);
-
 print "content-type: text/xml\n\n";
 
 print "<?xml version=\"1.0\"?>\n";
