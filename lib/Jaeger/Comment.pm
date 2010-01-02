@@ -18,6 +18,7 @@ use Jaeger::Changelog;
 use Jaeger::User;
 
 use Carp;
+use POSIX;
 
 @Jaeger::Comment::ISA = qw(Jaeger::Base);
 
@@ -229,5 +230,19 @@ sub _user_views {
 	return $self->{user_views} = [Jaeger::User->Select($where)];
 }
 
+# Returns the body. Used by the RSS feed.
+sub content {
+	my $self = shift;
+
+	return $self->{body};
+}
+
+# Returns an RFC 822 date for the publication date (date)
+sub _pubDate {
+	my $self = shift;
+
+	return $self->{pubDate} = POSIX::strftime("%a, %d %b %Y %H:%M:%S %z",
+		localtime $self->parsetimestamp($self->date()));
+}
 
 1;
