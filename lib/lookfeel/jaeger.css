@@ -112,4 +112,8 @@ div.printfooter { display: none; }
 	border-style: solid;
 	border-color: black;
 	border-width: 2px;
+	overflow: auto;
+}
+#twitter_update_list {
+	overflow: hidden;
 }
