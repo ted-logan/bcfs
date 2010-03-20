@@ -77,7 +77,7 @@ create table user_box (
 create table timezone (
 	id		serial primary key,
 	name		text not null unique,
-	ofst		int4 not null
+	ofst		float not null
 );
 
 create table location (
@@ -102,7 +102,7 @@ create table photo (
 
 create view photo_date as select
 	photo.id,
-	((date + ofst * 3600) / 86400) * 86400 as "date"
+	floor((date + ofst * 3600) / 86400) * 86400 as "date"
 	from photo, timezone
 	where not photo.hidden and timezone_id = timezone.id and photo.date > 0;
 
