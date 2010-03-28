@@ -14,6 +14,7 @@ use strict;
 use Jaeger::Base;
 use Jaeger::Comment;
 use Jaeger::Changelog::Browse;
+use Jaeger::Changelog::Series;
 use Jaeger::Photo;
 
 use POSIX;
@@ -312,9 +313,17 @@ sub _html {
 
 	my %params = %$self;
 
+	my @serieses = Jaeger::Changelog::Series->new_by_changelog($self);
+	foreach my $series (@serieses) {
+		$params{navigation} .= $self->lf()->changelog_series(
+			changelog => $self,
+			series => $series
+		);
+	}
+
 	if($user) {
 		# show the users who have viewed the changelog
-		$params{navigation} = '<p>These people have read this changelog: ' . join(', ', map {$_->link()} sort {$a->{name} cmp $b->{name}} @{$self->user_views()}) . '</p>';
+		$params{navigation} .= '<p>These people have read this changelog: ' . join(', ', map {$_->link()} sort {$a->{name} cmp $b->{name}} @{$self->user_views()}) . '</p>';
 
 		# Invite the user to post a comment
 		$params{navigation} .= qq'<p><a href="/changelog/$self->{id}.html/reply">Post comment</a></p>';

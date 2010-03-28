@@ -106,6 +106,28 @@ sub _changelog {
 	return %params;
 }
 
+sub _changelog_series {
+	my $self = shift;
+
+	my %params = @_;
+
+	$params{name} = $params{series}->name();
+	$params{description} = $params{series}->description();
+
+	my @list;
+	foreach my $changelog ($params{series}->changelogs()) {
+		if($changelog->id() == $params{changelog}->id()) {
+			push @list, '<b>' . $changelog->title() . '</b>';
+		} else {
+			push @list, $changelog->link();
+		}
+	}
+
+	$params{changelogs} = '[ ' . join(' | ', @list) . ' ]';
+
+	return %params;
+}
+
 sub _comment {
 	my $self = shift;
 
