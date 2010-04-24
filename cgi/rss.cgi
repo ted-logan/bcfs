@@ -10,6 +10,7 @@ use lib "$ENV{BCFS}/lib";
 
 use Jaeger::Changelog;
 use Jaeger::Comment;
+use Jaeger::Photo;
 use Jaeger::User;
 
 my $status = 0;
@@ -32,6 +33,19 @@ if($0 =~ /comment/) {
 
 	@entries = Jaeger::Comment->Select(
 		"status <= $status order by date desc limit 10"
+	);
+} elsif($0 =~ /photo/) {
+	# This is a photo feed
+	$feed->{title} = "jaegerfesting photos";
+	$feed->{description} = "Photos posted on jaeger.festing.org.";
+	$feed->{noun} = "photo";
+
+	# Show photos from the last week
+	@entries = Jaeger::Photo->Select(
+		"not hidden and " .
+		"mtime is not null and " .
+		"mtime >= now() + interval '1 week ago' " .
+		"order by mtime desc"
 	);
 } else {
 	# This is a changelog feed
@@ -59,14 +73,14 @@ print "\t\t<docs>http://blogs.law.harvard.edu/tech/rss</docs>\n";
 # grab recent entries or articles and print them out here
 foreach my $entry (@entries) {
 	print "\t\t<item>\n";
-	print "\t\t\t<title>", $entry->title(), "</title>\n";
+	print "\t\t\t<title><![CDATA[", $entry->title(), "]]></title>\n";
 	if(ref($entry) =~ /^Jaeger::Comment/) {
 		print "\t\t\t<author><![CDATA[", $entry->user()->name(),
 			"]]></author>\n";
 	}
-	print "\t\t\t<link>", $entry->url(), "</link>\n";
-	print "\t\t\t<guid isPermaLink=\"true\">", $entry->url(),
-		"</guid>\n";
+	print "\t\t\t<link><![CDATA[", $entry->url(), "]]></link>\n";
+	print "\t\t\t<guid isPermaLink=\"true\"><![CDATA[", $entry->url(),
+		"]]></guid>\n";
 	print "\t\t\t<pubDate>", $entry->pubDate(), "</pubDate>\n";
 
 	# Some RSS aggregators (*cough* Bloglines *cough*) have funny ideas

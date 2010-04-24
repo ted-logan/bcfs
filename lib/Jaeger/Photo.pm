@@ -13,6 +13,7 @@ package	Jaeger::Photo;
 use strict;
 
 use Jaeger::Base;
+use Jaeger::Lookfeel;
 
 @Jaeger::Photo::ISA = qw(Jaeger::Base);
 
@@ -346,7 +347,7 @@ sub _index {
 sub _url {
 	my $self = shift;
 
-	return $self->{url} =
+	return $self->{url} = $Jaeger::Base::BaseURL .
 		"photo.cgi?round=$self->{round}&number=$self->{number}";
 }
 
@@ -413,4 +414,41 @@ sub geotag {
 	$point->{longitude} = $longitude;
 
 	return $point;
+}
+
+#
+# Support for RSS
+#
+
+# Returns an RFC 822 date for the publication date (mtime)
+sub _pubDate {
+	my $self = shift;
+
+	return $self->{pubDate} = POSIX::strftime("%a, %d %b %Y %H:%M:%S %z",
+		localtime $self->parsetimestamp($self->mtime()));
+}
+
+sub content {
+	my $self = shift;
+
+	$self->{size} = '800x600';
+	$self->resize();
+	return $self->lf()->photo_rss(
+		title => $self->description(),
+		date => $self->date_format(),
+		round => $self->{round},
+		size => $self->size(),
+		number => $self->{number},
+		latitude => $self->{latitude},
+		longitude => $self->{longitude},
+
+	);
+}
+
+# I don't currently support restricting photo visibility, but I could. For now,
+# this will simply support RSS feeds.
+sub status {
+	my $self = shift;
+
+	return 0;
 }

@@ -654,6 +654,21 @@ sub _photo {
 	return %params;
 }
 
+sub _photo_rss {
+	my $self = shift;
+
+	my %params = @_;
+
+	if(defined($params{longitude}) && defined($params{latitude})) {
+		$params{location} = $self->photo_coordinates(
+			longitude => $params{longitude},
+			latitude => $params{latitude},
+		);
+	}
+
+	return %params;
+}
+
 sub _photo_coordinates {
 	my $self = shift;
 
