@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="/jaeger.css" type="text/css"/>
 <link href="/rss.cgi---rsscookie---" rel="alternate" type="application/rss+xml" title="rss" />
 <link href="/rss_comment.cgi---rsscookie---" rel="alternate" type="application/rss+xml" title="rss (comments)" />
+<link href="/rss_photo.cgi" rel="alternate" type="application/rss+xml" title="rss (photos)" />
 <meta name="ICBM" content="39.98778,-105.13008"/>
 <meta name="DC.title" content="jaegerfesting"/>
 <meta name="keywords" content="jaeger, festing"/>
@@ -59,6 +60,7 @@
 RSS:
 <a href="http://jaeger.festing.org/rss.cgi---rsscookie---">Entries</a>
 <a href="http://jaeger.festing.org/rss_comment.cgi---rsscookie---">Comments</a>
+<a href="http://jaeger.festing.org/rss_photo.cgi">Photos</a>
 </div>
 <div class="printfooter">
 <hr noshade>
