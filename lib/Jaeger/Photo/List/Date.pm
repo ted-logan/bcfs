@@ -15,6 +15,8 @@ use strict;
 use Carp;
 use Time::Local;
 
+use Jaeger::Photo;
+
 @Jaeger::Photo::List::Date::ISA = qw(Jaeger::Photo::List);
 
 sub new {

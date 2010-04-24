@@ -47,6 +47,26 @@ if($0 =~ /comment/) {
 		"mtime >= now() + interval '1 week ago' " .
 		"order by mtime desc"
 	);
+} elsif($0 =~ /calvin/) {
+	# This is Calvin's photo feed
+	$feed->{title} = "Calvin's Pictures";
+	$feed->{description} = "Baby photos from calvinlogan.com";
+	$feed->{noun} = "photo";
+
+	# Show Calvin photos from the last week
+	@entries = Jaeger::Photo->Select(
+		"description ilike '%calvin%' and " .
+		"not hidden and " .
+		"mtime is not null and " .
+		"mtime >= now() + interval '1 week ago' " .
+		"order by mtime desc"
+	);
+
+	# Permute the url to point to Calvin's site instead of my site
+	foreach my $photo (@entries) {
+		$photo->{url} = "http://calvinlogan.com/#" . $photo->{round} .
+			"/" . $photo->{number};
+	}
 } else {
 	# This is a changelog feed
 	$feed->{title} = "jaegerfesting";
