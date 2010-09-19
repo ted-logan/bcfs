@@ -215,7 +215,7 @@ sub _edit_level {
 		my $status = <STDIN>;
 		chomp $status;
 
-		if($status) {
+		if(defined $status) {
 			if($Jaeger::Changelog::Status{$status}) {
 				$self->{status} = $status;
 				last;
