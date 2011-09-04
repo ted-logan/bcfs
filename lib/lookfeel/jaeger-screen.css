@@ -1,0 +1,25 @@
+@media screen {
+	div.navbar, div.rightbar, div.articlenav, div.articlefooter, div.quote { display: block; }
+	div#main {
+		position: absolute;
+		left: 20%;
+		right: 20%;
+	}
+	div#graphic {
+		position: relative;
+		width: 60%;
+		left: 20%;
+	}
+	div#hacker {
+		display: block;
+		position: absolute;
+		vertical-align: bottom;
+		top: 0;
+		right: 0;
+		width: 20%;
+	}
+	div.hackerblack {
+		margin: 0.125em;
+		padding: 0.25em;
+	}
+}

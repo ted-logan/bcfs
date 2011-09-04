@@ -254,16 +254,31 @@ sub _main {
 		$params{rsscookie} = '?' . $user->cookie();
 	}
 
+	my $useragent;
+
 	# These parameters are shown in the printable footer
 	$params{date} = strftime "%H:%M %e %B %Y", localtime;
 	if(ref $self->query() eq 'CGI') {
 		$params{url} = $self->query()->url(-query => 1);
+
+		# Get the user agent from the CGI environment
+		$useragent = $self->query()->user_agent();
 	}
 	if(ref $self->query() eq 'Apache2::Request') {
 		# There has to be a better way to get the full URL, right?
 		my $baseurl = $Jaeger::Base::BaseURL;
 		$baseurl =~ s#/$##;
 		$params{url} = $baseurl . $self->query()->unparsed_uri();
+
+		$useragent = $self->query()->headers_in->get('User-Agent');
+	}
+
+	#
+	# If the user agent indicates this is a mobile browser, don't provide
+	# the CSS designed for full-sized browsers.
+	if($useragent !~ /iPhone/ && $useragent !~ /Mobile Safari/) {
+		$params{screencss} = 
+			'<link rel="stylesheet" href="/jaeger-screen.css" type="text/css"/>';
 	}
 
 	return %params;
