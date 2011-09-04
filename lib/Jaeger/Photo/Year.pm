@@ -34,6 +34,21 @@ sub new {
 	return $self;
 }
 
+sub years {
+	my $self = shift;
+
+	my @years;
+
+	my $sql = "select year from photo_year";
+	my $sth = $self->{dbh}->prepare($sql);
+	$sth->execute() or warn "$sql;\n";
+	while(my ($year) = $sth->fetchrow_array()) {
+		push @years, $year;
+	}
+
+	return sort @years;
+}
+
 #
 # methods used by Jaeger::Lookfeel to show this page
 #
@@ -60,7 +75,10 @@ sub html {
 		$dates{$date_iso} = "photo.cgi?date=$date_iso";
 	}
 
-	return "<tr><td>" . year_thumbnail($self->{year}, \%dates) . "</td></tr>";
+	return "<tr><td>" . year_thumbnail($self->{year}, \%dates) . "</td></tr>" .
+		qq'<div class="articlefooter"><hr noshade><center><small>' .
+		join(' | ', map { qq'<a href="photo.cgi?year=$_">$_</a>' } $self->years()).
+		"</small></center><hr noshade></div>\n";
 }
 
 sub _title {
