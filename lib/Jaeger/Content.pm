@@ -137,6 +137,8 @@ sub Navbar {
 		);
 	}
 
+	push @content, '<li><a href="/photo.cgi">Photos</a></li>';
+
 	return $lf->linkbox(
 		title => 'Content',
 		links => join('', @content),

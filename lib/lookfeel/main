@@ -8,9 +8,6 @@
 <link href="/rss.cgi---rsscookie---" rel="alternate" type="application/rss+xml" title="rss" />
 <link href="/rss_comment.cgi---rsscookie---" rel="alternate" type="application/rss+xml" title="rss (comments)" />
 <link href="/rss_photo.cgi" rel="alternate" type="application/rss+xml" title="rss (photos)" />
-<meta name="ICBM" content="39.98778,-105.13008"/>
-<meta name="DC.title" content="jaegerfesting"/>
-<meta name="keywords" content="jaeger, festing"/>
 ---navlink---
 <title>j&auml;gerfesting---title---</title>
 </head>
@@ -74,14 +71,6 @@ Downloaded ---date--- from ---url---
 <div id="leftbar">
 <div class="navbar">
 
-<font size="+1">
-Want to <a href="http://tedlogan.com/Ted_Logan_Resume.pdf">hire</a> a computer engineer?
-<p>
-I'm <a href="/content.cgi?page=Wife">Married</a>!
-<p>
-<a href="/photo.cgi">Digital photos</a>
-</font>
-<p>
 ---navbar---
 ---links---
 
