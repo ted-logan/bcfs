@@ -64,8 +64,11 @@ if($0 =~ /comment/) {
 
 	# Permute the url to point to Calvin's site instead of my site
 	foreach my $photo (@entries) {
-		$photo->{url} = "http://calvinlogan.com/#" . $photo->{round} .
-			"/" . $photo->{number};
+		my $month = $photo->date();
+		$month =~ s/^(\d\d\d\d-\d\d).*/\1-01/;
+
+		$photo->{url} = "http://calvinlogan.com/?month=$month#" .
+			$photo->{round} . "/" . $photo->{number};
 
 		$photo->{description} =~ s/Kiesa/Mommy/;
 		$photo->{description} =~ s/Jaeger/Daddy/;

@@ -10,6 +10,33 @@ use lib "$ENV{BCFS}/lib";
 
 use Jaeger::Photo;
 
+my $dbh = $Jaeger::Base::Pgdbh;
+
+my @months = do {
+	my @months;
+
+	my $sql = "select month from calvin_photo_month group by month";
+	my $sth = $dbh->prepare($sql);
+	$sth->execute() or warn "$sql;\n";
+	while(my ($month) = $sth->fetchrow_array()) {
+		push @months, $month;
+	}
+
+	sort @months;
+};
+
+# Show only a month's worth of photos at a time. The "everything from the past
+# three years" worked better when the entire back catalog of Calvin's photos
+# only dated several months.
+my $month = do {
+	my $query = Jaeger::Base->Query();
+	if($query->param('month')) {
+		$query->param('month');
+	} else {
+		$months[-1];
+	}
+};
+
 print "content-type: text/html; charset=UTF-8\n\n";
 
 print <<HTML;
@@ -30,7 +57,8 @@ was 8 pounds, 15 ounces, and 21 inches long.
 </p>
 HTML
 
-my $where = "description ilike '%calvin%' and not hidden order by date desc";
+my $where = "id in (select id from calvin_photo_month where month = '$month') ".
+	"order by date desc";
 my @photos = Jaeger::Photo->Select($where);
 
 foreach my $photo (@photos) {
@@ -51,7 +79,8 @@ foreach my $photo (@photos) {
 HTML
 }
 
-print <<HTML;
+if($month eq $months[0]) {
+	print <<HTML;
 <h3>32 Weeks</h3>
 
 <p>
@@ -80,7 +109,25 @@ upper left of the picture is his nose.
 <p>
 <img src="http://jaeger.festing.org/changelog/2008-08-30/calvin_or_jade.jpg" alt="Calvin? Jade? You decide." />
 </p>
+HTML
+}
 
+# Show links to all the months for which photos are available
+print "<p>\n";
+my $last_year;
+foreach my $month (@months) {
+	my ($y, $m) = $month =~ /^(\d\d\d\d)-(\d\d)/;
+	if($last_year ne $y) {
+		print "$y: ";
+		$last_year = $y;
+	} elsif(defined $last_year) {
+		print "| ";
+	}
+	print qq'<a href="/?month=$month">$Jaeger::Base::Months[$m]</a> ';
+}
+print "</p>\n";
+
+print <<HTML;
 </div>
 </body></html>
 HTML
