@@ -39,6 +39,10 @@ foreach my $photo (@photos) {
 
 	my $date = $photo->date_format();
 
+	# Reformat names from Calvin's perspective
+	$photo->{description} =~ s/Kiesa/Mommy/;
+	$photo->{description} =~ s/Jaeger/Daddy/;
+
 	print <<HTML;
 <a name="$photo->{round}/$photo->{number}"></a>
 <h3>$photo->{description}</h3>

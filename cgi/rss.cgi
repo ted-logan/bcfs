@@ -66,6 +66,9 @@ if($0 =~ /comment/) {
 	foreach my $photo (@entries) {
 		$photo->{url} = "http://calvinlogan.com/#" . $photo->{round} .
 			"/" . $photo->{number};
+
+		$photo->{description} =~ s/Kiesa/Mommy/;
+		$photo->{description} =~ s/Jaeger/Daddy/;
 	}
 } else {
 	# This is a changelog feed
