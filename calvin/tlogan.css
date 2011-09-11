@@ -48,3 +48,5 @@ div#links {
 a, a:visited { color: #627a5f; }
 a:active { color: #fff; }
 div#links a, div#links a:visited { color: #fff; }
+h1 a, h1 a:visited, h3 a, h3 a:visited { color: #000; text-decoration: none; }
+h3 a:hover { text-decoration: underline; }

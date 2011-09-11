@@ -49,7 +49,7 @@ print <<HTML;
 
 <div id="body">
 <div style="float: right; padding-top: 10px; padding-right: 10px;"><a href="/calvin_rss.cgi">RSS</a></div>
-<h1>Calvin Logan</h1>
+<h1><a href="/">Calvin Logan</a></h1>
 
 <p>
 Calvin Theodore Stone Logan was born at 22:02 MDT on 26 March 2009. He
@@ -73,7 +73,7 @@ foreach my $photo (@photos) {
 
 	print <<HTML;
 <a name="$photo->{round}/$photo->{number}"></a>
-<h3>$photo->{description}</h3>
+<h3><a href="/?month=$month#$photo->{round}/$photo->{number}">$photo->{description}</a></h3>
 <p><i>$date</i></p>
 <p><img src="http://jaeger.festing.org/digitalpics/$photo->{round}/$photo->{size}/$photo->{number}.jpg" /></p>
 HTML
