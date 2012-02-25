@@ -20,6 +20,7 @@ use lib "$ENV{BCFS}/lib";
 use Jaeger::Photo;
 
 use FileHandle;
+use POSIX qw(strftime);
 
 autoflush STDOUT 1;
 
@@ -35,6 +36,15 @@ if(grep /--new/, @ARGV) {
 
 foreach my $round (@ARGV) {
 	annotate_round($round, $new);
+}
+
+if(@ARGV) {
+	# Automatically update the thumbnails on the server
+	#
+	# Note that ssh executes this command in a non-login shell, so any
+	# necessary environment variables (namely, $BCFS) must be set in
+	# .bashrc before the interactive-shell test.
+	system "ssh honor2.festing.org src/bcfs/bin/thumbnail.pl @ARGV";
 }
 
 exit;
@@ -139,6 +149,8 @@ sub annotate_photo {
 		}
 
 		$photo->{description} = $descript;
+		# Set the mtime to the current time (in GMT)
+		$photo->{mtime} = strftime("%Y-%m-%d %H:%M:%S+00", localtime);
 		$photo->update();
 	}
 
