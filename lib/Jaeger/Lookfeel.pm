@@ -279,6 +279,9 @@ sub _main {
 	if($useragent !~ /iPhone/ && $useragent !~ /Mobile Safari/) {
 		$params{screencss} = 
 			'<link rel="stylesheet" href="/jaeger-screen.css" type="text/css"/>';
+	} else {
+		$params{screencss} = 
+			'<meta name="viewport" content="width=device-width, user-scalable=no" />';
 	}
 
 	return %params;
