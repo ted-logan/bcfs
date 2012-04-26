@@ -295,6 +295,7 @@ sub _photo_main {
 
 	if(my $title = $obj->title()) {
 		$params{title} = ": $title";
+		$params{description} = "$title.";
 	}
 
 	# set human-readable navigation links
