@@ -180,6 +180,15 @@ sub _main {
 			title => $index->title(),
 		);
 	}
+	if(my $summary = $obj[0]->summary()) {
+		# Summary should be plain text. Encode it.
+		$summary =~ s/&/&amp;/g;
+		$summary =~ s/"/&quot;/g;
+		$summary =~ s/</&lt;/g;
+		$summary =~ s/>/&gt;/g;
+		push @navlink,
+			qq'<meta name="description" content="$summary" />';
+	}
 	$params{navlink} = join('', @navlink);
 
 	# get a quote
