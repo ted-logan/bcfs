@@ -92,3 +92,7 @@ div.printfooter { display: none; }
 #twitter_update_list {
 	overflow: hidden;
 }
+.browse-changelog-summary, .browse-changelog-date {
+	margin-left: 1.5em;
+	font-size: 80%;
+}

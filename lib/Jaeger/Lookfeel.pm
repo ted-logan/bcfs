@@ -128,6 +128,20 @@ sub _changelog_series {
 	return %params;
 }
 
+sub _browse_changelog {
+	my $self = shift;
+
+	my %params = @_;
+
+	if($params{summary}) {
+		$params{summary} = $self->browse_changelog_summary(
+			summary => $params{summary}
+		);
+	}
+
+	return %params;
+}
+
 sub _comment {
 	my $self = shift;
 

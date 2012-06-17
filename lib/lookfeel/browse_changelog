@@ -1,2 +1,3 @@
 <a href="---url---">---title---</a> <i>---visibility---</i><br>
-<font size="-1">&nbsp;&nbsp;&nbsp;---time_begin---</font><br>
+<div class="browse-changelog-date">---time_begin---</div>
+---summary---
