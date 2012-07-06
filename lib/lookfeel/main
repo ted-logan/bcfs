@@ -31,18 +31,18 @@
 </div>
 
 <div style="position: relative;">
-<div id="main">
+<div id="main" class="instapaper_body">
 <div class="article">
 
 ---content---
 
-<div class="articlenav">
+<div class="articlenav instapaper_ignore">
 ---navlinks---
 </div>
 
 </div>
 
-<div class="quote">
+<div class="quote instapaper_ignore">
 <div class="lyric">
 ---quote---
 </div>
@@ -53,14 +53,14 @@
 &copy; 1998-2012 Theodore Logan. All Rights Reserved.<br/>
 <a href="mailto:jaeger@festing.org">jaeger@festing.org</a><br/>
 </i>
-<div class="screenfooter">
+<div class="screenfooter instapaper_ignore">
 <a href="http://jaeger.festing.org/theodore_logan.asc">PGP key</a><br/>
 RSS:
 <a href="http://jaeger.festing.org/rss.cgi---rsscookie---">Entries</a>
 <a href="http://jaeger.festing.org/rss_comment.cgi---rsscookie---">Comments</a>
 <a href="http://jaeger.festing.org/rss_photo.cgi">Photos</a>
 </div>
-<div class="printfooter">
+<div class="printfooter instapaper_ignore">
 <hr noshade>
 Downloaded ---date--- from ---url---
 </div>
