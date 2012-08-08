@@ -1,5 +1,6 @@
 @media screen {
 	div.navbar, div.rightbar, div.articlenav, div.articlefooter, div.quote { display: block; }
+	div.mobilenav { display: none; }
 	div#main {
 		position: absolute;
 		left: 20%;

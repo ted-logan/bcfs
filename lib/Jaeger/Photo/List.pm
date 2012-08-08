@@ -37,15 +37,16 @@ sub html {
 
 	my $photos = $self->photos();
 
-	push @html, "<td>\n";
-	push @html, "<table>\n";
-	push @html, "<tr><td>", scalar(@$photos), " photo",
-		(@$photos == 1 ? '' : 's'), "</td></tr>\n";
+	push @html, "<p>", scalar(@$photos), " photo",
+		(@$photos == 1 ? '' : 's'), "</p>\n";
 
 	foreach my $photo (@$photos) {
+		$photo->{size} = "256x192";
+		$photo->resize();
+
 		push @html, $self->lf()->photo_list(
 			url => $photo->url(),
-			thumbnail => "/digitalpics/$photo->{round}/thumbnail/$photo->{number}.jpg",
+			thumbnail => "/digitalpics/$photo->{round}/$photo->{size}/$photo->{number}.jpg",
 			description => $photo->description(),
 			date => $photo->date_format(),
 			latitude => $photo->latitude(),
@@ -53,8 +54,9 @@ sub html {
 		);
 	}
 
-	push @html, "</table>\n";
-	push @html, "</td>\n";
+	push @html, <<HTML;
+<div style="clear: left;"></div>
+HTML
 
 	return join('', @html);
 }

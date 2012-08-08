@@ -1,6 +1,5 @@
-<tr>
-<td><a href="---url---"><img src="---thumbnail---" border="0"></a></td>
-<td>---description---
----location---
-<h3>---date---</h3></td>
-</tr>
+<div style="float: left; padding-right: 1em; padding-bottom: 1em; width: 256px;">
+<div style="width: 256px; height: 192px;"><a href="---url---"><img src="---thumbnail---" border="0" title="---description---"></a></div>
+<div style="white-space: nowrap; overflow: hidden;">---description---</div>
+<div><h3>---date---</h3></div>
+</div>

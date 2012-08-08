@@ -152,6 +152,31 @@ sub _comment {
 	return %params;
 }
 
+sub screencss {
+	my $self = shift;
+
+	my $useragent;
+
+	if(ref $self->query() eq 'CGI') {
+		# Get the user agent from the CGI environment
+		$useragent = $self->query()->user_agent();
+	}
+	if(ref $self->query() eq 'Apache2::Request') {
+		$useragent = $self->query()->headers_in->get('User-Agent');
+	}
+
+	# If the user agent indicates this is a mobile browser, don't provide
+	# the CSS designed for full-sized browsers.
+	if($useragent !~ /iPhone/ && $useragent !~ /Mobile Safari/) {
+		return '<link rel="stylesheet" href="/jaeger-screen.css" type="text/css"/>';
+	} else {
+		return <<HTML;
+<link rel="stylesheet" href="/jaeger-mobile.css" type="text/css"/>
+<meta name="viewport" content="width=device-width, user-scalable=no" />
+HTML
+	}
+}
+
 # we pass to this an array of objects to be displayed
 # if more than one element is passed, the first one will be used only
 # for the title and navigation links
@@ -277,35 +302,19 @@ sub _main {
 		$params{rsscookie} = '?' . $user->cookie();
 	}
 
-	my $useragent;
-
 	# These parameters are shown in the printable footer
 	$params{date} = strftime "%H:%M %e %B %Y", localtime;
 	if(ref $self->query() eq 'CGI') {
 		$params{url} = $self->query()->url(-query => 1);
-
-		# Get the user agent from the CGI environment
-		$useragent = $self->query()->user_agent();
 	}
 	if(ref $self->query() eq 'Apache2::Request') {
 		# There has to be a better way to get the full URL, right?
 		my $baseurl = $Jaeger::Base::BaseURL;
 		$baseurl =~ s#/$##;
 		$params{url} = $baseurl . $self->query()->unparsed_uri();
-
-		$useragent = $self->query()->headers_in->get('User-Agent');
 	}
 
-	#
-	# If the user agent indicates this is a mobile browser, don't provide
-	# the CSS designed for full-sized browsers.
-	if($useragent !~ /iPhone/ && $useragent !~ /Mobile Safari/) {
-		$params{screencss} = 
-			'<link rel="stylesheet" href="/jaeger-screen.css" type="text/css"/>';
-	} else {
-		$params{screencss} = 
-			'<meta name="viewport" content="width=device-width, user-scalable=no" />';
-	}
+	$params{screencss} = $self->screencss();
 
 	return %params;
 }
@@ -354,6 +363,8 @@ sub _photo_main {
 	$params{navlink} = join('', @navlink);
 
 	$params{content} = $obj->html();
+
+	$params{screencss} = $self->screencss();
 
 	return %params;
 }
@@ -745,6 +756,11 @@ sub _photo_list {
 	my $self = shift;
 
 	my %params = @_;
+
+	$params{description} =~ s/&/&amp;/g;
+	$params{description} =~ s/"/&quot;/g;
+	$params{description} =~ s/</&lt;/g;
+	$params{description} =~ s/>/&gt;/g;
 
 	if(defined($params{longitude}) && defined($params{latitude})) {
 		$params{location} = $self->photo_coordinates(

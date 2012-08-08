@@ -75,7 +75,7 @@ sub html {
 		$dates{$date_iso} = "photo.cgi?date=$date_iso";
 	}
 
-	return "<tr><td>" . year_thumbnail($self->{year}, \%dates) . "</td></tr>" .
+	return year_thumbnail($self->{year}, \%dates) .
 		qq'<div class="articlefooter"><hr noshade><center><small>' .
 		join(' | ', map { qq'<a href="photo.cgi?year=$_">$_</a>' } $self->years()).
 		"</small></center><hr noshade></div>\n";

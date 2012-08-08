@@ -68,7 +68,7 @@ h3 {
 div.printfooter { display: none; }
 @media print {
 	div.printfooter { display: block; }
-	div.articlenav, div.articlefooter, div.screenfooter { display: none; }
+	div.articlenav, div.articlefooter, div.screenfooter, div.mobilenav { display: none; }
 	div#graphic { float: right; }
 }
 .lyric {

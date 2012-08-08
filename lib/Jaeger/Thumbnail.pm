@@ -61,20 +61,17 @@ sub year_thumbnail {
 	my @html;
 
 	push @html, "<h1>$year</h1>\n";
-	push @html, "<table>\n";
 	for(my $month = 1; $month < 13; $month++) {
+		my $style = "padding-right: 1em; float: left;";
 		if(($month % 3) == 1) {
-			push @html, "<tr>";
+			$style .= " clear: left;";
 		}
-		push @html, "<td valign=top>\n";
+		push @html, "<div style=\"$style\">\n";
 		push @html, month_thumbnail($month, $year, $data);
-		push @html, "</td>";
-		if(($month % 3) == 0) {
-			push @html, "</tr>";
-		}
-		push @html, "\n";
+		push @html, "</div>\n";
 	}
-	push @html, "</table>\n";
+
+	push @html, qq'<div style="clear: left;"></div>\n';
 
 	return join('', @html);
 }
