@@ -60,15 +60,19 @@ sub _html {
 
 	foreach my $photo (@$photos) {
 		next unless $photo;
-		push @html, $self->lf()->photo_search_list(
+
+		$photo->{size} = "256x192";
+		$photo->resize();
+
+		push @html, $self->lf()->photo_list(
 			url => $photo->url(),
-			thumbnail => "/digitalpics/$photo->{round}/thumbnail/$photo->{number}.jpg",
+			thumbnail => "/digitalpics/$photo->{round}/$photo->{size}/$photo->{number}.jpg",
 			description => $photo->description(),
-			date => $photo->date_format()
+			date => $photo->date_format(),
+			latitude => $photo->latitude(),
+			longitude => $photo->longitude(),
 		);
 	}
 
-	return $self->lf()->photo_search(
-		photos => join('', @html)
-	);
+	return join('', @html);
 }
