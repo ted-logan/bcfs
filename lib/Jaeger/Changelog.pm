@@ -141,36 +141,30 @@ sub _edit_pipe {
 	if($self->{content}) {
 		open TEMPFILE, ">$tempfile"
 			or die "Can't write to tempfile: $!\n";
+		print TEMPFILE "Title:\t$self->{title}\n";
+		print TEMPFILE "Begin:\t$self->{time_begin}\n";
+		print TEMPFILE "End:\t$self->{time_end}\n";
+		print TEMPFILE "Status:\t$self->{status}\n";
+		print TEMPFILE "Summary:\t$self->{summary}\n";
+		print TEMPFILE "\n";
 		print TEMPFILE $self->{content};
 		close TEMPFILE;
 	}
 
-	my $old_content = $self->{content};
-
 	system "$command $tempfile";
 
-	open TEMPFILE, $tempfile
-		or die "Can't open tempfile: $!\n";
-	local $/ = undef;
-	my $new_content = <TEMPFILE>;
-	close TEMPFILE;
+	my $changed = $self->import_file($tempfile);
 
-	# should we update the finished time?
-	unless($self->{time_end}) {
-		$self->{time_end} = scalar localtime time;
-	}
+#	# should we update the finished time?
+#	unless($self->{time_end}) {
+#		$self->{time_end} = scalar localtime time;
+#	}
 
 	if($unlink_tempfile) {
 		unlink $tempfile;
 	}
 
-	$self->{content} = $new_content;
-
-	if($new_content eq $old_content) {
-		return 0;
-	} else {
-		return 1;
-	}
+	return $changed;
 }
 
 sub _edit_menu {
@@ -231,6 +225,75 @@ sub _edit_level {
 	print "Set status: $self->{status}: $Jaeger::Changelog::Status{$self->{status}}\n";
 
 	return $self->{status};
+}
+
+# Import the changelog from a file on disk. This is used both for offline
+# changelogs, and for live-editing changelogs.
+sub import_file {
+	my $self = shift;
+
+	my $filename = shift;
+
+	open my $fh, $filename
+		or die "Can't open changelog $filename: $!\n";
+
+	my %header;
+	while(<$fh>) {
+		s/[\r\n]+$//;
+		last unless $_;
+		my ($key, $value) = /(.*?):\s*(.*)/;
+		$header{lc $key} = $value;
+	}
+
+	local $/ = undef;
+	my $new_content = <$fh>;
+	close $fh;
+
+	my $changed = 0;
+
+	if($header{title} && ($header{title} ne $self->{title})) {
+		$self->{title} = $header{title};
+		$changed = 1;
+	}
+
+	if($header{begin} && ($header{begin} ne $self->{time_begin})) {
+		$self->{time_begin} = $header{begin};
+		$changed = 1;
+	}
+
+	if($header{end} && ($header{end} ne $self->{time_end})) {
+		$self->{time_end} = $header{end};
+		$changed = 1;
+	}
+
+	if($header{summary} && ($header{summary} ne $self->{summary})) {
+		$self->{summary} = $header{summary};
+		$changed = 1;
+	}
+
+	if(exists $header{status} && ($header{status} != $self->{status})) {
+		$self->{status} = $header{status};
+		$changed = 1;
+	}
+
+	if($new_content ne $self->{content}) {
+		$self->{content} = $new_content;
+		$changed = 1;
+	}
+
+	return $changed;
+}
+
+sub columns {
+	my $self = shift;
+
+	my @columns = $self->SUPER::columns();
+
+	unless($self->{time_end}) {
+		@columns = grep !/time_end/, @columns;
+	}
+
+	return @columns;
 }
 
 # returns an object for the previous changelog, if any
