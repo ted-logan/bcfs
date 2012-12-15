@@ -138,27 +138,20 @@ sub _edit_pipe {
 		$unlink_tempfile = 1;
 	}
 
-	if($self->{content}) {
-		open TEMPFILE, ">$tempfile"
-			or die "Can't write to tempfile: $!\n";
-		print TEMPFILE "Title:\t$self->{title}\n";
-		print TEMPFILE "Begin:\t$self->{time_begin}\n";
-		print TEMPFILE "End:\t$self->{time_end}\n";
-		print TEMPFILE "Status:\t$self->{status}\n";
-		print TEMPFILE "Summary:\t$self->{summary}\n";
-		print TEMPFILE "\n";
-		print TEMPFILE $self->{content};
-		close TEMPFILE;
-	}
+	open TEMPFILE, ">$tempfile"
+		or die "Can't write to tempfile: $!\n";
+	print TEMPFILE "Title:  \t$self->{title}\n";
+	print TEMPFILE "Begin:  \t$self->{time_begin}\n";
+	print TEMPFILE "End:    \t$self->{time_end}\n";
+	print TEMPFILE "Status: \t$self->{status}\n";
+	print TEMPFILE "Summary:\t$self->{summary}\n";
+	print TEMPFILE "\n";
+	print TEMPFILE $self->{content};
+	close TEMPFILE;
 
 	system "$command $tempfile";
 
 	my $changed = $self->import_file($tempfile);
-
-#	# should we update the finished time?
-#	unless($self->{time_end}) {
-#		$self->{time_end} = scalar localtime time;
-#	}
 
 	if($unlink_tempfile) {
 		unlink $tempfile;
