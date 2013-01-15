@@ -115,7 +115,7 @@ sub annotate_photo {
 		die "Fork failed! $!\n";
 	}
 	if($child_pid == 0) {
-		system "eog \"" . $photo->file() . "\" >/dev/null";
+		system "eog \"" . $photo->file() . "\" >/dev/null 2>&1";
 
 		# Wait to be killed by the parent
 		while(1) {
