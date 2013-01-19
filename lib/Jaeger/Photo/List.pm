@@ -40,7 +40,7 @@ sub html {
 	push @html, "<p>", scalar(@$photos), " photo",
 		(@$photos == 1 ? '' : 's'), "</p>\n";
 
-	foreach my $photo (@$photos) {
+	foreach my $photo (sort {$a->{date} <=> $b->{date}} @$photos) {
 		$photo->{size} = "256x192";
 		$photo->resize();
 
