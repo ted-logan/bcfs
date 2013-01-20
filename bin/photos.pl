@@ -19,8 +19,11 @@ die "\$BCFS must be set!\n" unless $ENV{BCFS};
 use lib "$ENV{BCFS}/lib";
 use Jaeger::Photo;
 
+use Data::Dumper;
 use FileHandle;
 use POSIX qw(strftime);
+use Image::EXIF;
+use Date::Parse;
 
 autoflush STDOUT 1;
 
@@ -34,7 +37,53 @@ if(grep /--new/, @ARGV) {
 	@ARGV = grep !/--new/, @ARGV;
 }
 
+# The number of seconds to _add_ to the time to adjust for the camera's clock
+# being behind
+my $time_adjust = 0;
+
+# The time zone that the _camera_'s clock was set to. For most (non-networked)
+# cameras, this will be constant; I tend to keep my camera's clock set to local
+# (Mountain) time and change it with daylight savings twice a year. Though it's
+# not entirely uncommon for the time zone to lag by a couple of months.
+#
+# For mobile phones (and other devices that set their clock more frequently),
+# this will be updated whenever I cross a time zone boundary, except for photos
+# taken in flight or in places where a network time is not available for
+# whatever reason.
+my $camera_timezone;
+
+# Should we ask what the camera timezone is for each photo? This should be set
+# to a true value for mobile phone pictures, and false otherwise.
+my $ask_camera_timezone = 0;
+
+# The time zone that the _photo_ was taken in. This will change according to
+# whatever I consider the 'local time' to be.
+my $photo_timezone;
+
+my $ask_photo_timezone = 0;
+
 foreach my $round (@ARGV) {
+	if($round eq '272' || $round eq '274') {
+		# Parameters for rounds 272, 274, taken with my Nikon D50 in
+		# Hong Kong
+		$time_adjust = -503;
+		$camera_timezone = Jaeger::Timezone->Select(name => 'MDT');
+		$photo_timezone = Jaeger::Timezone->Select(name => 'HKT');
+	} elsif($round eq '275') {
+		# Parameters for round 275, taken with Kiesa's iPhone
+		$time_adjust = 0;
+		$camera_timezone = Jaeger::Timezone->Select(name => 'HKT');
+		$photo_timezone = Jaeger::Timezone->Select(name => 'HKT');
+	} elsif($round eq '273' || $round eq '277') {
+		# Parameters for rounds 273 and 277, taken with my smartphone
+		$ask_camera_timezone = 1;
+		$ask_photo_timezone = 1;
+	} else {
+		# Parameters for other rounds
+		$time_adjust = 0;
+		$camera_timezone = Jaeger::Timezone->Select(name => 'MST');
+		$photo_timezone = Jaeger::Timezone->Select(name => 'MST');
+	}
 	annotate_round($round, $new);
 }
 
@@ -90,12 +139,31 @@ sub annotate_round {
 sub annotate_photo {
 	my $photo = shift;
 
-	# FIXME set the time zone intelligently
 	unless($photo->{timezone_id}) {
-		$photo->{timezone} = Jaeger::Timezone->Select(name => 'MST');
+		if($ask_photo_timezone || !defined($photo_timezone)) {
+			print $photo->{round}, '/', $photo->{number}, ': ';
+			$photo_timezone =
+				get_timezone("Photo", $photo_timezone);
+		}
+		$photo->{timezone} = $photo_timezone;
 	}
 	unless($photo->{location_id}) {
 		$photo->{location_id} = 1;
+	}
+
+	if($photo->{exifdate}) {
+		# If this is a new photo, adjust the timestamp by the given
+		# adjustment
+		$photo->{date} = $photo->{exifdate} + $time_adjust;
+
+		if($ask_camera_timezone || !defined($camera_timezone)) {
+			print $photo->{round}, '/', $photo->{number}, ': ';
+			$camera_timezone =
+				get_timezone("Camera", $camera_timezone);
+		}
+
+		# And the time zone adjustment
+		$photo->{date} -= $camera_timezone->ofst() * 3600;
 	}
 
 	# does a cropped photo exist? if not, this photo should be hidden
@@ -187,8 +255,35 @@ sub import_round {
 			$photo->{round} = $round;
 			$photo->{number} = $number;
 
-			# read the date from the file date and time
-			$photo->{date} = (stat $photo->file_raw())[9];
+			# read the date from the EXIF date and time
+			# (The timestamp will be in the _camera's_ local time,
+			# which may be different from the _photo's_ local time.
+			# This will be adjusted later.)
+			my $exif = new Image::EXIF($photo->file_raw());
+			if($exif && $exif->get_other_info()) {
+				my $date = $exif->get_other_info()
+					->{'Image Generated'};
+				unless($date) {
+					$date = $exif->get_image_info()
+						->{'Image Created'};
+				}
+				if($date) {
+					$photo->{exifdate} = str2time($date,
+						"GMT");
+				} else {
+					warn "EXIF tags not recogonized for ",
+						$photo->file_raw(), "\n";
+					print Dumper($exif->get_all_info());
+				}
+			}
+
+			unless($photo->{exifdate}) {
+				warn "Exif info not found for ",
+					$photo->file_raw(), "\n";
+				$photo->{exifdate} =
+					(stat $photo->file_raw())[9];
+			}
+			$photo->{date} = $photo->{exifdate};
 
 			$photos{$number} = $photo;
 		}
@@ -223,4 +318,34 @@ sub import_round {
 	}
 
 	return sort {$a->{number} <=> $b->{number}} values %photos;
+}
+
+# Ask the user for a timezone
+sub get_timezone {
+	my $what = shift;
+	my $old_timezone = shift;
+
+	my $new_timezone = undef;
+
+	do {
+		print "$what timezone: ";
+		if($old_timezone) {
+			print "[", $old_timezone->{name}, "] ";
+		}
+		my $name = <STDIN>;
+		chomp $name;
+		if($name eq '') {
+			$new_timezone = $old_timezone;
+		} else {
+			$new_timezone = Jaeger::Timezone->Select(name => $name);
+			if($new_timezone) {
+				printf "Selected timezone %s (GMT%+d)\n",
+					$name, $new_timezone->{ofst};
+			} else {
+				print "Unrecogonized timezone '$name'\n";
+			}
+		}
+	} while(!defined($new_timezone));
+
+	return $new_timezone;
 }
