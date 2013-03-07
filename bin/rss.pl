@@ -25,7 +25,7 @@ use XML::RSS;
 use LWP::UserAgent;
 
 my @links = qw(
-	http://kiesa.festing.org/serendipity/index.php?/feeds/index.rss2
+	http://kiesa.festing.org/wordpress/feed/
 	http://mega.festing.org/script/index.php?title=Special:Recentchanges&feed=rss
 	http://www.willylogan.com/?feed=rss2
 );
