@@ -78,11 +78,15 @@ foreach my $round (@ARGV) {
 		# Parameters for rounds 273 and 277, taken with my smartphone
 		$ask_camera_timezone = 1;
 		$ask_photo_timezone = 1;
+	} elsif($round eq '278') {
+		$time_adjust = 0;
+		$camera_timezone = Jaeger::Timezone->Select(name => 'MST');
+		$ask_photo_timezone = 1;
 	} else {
 		# Parameters for other rounds
 		$time_adjust = 0;
-		$camera_timezone = Jaeger::Timezone->Select(name => 'MST');
-		$photo_timezone = Jaeger::Timezone->Select(name => 'MST');
+		$camera_timezone = Jaeger::Timezone->Select(name => 'MDT');
+		$photo_timezone = Jaeger::Timezone->Select(name => 'MDT');
 	}
 	annotate_round($round, $new);
 }
@@ -138,6 +142,44 @@ sub annotate_round {
 #
 sub annotate_photo {
 	my $photo = shift;
+
+	# does a cropped photo exist? if not, this photo should be hidden
+	unless($photo->file_crop()) {
+		# flag photo as hidden and move on to the next one
+		$photo->{hidden} = 'true';
+#		$photo->update();
+		return;
+	}
+
+	# read the date from the EXIF date and time
+	# (The timestamp will be in the _camera's_ local time,
+	# which may be different from the _photo's_ local time.
+	# This will be adjusted later.)
+	my $exif = new Image::EXIF($photo->file_raw());
+	if($exif && $exif->get_other_info()) {
+		my $date = $exif->get_other_info()
+			->{'Image Generated'};
+		unless($date) {
+			$date = $exif->get_image_info()
+				->{'Image Created'};
+		}
+		if($date) {
+			$photo->{exifdate} = str2time($date,
+				"GMT");
+		} else {
+			warn "EXIF tags not recogonized for ",
+				$photo->file_raw(), "\n";
+			print Dumper($exif->get_all_info());
+		}
+	}
+
+	unless($photo->{exifdate}) {
+		warn "Exif info not found for ",
+			$photo->file_raw(), "\n";
+		$photo->{exifdate} =
+			(stat $photo->file_raw())[9];
+	}
+	$photo->{date} = $photo->{exifdate};
 
 	unless($photo->{timezone_id}) {
 		if($ask_photo_timezone || !defined($photo_timezone)) {
@@ -255,6 +297,7 @@ sub import_round {
 			$photo->{round} = $round;
 			$photo->{number} = $number;
 
+=for later
 			# read the date from the EXIF date and time
 			# (The timestamp will be in the _camera's_ local time,
 			# which may be different from the _photo's_ local time.
@@ -284,6 +327,7 @@ sub import_round {
 					(stat $photo->file_raw())[9];
 			}
 			$photo->{date} = $photo->{exifdate};
+=cut
 
 			$photos{$number} = $photo;
 		}
