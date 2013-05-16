@@ -196,6 +196,9 @@ sub handler {
 
 	$Jaeger::User::Current = 0;
 	$Jaeger::Base::Query = undef;
+	$Jaeger::Base::Pgdbh = undef;
+	$Jaeger::Base::Lookfeel = undef;
+	%Jaeger::Base::Ids = ();
 
 	return OK;
 }

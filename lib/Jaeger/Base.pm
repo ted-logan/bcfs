@@ -33,11 +33,18 @@ if(`hostname` =~ /^honor/) {
 	$Jaeger::Base::BaseURL = 'http://jaeger.festing.org/';
 }
 
-$Jaeger::Base::Pgdbh =
-	DBI->connect("DBI:Pg:${connection}dbname=jaeger", "", "");
+$Jaeger::Base::Pgdbh = undef;
 
-unless($Jaeger::Base::Pgdbh) {
-	die "Jaeger::Base: Unable to connect to pg database\n";
+sub Pgdbh {
+	unless($Jaeger::Base::Pgdbh) {
+		$Jaeger::Base::Pgdbh =
+			DBI->connect("DBI:Pg:${connection}dbname=jaeger", "",
+				"");
+		unless($Jaeger::Base::Pgdbh) {
+			die "Jaeger::Base: Unable to connect to pg database\n";
+		}
+	}
+	return $Jaeger::Base::Pgdbh;
 }
 
 #
@@ -80,7 +87,7 @@ sub new {
 	my $package = shift;
 	my $self = ref $_[0] eq 'HASH' ? {%{$_[0]}} : {};
 
-	$self->{dbh} = $Jaeger::Base::Pgdbh;
+	$self->{dbh} = Jaeger::Base::Pgdbh();
 	$self->{table} = $package->table();
 
 	if($self->{id}) {
@@ -124,7 +131,7 @@ sub Select {
 		$package = ref $package;
 	}
 
-	my $dbh = $Jaeger::Base::Pgdbh;
+	my $dbh = Jaeger::Base::Pgdbh();
 
 	my $whereclause;
 	if(@_ == 1) {
@@ -170,7 +177,7 @@ sub Select {
 sub Count {
 	my $package = shift;
 
-	my $dbh = $Jaeger::Base::Pgdbh;
+	my $dbh = Jaeger::Base::Pgdbh();
 
 	my $whereclause;
 	if(@_ == 1) {

@@ -487,7 +487,7 @@ sub Navbar {
 			$user->signup() . "' and id not in (select " .
 			"changelog_id from user_changelog_view where user_id =".
 			$user->id() . ")";
-		my $sth = $Jaeger::Base::Pgdbh->prepare($sql);
+		my $sth = Jaeger::Base::Pgdbh()->prepare($sql);
 		$sth->execute() or warn "$sql;\n";
 		while(my ($id) = $sth->fetchrow_array()) {
 			$unread{$id} = 1;

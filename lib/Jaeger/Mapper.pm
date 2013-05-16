@@ -26,7 +26,7 @@ sub Map {
 	my $map = {};
 
 	my $sql = "select * from $params{table} where $params{idfield} = $params{id}";
-	my $sth = $Jaeger::Base::Pgdbh->prepare($sql);
+	my $sth = Jaeger::Base::Pgdbh()->prepare($sql);
 	$sth->execute() or warn "$sql;\n";
 
 	my $field = $params{field};

@@ -10,7 +10,7 @@ use lib "$ENV{BCFS}/lib";
 
 use Jaeger::Photo;
 
-my $dbh = $Jaeger::Base::Pgdbh;
+my $dbh = Jaeger::Base::Pgdbh();
 
 my @months = do {
 	my @months;
@@ -44,6 +44,7 @@ print <<HTML;
 <head><title>Calvin Logan</title>
 <link rel="stylesheet" type="text/css" href="/tlogan.css" />
 <link href="/calvin_rss.cgi" rel="alternate" type="application/rss+xml" title="rss" />
+<meta name="description" content="The continuing adventures of an intrepid preschooler" />
 </head>
 <body>
 
@@ -52,9 +53,9 @@ print <<HTML;
 <h1><a href="/">Calvin Logan</a></h1>
 
 <p>
-Calvin Theodore Stone Logan was born at 22:02 MDT on 26 March 2009. He
-was 8 pounds, 15 ounces, and 21 inches long.
+The continuing adventures of an intrepid preschooler
 </p>
+
 HTML
 
 my $where = "id in (select id from calvin_photo_month where month = '$month') ".

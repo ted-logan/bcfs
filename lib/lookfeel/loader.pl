@@ -13,7 +13,7 @@ die "\$BCFS must be set!\n" unless $ENV{BCFS};
 use lib "$ENV{BCFS}/lib";
 use Jaeger::Base;
 
-my $dbh = $Jaeger::Base::Pgdbh;
+my $dbh = Jaeger::Base::Pgdbh();
 
 sub load {
 	my ($label, $value) = @_;
