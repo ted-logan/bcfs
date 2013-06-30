@@ -608,7 +608,7 @@ sub _login_status_user {
 =cut
 
 	# Assemble a list of recent visitors
-	my $where = "last_visit > now() + '-1h' order by last_visit desc";
+	my $where = "last_visit > now() + '-1h' and status > 0 order by last_visit desc";
 	my @recent;
 	foreach my $user (Jaeger::User->Select($where)) {
 		my $sec = time - $self->parsetimestamp($user->last_visit());
