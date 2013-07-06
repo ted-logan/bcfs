@@ -19,7 +19,6 @@ use Time::Local;
 use Jaeger::Photo::Search;
 use Jaeger::Changelog::Search;
 use Jaeger::Comment::Search;
-use Jaeger::Journal::Search;
 
 use Carp;
 
@@ -195,15 +194,6 @@ sub _html {
 		};
 	}
 
-	# journal results
-	if(grep /(all|journal)/, @what) {
-		my $search = new Jaeger::Journal::Search($self);
-		push @results, {
-			count => $search->count(),
-			html => $search->html()
-		};
-	}
-	
 	# sort searches according to the number of hits
 	return join '', map {$_->{html}}
 		sort {$b->{count} <=> $a->{count}} @results;
