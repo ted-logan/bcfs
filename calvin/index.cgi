@@ -102,7 +102,7 @@ upper left of the picture is his nose.
 <h3>13 Weeks</h3>
 
 <p>
-<embed id="VideoPlayback" src="http://video.google.com/googleplayer.swf?docid=-7470424492462578025&hl=en&fs=true" style="width:400px;height:326px" allowFullScreen="true" allowScriptAccess="always" type="application/x-shockwave-flash"> </embed>
+<iframe width="420" height="315" src="//www.youtube-nocookie.com/embed/v0Or66GesfM" frameborder="0" allowfullscreen></iframe>
 </p>
 
 <h3>7 Weeks</h3>
