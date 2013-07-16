@@ -50,7 +50,8 @@ if($0 =~ /comment/) {
 } elsif($0 =~ /calvin/) {
 	# This is Calvin's photo feed
 	$feed->{title} = "Calvin's Pictures";
-	$feed->{description} = "Baby photos from calvinlogan.com";
+	$feed->{description} =
+		"The continuing adventures of an intrepid preschooler";
 	$feed->{noun} = "photo";
 
 	# Show Calvin photos from the last week
@@ -76,7 +77,7 @@ if($0 =~ /comment/) {
 } else {
 	# This is a changelog feed
 	$feed->{title} = "jaegerfesting";
-	$feed->{description} = "Random content from a hacker in Longmont, Colorado. I still claim Boulder as my home.";
+	$feed->{description} = "Random content from a hacker in Boulder, Colorado.";
 	$feed->{noun} = "entry";
 
 	@entries = Jaeger::Changelog->Select(
@@ -92,7 +93,7 @@ print "\t<channel>\n";
 print "\t\t<title>", $feed->{title}, "</title>\n";
 print "\t\t<link>http://jaeger.festing.org/changelog/</link>\n";
 print "\t\t<description>$feed->{description}</description>\n";
-print "\t\t<copyright>Copyright 1999-2010 Theodore Logan</copyright>\n";
+print "\t\t<copyright>Copyright 1999-2013 Theodore Logan</copyright>\n";
 print "\t\t<language>en-us</language>\n";
 print "\t\t<docs>http://blogs.law.harvard.edu/tech/rss</docs>\n";
 
