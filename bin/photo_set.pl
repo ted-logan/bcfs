@@ -31,7 +31,7 @@ foreach my $set (Jaeger::Photo::Set->Select()) {
 	my $total = 0;
 	my $new = 0;
 
-	foreach my $photo ($set->photos()) {
+	foreach my $photo (@{$set->photos()}) {
 		$i++;
 		next if $photo->{hidden};
 		my $file = sprintf "%04d-%s_%s.jpg",

@@ -15,6 +15,7 @@ use lib "$ENV{BCFS}/lib";
 use Jaeger::Photo;
 use Jaeger::Slideshow;
 use Jaeger::Lookfeel;
+use Jaeger::Photo::Set;
 
 my $q = Jaeger::Base::Query();
 
@@ -77,6 +78,9 @@ if(my $round = $q->param('round')) {
 	} else {
 		$page = $slideshow;
 	}
+
+} elsif(my $set = $q->param('set')) {
+	$page = Jaeger::Photo::Set->new_id($set);
 
 } else {
 	# display a thumbnail for a year, or the current year

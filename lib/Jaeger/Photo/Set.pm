@@ -6,8 +6,9 @@ use strict;
 
 use Jaeger::Base;
 use Jaeger::Photo;
+use Jaeger::Photo::List;
 
-@Jaeger::Photo::Set::ISA = qw(Jaeger::Base);
+@Jaeger::Photo::Set::ISA = qw(Jaeger::Photo::List);
 
 sub table {
 	return 'photo_set';
@@ -26,10 +27,11 @@ sub _directory {
 		'/home/jaeger/graphics/photos/sets/' . $name;
 }
 
-sub photos {
+sub _photos {
 	my $self = shift;
 	my $id = $self->id();
-	return Jaeger::Photo->Select("join photo_set_map on photo.id = photo_set_map.photo_id where photo_set_map.photo_set_id = $id order by date");
+	$self->{photos} = [Jaeger::Photo->Select("join photo_set_map on photo.id = photo_set_map.photo_id where photo_set_map.photo_set_id = $id order by date")];
+	return $self->{photos};
 }
 
 sub add {
@@ -41,6 +43,12 @@ sub add {
 		$self->dbh()->do($sql)
 			or warn "$sql;\n";
 	}
+}
+
+sub _title {
+	my $self = shift;
+
+	return $self->{title} = "Photo set: " . $self->{name};
 }
 
 1;
