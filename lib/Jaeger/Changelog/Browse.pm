@@ -13,6 +13,7 @@ use strict;
 
 use Jaeger::Base;
 use Jaeger::Lookfeel;
+use Jaeger::User;
 
 @Jaeger::Changelog::Browse::ISA = qw(Jaeger::Base);
 
@@ -122,7 +123,15 @@ sub _html {
 sub navigation {
 	my $self = shift;
 
+	my $level;
+	if(my $user = Jaeger::User->Login()) {
+		$level = $user->{status};
+	} else {
+		$level = 0;
+	}
+
 	my $sql = "select extract(year from time_begin) from changelog " .
+		"where status <= $level " .
 		"group by date_part order by date_part";
 
 	my $sth = $self->dbh()->prepare($sql);
