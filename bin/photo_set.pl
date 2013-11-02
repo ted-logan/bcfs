@@ -1,0 +1,57 @@
+#!/usr/bin/perl
+
+# Create a directory with all of the photos from each of the photo sets, sorted
+# by date.
+
+use strict;
+
+die "\$BCFS must be set!\n" unless $ENV{BCFS};
+
+use lib "$ENV{BCFS}/lib";
+use Jaeger::Photo;
+use Jaeger::Photo::Set;
+
+foreach my $set (Jaeger::Photo::Set->Select()) {
+	my $dir = $set->directory();
+	printf "%d: %s (%s)\n", $set->id(), $set->name(), $dir;
+
+	unless(-d $dir) {
+		mkdir $dir;
+	}
+
+	my %old = do {
+		opendir DIR, $dir;
+		my @files = grep /\.jpg$/, readdir DIR;
+		closedir DIR;
+		map {$_, undef} @files;
+	};
+
+	my $i;
+
+	my $total = 0;
+	my $new = 0;
+
+	foreach my $photo ($set->photos()) {
+		$i++;
+		next if $photo->{hidden};
+		my $file = sprintf "%04d-%s_%s.jpg",
+			$i, $photo->{round}, $photo->{number};
+		print "$file ($photo->{description})\n";
+		unless(-f "$dir/$file") {
+			link($photo->file_crop(), "$dir/$file")
+				or warn "Can't create link: $!\n";
+			$new++;
+		}
+		$total++;
+		delete $old{$file};
+	}
+
+	my $old = scalar keys %old;
+	if($old) {
+		unlink map {"$dir/$_"} keys %old;
+	}
+
+	print "\n";
+	print "$total total pictures; $new new pictures, $old old pictures\n";
+	print "\n";
+}

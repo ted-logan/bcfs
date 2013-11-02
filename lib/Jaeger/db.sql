@@ -170,3 +170,17 @@ create table mileage (
 	total		float not null,
 	valid		boolean not null default(true)
 );
+
+create table photo_set (
+	id		serial primary key,
+	name		text not null
+);
+
+create table photo_set_map (
+	photo_set_id	int4 references photo_set,
+	photo_id	int4 references photo,
+	unique(photo_set_id, photo_id)
+);
+
+create index photo_set_map_set_index on photo_set_map (photo_set_id);
+create index photo_set_map_photo_index on photo_set_map (photo_id);

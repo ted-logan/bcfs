@@ -135,7 +135,12 @@ sub Select {
 
 	my $whereclause;
 	if(@_ == 1) {
-		$whereclause = ' where ' . shift;
+		my $where = shift;
+		if($where =~ /^join /i) {
+			$whereclause = ' ' . $where;
+		} else {
+			$whereclause = ' where ' . $where;
+		}
 	} elsif(@_) {
 		my %data = @_;
 		$whereclause = ' where ' . join(' and ',
