@@ -96,3 +96,6 @@ div.printfooter { display: none; }
 	margin-left: 1.5em;
 	font-size: 80%;
 }
+div.article img {
+	max-width: 100%;
+}

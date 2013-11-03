@@ -423,7 +423,7 @@ sub inline_photo {
 
 	if($photo) {
 		# Make sure an appropiate thumbnail exists
-		$photo->{size} = "320x240";
+		$photo->{size} = "640x480";
 		$photo->resize();
 
 		return $self->lf()->changelog_inline_photo(
