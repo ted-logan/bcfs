@@ -70,6 +70,10 @@ div.printfooter { display: none; }
 	div.printfooter { display: block; }
 	div.articlenav, div.articlefooter, div.screenfooter, div.mobilenav { display: none; }
 	div#graphic { float: right; }
+	BODY, h1, h2, a, a:visited {
+		background: #fff;
+		color: #000;
+	}
 }
 .lyric {
 	color: #f0f0c0;
@@ -97,5 +101,8 @@ div.printfooter { display: none; }
 	font-size: 80%;
 }
 div.article img {
+	max-width: 100%;
+}
+div.article center img {
 	max-width: 100%;
 }
