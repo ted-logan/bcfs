@@ -74,7 +74,8 @@ foreach my $round (@ARGV) {
 		$time_adjust = 0;
 		$camera_timezone = Jaeger::Timezone->Select(name => 'HKT');
 		$photo_timezone = Jaeger::Timezone->Select(name => 'HKT');
-	} elsif($round eq '273' || $round eq '277') {
+	} elsif($round eq '273' || $round eq '277' || $round eq '285' ||
+			$round eq '291' || $round eq '297') {
 		# Parameters for rounds 273 and 277, taken with my smartphone
 		$ask_camera_timezone = 1;
 		$ask_photo_timezone = 1;
@@ -82,6 +83,10 @@ foreach my $round (@ARGV) {
 		$time_adjust = 0;
 		$camera_timezone = Jaeger::Timezone->Select(name => 'MST');
 		$ask_photo_timezone = 1;
+	} elsif($round eq '283' || $round eq '284') {
+		$time_adjust = 0;
+		$camera_timezone = Jaeger::Timezone->Select(name => 'MDT');
+		$photo_timezone = Jaeger::Timezone->Select(name => 'EDT');
 	} else {
 		# Parameters for other rounds
 		$time_adjust = 0;
@@ -143,13 +148,27 @@ sub annotate_round {
 sub annotate_photo {
 	my $photo = shift;
 
-	# does a cropped photo exist? if not, this photo should be hidden
+	# Does a cropped photo exist? If not, this photo should not be inserted
+	# into the database.
 	unless($photo->file_crop()) {
-		# flag photo as hidden and move on to the next one
-		$photo->{hidden} = 'true';
-#		$photo->update();
 		return;
 	}
+
+	# show the photo
+	my $child_pid = fork();
+	unless(defined $child_pid) {
+		die "Fork failed! $!\n";
+	}
+	if($child_pid == 0) {
+		system "eog \"" . $photo->file() . "\" >/dev/null 2>&1";
+
+		# Wait to be killed by the parent
+		while(1) {
+			sleep 600;
+		}
+	}
+
+	# parent process
 
 	# read the date from the EXIF date and time
 	# (The timestamp will be in the _camera's_ local time,
@@ -176,6 +195,9 @@ sub annotate_photo {
 	unless($photo->{exifdate}) {
 		warn "Exif info not found for ",
 			$photo->file_raw(), "\n";
+		# Fall back to the file mtime. This is less reliable than the
+		# EXIF date, since it is liable to be mangled if the computer's
+		# time zone doesn't match the camera's time zone.
 		$photo->{exifdate} =
 			(stat $photo->file_raw())[9];
 	}
@@ -188,9 +210,6 @@ sub annotate_photo {
 				get_timezone("Photo", $photo_timezone);
 		}
 		$photo->{timezone} = $photo_timezone;
-	}
-	unless($photo->{location_id}) {
-		$photo->{location_id} = 1;
 	}
 
 	if($photo->{exifdate}) {
@@ -208,32 +227,8 @@ sub annotate_photo {
 		$photo->{date} -= $camera_timezone->ofst() * 3600;
 	}
 
-	# does a cropped photo exist? if not, this photo should be hidden
-	unless($photo->file_crop()) {
-		# flag photo as hidden and move on to the next one
-		$photo->{hidden} = 'true';
-		$photo->update();
-		return;
-	}
-
 	# make sure this photo is not flagged as hidden
 	$photo->{hidden} = 'false';
-
-	# show the photo
-	my $child_pid = fork();
-	unless(defined $child_pid) {
-		die "Fork failed! $!\n";
-	}
-	if($child_pid == 0) {
-		system "eog \"" . $photo->file() . "\" >/dev/null 2>&1";
-
-		# Wait to be killed by the parent
-		while(1) {
-			sleep 600;
-		}
-	}
-
-	# parent process
 
 	# get the description of the photo
 	print "\n";
@@ -297,37 +292,8 @@ sub import_round {
 			$photo->{round} = $round;
 			$photo->{number} = $number;
 
-=for later
-			# read the date from the EXIF date and time
-			# (The timestamp will be in the _camera's_ local time,
-			# which may be different from the _photo's_ local time.
-			# This will be adjusted later.)
-			my $exif = new Image::EXIF($photo->file_raw());
-			if($exif && $exif->get_other_info()) {
-				my $date = $exif->get_other_info()
-					->{'Image Generated'};
-				unless($date) {
-					$date = $exif->get_image_info()
-						->{'Image Created'};
-				}
-				if($date) {
-					$photo->{exifdate} = str2time($date,
-						"GMT");
-				} else {
-					warn "EXIF tags not recogonized for ",
-						$photo->file_raw(), "\n";
-					print Dumper($exif->get_all_info());
-				}
-			}
-
-			unless($photo->{exifdate}) {
-				warn "Exif info not found for ",
-					$photo->file_raw(), "\n";
-				$photo->{exifdate} =
-					(stat $photo->file_raw())[9];
-			}
-			$photo->{date} = $photo->{exifdate};
-=cut
+			# Don't read the photo's date yet. Wait to do that
+			# until we solicit time zone input from the user.
 
 			$photos{$number} = $photo;
 		}
