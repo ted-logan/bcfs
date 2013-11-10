@@ -20,10 +20,12 @@ use lib "$ENV{BCFS}/lib";
 use Jaeger::Photo;
 
 use Data::Dumper;
-use FileHandle;
 use POSIX qw(strftime);
-use Image::EXIF;
-use Date::Parse;
+use Image::ExifTool;
+
+# Set an empty timezone to force the EXIF module to not to time-zone
+# conversions, since we'll do them ourselves.
+$ENV{TZ} = "";
 
 autoflush STDOUT 1;
 
@@ -102,6 +104,7 @@ if(@ARGV) {
 	# Note that ssh executes this command in a non-login shell, so any
 	# necessary environment variables (namely, $BCFS) must be set in
 	# .bashrc before the interactive-shell test.
+	print "Updating thumbnails\n";
 	system "ssh honor2.festing.org src/bcfs/bin/thumbnail.pl @ARGV";
 }
 
@@ -154,6 +157,8 @@ sub annotate_photo {
 		return;
 	}
 
+	print "\n";
+
 	# show the photo
 	my $child_pid = fork();
 	unless(defined $child_pid) {
@@ -174,22 +179,13 @@ sub annotate_photo {
 	# (The timestamp will be in the _camera's_ local time,
 	# which may be different from the _photo's_ local time.
 	# This will be adjusted later.)
-	my $exif = new Image::EXIF($photo->file_raw());
-	if($exif && $exif->get_other_info()) {
-		my $date = $exif->get_other_info()
-			->{'Image Generated'};
-		unless($date) {
-			$date = $exif->get_image_info()
-				->{'Image Created'};
-		}
-		if($date) {
-			$photo->{exifdate} = str2time($date,
-				"GMT");
-		} else {
-			warn "EXIF tags not recogonized for ",
-				$photo->file_raw(), "\n";
-			print Dumper($exif->get_all_info());
-		}
+	my $exif = new Image::ExifTool;
+	if($exif && $exif->ExtractInfo($photo->file_raw())) {
+		$exif->Options(DateFormat => '%s');
+		my $dates = $exif->GetInfo('CreateDate', 'ModifyDate');
+		$photo->{exifdate} =
+			$dates->{CreateDate} ||
+			$dates->{ModifyDate};
 	}
 
 	unless($photo->{exifdate}) {
@@ -202,6 +198,9 @@ sub annotate_photo {
 			(stat $photo->file_raw())[9];
 	}
 	$photo->{date} = $photo->{exifdate};
+
+	print $photo->{round}, '/', $photo->{number}, ': Raw timestamp: ',
+		strftime("%H:%M:%S %A %d %B %Y", gmtime $photo->{date}), "\n";
 
 	unless($photo->{timezone_id}) {
 		if($ask_photo_timezone || !defined($photo_timezone)) {
@@ -231,7 +230,6 @@ sub annotate_photo {
 	$photo->{hidden} = 'false';
 
 	# get the description of the photo
-	print "\n";
 	print $photo->{round}, '/', $photo->{number}, ': ',
 		$photo->date_format(), "\n";
 	if($photo->{description}) {
