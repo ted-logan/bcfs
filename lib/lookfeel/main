@@ -14,7 +14,7 @@
 
 <body>
 
-<div style="position: relative;">
+<div class="hpane">
 
 <div id="hacker">
 <div class="hackerblack">
@@ -37,7 +37,7 @@
 <a href="/yoda.cgi">Gas Mileage</a>
 </div>
 
-<div style="position: relative;">
+<div class="hpane">
 <div id="main" class="instapaper_body">
 <div class="article">
 
