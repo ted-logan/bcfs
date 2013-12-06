@@ -8,7 +8,7 @@ a:active { color: #fff; }
 a:visited { color: #d34; }
 div.hpane {
 	position: relative;
-	max-width: 60em;
+	max-width: 70em;
 	margin-left: auto;
 	margin-right: auto;
 }
