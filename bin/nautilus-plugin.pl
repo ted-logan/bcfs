@@ -33,6 +33,7 @@
 use strict;
 
 use Cwd;
+use Image::Magick;
 
 my $pwd = getcwd;
 
@@ -66,7 +67,7 @@ if($0 =~ /update-round/) {
 		} else {
 			# Update all rounds
 			opendir HERE, '.';
-			foreach my $round (grep {-d $_} grep !/^\./, readdir HERE) {
+			foreach my $round (grep {-d $_ && ! -l $_} grep !/^\./, readdir HERE) {
 				update_todo($round);
 			}
 			closedir HERE;
@@ -80,15 +81,12 @@ if($0 =~ /update-round/) {
 	}
 }
 
-# Updates the contents of the todo directory (which must exist) and updates
-# the todo-xxx symlinks.
+# Updates the contents of the todo directory (which must exist)
 #
 # The first argument is the path (relative or absolute) to the round (which
 # will have subdirectories "todo", "raw", and "new").
 sub update_todo {
 	my $round_path = shift;
-
-	warn "Update todo: $round_path\n";
 
 	my $abs_round_path = Cwd::abs_path($round_path);
 	unless($abs_round_path =~ m#photos/dc/([^/]+)$#) {
@@ -97,7 +95,11 @@ sub update_todo {
 	}
 	my $round = $1;
 
-	warn "Abs path=$abs_round_path; round=$round\n";
+	if($round eq 'todo') {
+		# This is not a real round, but a directory containing all
+		# pending pictures
+		return undef;
+	}
 
 	mkdir "$round_path/new" unless -d "$round_path/new";
 
@@ -119,6 +121,37 @@ sub update_todo {
 	my $todo_file_count = 0;
 
 	foreach my $file (@files) {
+		if(-f "$round_path/full/$file" && !-f "$round_path/new/$file") {
+			# Full-sized image that will be cropped down for posting
+			my ($width, $height) = qw(1600 1200);
+
+			my $img = new Image::Magick;
+			$img->Read("$round_path/full/$file");
+			my ($owidth, $oheight) = $img->Get('width', 'height');
+
+			my ($nwidth, $nheight);
+
+			my $aspect = $owidth / $oheight;
+			if($aspect > ($width / $height)) {
+				$nwidth = $width;
+				$nheight = int($width / $aspect);
+			} else {
+				$nwidth = int($height * $aspect);
+				$nheight = $height;
+			}
+
+			if(($nwidth > $owidth) || ($nheight > $oheight)) {
+				# Image is full-size anyway
+				link "$round_path/full/$file",
+					"$round_path/new/$file";
+			} else {
+				$img->Resize(width => $nwidth,
+					height => $nheight);
+				$img->Set(quality => 85);
+				$img->Write("$round_path/new/$file");
+			}
+		}
+
 		if(-f "$round_path/new/$file") {
 			# File has been cropped; remove it from the todo dir
 			unlink "$round_path/todo/$file"
@@ -138,27 +171,23 @@ sub update_todo {
 		}
 	}
 
+	print "$round: $todo_file_count todo\n";
+
 	if($todo_file_count == 0) {
-		rmdir "$round_path/todo";
+		if(-d "$round_path/todo") {
+			rmdir "$round_path/todo"
+				or warn "Can't remove $round_path/todo: $!\n";
+		}
+		if(-d "$round_path/raw") {
+			unlink glob "$round_path/raw/*";
+			rmdir "$round_path/raw"
+				or warn "Can't remove $round_path/raw: $!\n";
+		}
 	}
 
 	my $current_todo_file = glob "$round_path/../$round-*_todo";
-	my $new_todo_file = "$round_path/../$round-${todo_file_count}_todo";
 	if(defined($current_todo_file)) {
-		if($current_todo_file ne $new_todo_file) {
-			unlink $current_todo_file;
-			if($todo_file_count > 0) {
-				symlink "$round/todo", $new_todo_file;
-			} else {
-				symlink "$round/new", $new_todo_file;
-			}
-		}
-	} else {
-		if($todo_file_count > 0) {
-			symlink "$round/todo", $new_todo_file;
-		} else {
-			symlink "$round/new", $new_todo_file;
-		}
+		unlink $current_todo_file;
 	}
 
 	return $todo_file_count;
