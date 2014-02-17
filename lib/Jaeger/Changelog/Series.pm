@@ -42,20 +42,14 @@ sub changelogs {
 		$level = 0;
 	}
 
-	my $subquery =
-		"select changelog_id from changelog_series_entry " .
-		"where series_id = $self->{id} " .
-		"order by sort_order";
-
-	# I can't quite figure out how to get my database-object mapper to sort
-	# by changelog_series_entry.sort_order, so I'm sorting by
-	# changelog.time_begin until I tweak my database-object mapper to
-	# support joins, which won't happen until I desperately need this
-	# feature.
+	# Select all of the changelogs from the series (visible by the current
+	# user), sorting by the sort_order
 	return Jaeger::Changelog->Select(
-		"status <= $level and " .
-		"id in ($subquery) " .
-		"order by time_begin"
+		"join changelog_series_entry " .
+		"on changelog.id = changelog_series_entry.changelog_id " .
+		"where series_id = $self->{id} " .
+		"and status <= $level " .
+		"order by sort_order"
 	);
 }
 
