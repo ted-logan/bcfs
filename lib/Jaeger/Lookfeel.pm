@@ -103,6 +103,11 @@ sub _changelog {
 		);
 	}
 
+	if($params{summary}) {
+		$params{content} = '<blockquote><i>' . $params{summary} .
+			"</i></blockquote>\n" . $params{content};
+	}
+
 	return %params;
 }
 
