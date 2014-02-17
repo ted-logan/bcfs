@@ -153,7 +153,8 @@ sub Select {
 		die "$package doesn't have a table\n";
 	}
 
-	my $sql = "select * from " . $package->table() . $whereclause;
+	my $sql = "select " . $package->table() . ".* from " .
+		$package->table() . $whereclause;
 
 	my $sth = $dbh->prepare($sql);
 	$sth->execute()
