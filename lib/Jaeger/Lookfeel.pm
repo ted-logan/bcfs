@@ -257,6 +257,10 @@ sub _main {
 
 	# populate the navigation links
 
+	my $q = Jaeger::Base::Query();
+
+	push @navbar, $self->search_box(q => $q->param('q'));
+
 	if(ref $obj[0] eq 'Jaeger::Changelog') {
 		push @navbar, $obj[0]->Navbar();
 	} else {
@@ -278,14 +282,6 @@ sub _main {
 	}
 
 	$params{navbar} = $self->links(linkbox => join('', @navbar));
-
-	my $q = Jaeger::Base::Query();
-
-	# populate content solutions data: links, chatterbox
-	$params{links} = $self->search_box(q => $q->param('q'));
-	$params{chatterbox} = $self->chatterbox(
-		chatter => 'Coming soon, we hope'
-	);
 
 	# populate the content
 	if(@obj > 1) {
