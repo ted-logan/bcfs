@@ -6,6 +6,10 @@
 <link rel="stylesheet" href="/jaeger.css" type="text/css"/>
 ---screencss---
 <meta name="description" content="---description---" />
+<meta name="twitter:card" content="photo" />
+<meta name="twitter:site" content="@calvinsdad" />
+<meta name="twitter:title" content="---description---" />
+<meta name="twitter:image" content="---photo---" />
 ---navlink---
 <title>j&auml;gerfesting---title---</title>
 </head>

@@ -438,6 +438,28 @@ sub inline_photo {
 	return undef;
 }
 
+# Look for the first <photo/> in the changelog, and use that as the summary
+# image. I can think of places where the first image is not the most obvious
+# image to use, but this will at least get us going.
+sub _image {
+	my $self = shift;
+
+	if($self->{content} =~ /(<photo .*?\/>)/) {
+		my $tag = $1;
+
+		my ($round) = $tag =~ /round="(\w+)"/;
+		my ($number) = $tag =~ /number="(\w+)"/;
+
+		return scalar Jaeger::Photo->Select(
+			round => $round,
+			number => $number
+		);
+		
+	}
+
+	return undef;
+}
+
 # returns the Postgres-compatible date of this object so we can show related
 # content
 sub _date {

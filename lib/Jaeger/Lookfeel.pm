@@ -224,6 +224,10 @@ sub _main {
 			title => $index->title(),
 		);
 	}
+	push @navlink,
+		'<meta name="twitter:card" content="summary" />';
+	push @navlink,
+		'<meta name="twitter:site" content="@calvinsdad" />';
 	if(my $summary = $obj[0]->summary()) {
 		# Summary should be plain text. Encode it.
 		$summary =~ s/&/&amp;/g;
@@ -232,8 +236,24 @@ sub _main {
 		$summary =~ s/>/&gt;/g;
 		push @navlink,
 			qq'<meta name="description" content="$summary" />';
+		push @navlink,
+			qq'<meta name="twitter:description" content="$summary" />';
 	}
-	$params{navlink} = join('', @navlink);
+	if(my $title = $obj[0]->title()) {
+		$title =~ s/&/&amp;/g;
+		$title =~ s/"/&quot;/g;
+		$title =~ s/</&lt;/g;
+		$title =~ s/>/&gt;/g;
+		push @navlink,
+			qq'<meta name="twitter:title" content="$title" />';
+	}
+	if(my $image = $obj[0]->image()) {
+		my $size = "640x480";
+		$image->resize($size);
+		push @navlink,
+			qq'<meta name="twitter:image" content="${Jaeger::Base::BaseURL}digitalpics/' . $image->round() . "/$size/" . $image->number() . '.jpg" />';
+	}
+	$params{navlink} = join("\n", @navlink);
 
 	# get a quote
 	my $fortune = new Fortune;
@@ -326,9 +346,16 @@ sub _photo_main {
 
 	my %params;
 
+	my @navlink;
 	if(my $title = $obj->title()) {
 		$params{title} = ": $title";
 		$params{description} = "$title.";
+	}
+	if(ref $obj eq 'Jaeger::Photo') {
+		my $size = "640x480";
+		$obj->resize($size);
+		$params{photo} = ${Jaeger::Base::BaseURL} . 'digitalpics/' .
+			$obj->round() . "/$size/" . $obj->number() . '.jpg';
 	}
 
 	# set human-readable navigation links
@@ -339,7 +366,6 @@ sub _photo_main {
 	);
 
 	# set machine-readable navigation links
-	my @navlink;
 	if(my $prev = $obj->prev()) {
 		push @navlink, $self->navlink(
 			type => 'prev',
