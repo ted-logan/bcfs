@@ -52,8 +52,8 @@ if(my $round = $q->param('round')) {
 			# Good. The photo exists.
 			if($q->param('size')) {
 				$page->{size} = $q->param('size');
-			} elsif($page->native() > 800) {
-				$page->{size} = '800x600';
+			} elsif($page->native() > 1024) {
+				$page->{size} = '1024x768';
 			}
 			$page->resize();
 
