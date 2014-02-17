@@ -41,6 +41,9 @@ div.articlenav {
 div#photo_main {
 	text-align: center;
 }
+div#phototitlebar h1 {
+	margin-bottom: 0.2em;
+}
 h1 {
 	color: #fff;
 	background: #000;

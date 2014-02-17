@@ -389,9 +389,21 @@ sub _photo_main {
 	}
 	$params{navlink} = join('', @navlink);
 
-	$params{content} = $obj->html();
-
 	$params{screencss} = $self->screencss();
+
+	# Fill in the content from the photo itself
+	$params{phototitle} = $obj->{description};
+	$params{date} = $obj->date_format();
+	$params{round} = $obj->round();
+	$params{number} = $obj->number();
+	$params{size} = $obj->size();
+
+	if(defined($obj->{longitude}) && defined($obj->{latitude})) {
+		$params{location} = $self->photo_coordinates(
+			longitude => $obj->{longitude},
+			latitude => $obj->{latitude},
+		);
+	}
 
 	return %params;
 }
