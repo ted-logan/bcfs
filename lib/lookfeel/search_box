@@ -1,4 +1,5 @@
 <h2><a href="/search.cgi">Search</a></h2>
+<div class="search">
 <form action="/search.cgi" method="get">
 <input name="q" value="---q---">
 <select name="search">
@@ -9,3 +10,4 @@
 <option value="journal">Journals</option>
 </select>
 <input type="submit" value="Search!">
+</div>
