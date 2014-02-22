@@ -1,32 +1,7 @@
-<h1>Create User: Step 1</h1>
+<h1>Create User</h1>
 
 <p>
-Becoming an officially-registered j&auml;gerfesting user has many advantages.
-At least, that's what the marketing department told me to put here.
+New account creation is disabled at this time due to spam account creation.
+Please e-mail me
+(<a href="mailto:jaeger@festing.org">jaeger@festing.org</a>) for an account.
 </p>
-
-<p>
-<b>You'll need to enter a real, live, valid e-mail address here.</b> 
-Your account won't be active until you can respond with the magic cookie
-that will be sent to the e-mail address you specify. So if you're a
-spammer and you think you can bypass the form by entering a bogus
-address, you're deluding yourself, and you might as well not waste your
-time. This is not the blog you're looking for. Of course, if you're a
-spammer, you probably won't bother reading this.
-</p>
-
-<p>
-<b>---message---</b>
-</p>
-
-<form action="/create.cgi" method="post">
-<input type="hidden" name="step" value="1">
-
-<table>
-<tr><td><b>Login:</b></td> <td><input name="login" value="---login---"></td></tr>
-<tr><td><b>Name/Alias:</b></td> <td><input name="name" value="---name---"></td></tr>
-<tr><td><b>e-mail:</b></td> <td><input name="email" value="---email---"></td></tr>
-<tr><td colspan="2"><input value="Create" type="submit"></td></tr>
-</table>
-
-</form>
