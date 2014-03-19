@@ -65,7 +65,9 @@ my $photo_timezone;
 my $ask_photo_timezone = 0;
 
 foreach my $round (@ARGV) {
-	if($round eq '272' || $round eq '274') {
+	if(read_config($round)) {
+		# Use time zone configuration from the file
+	} elsif($round eq '272' || $round eq '274') {
 		# Parameters for rounds 272, 274, taken with my Nikon D50 in
 		# Hong Kong
 		$time_adjust = -503;
@@ -81,7 +83,7 @@ foreach my $round (@ARGV) {
 		# Parameters for rounds 273 and 277, taken with my smartphone
 		$ask_camera_timezone = 1;
 		$ask_photo_timezone = 1;
-	} elsif($round eq '278') {
+	} elsif($round eq '278' || $round eq '299') {
 		$time_adjust = 0;
 		$camera_timezone = Jaeger::Timezone->Select(name => 'MST');
 		$ask_photo_timezone = 1;
@@ -89,11 +91,38 @@ foreach my $round (@ARGV) {
 		$time_adjust = 0;
 		$camera_timezone = Jaeger::Timezone->Select(name => 'MDT');
 		$photo_timezone = Jaeger::Timezone->Select(name => 'EDT');
+	} elsif($round eq '298') {
+		$time_adjust = -391;
+		$camera_timezone = Jaeger::Timezone->Select(name => 'MDT');
+		$photo_timezone = Jaeger::Timezone->Select(name => 'MST');
+	} elsif($round eq '300' || $round eq '301') {
+		$time_adjust = 0;
+		$camera_timezone = Jaeger::Timezone->Select(name => 'MST');
+		$photo_timezone = Jaeger::Timezone->Select(name => 'MST');
+	} elsif($round eq '302') {
+		$time_adjust = 0;
+		$camera_timezone = Jaeger::Timezone->Select(name => 'MST');
+		$photo_timezone = Jaeger::Timezone->Select(name => 'PST');
 	} else {
 		# Parameters for other rounds
-		$time_adjust = 0;
-		$camera_timezone = Jaeger::Timezone->Select(name => 'MDT');
-		$photo_timezone = Jaeger::Timezone->Select(name => 'MDT');
+		my $ask = { name => 'ask' };
+
+		$camera_timezone = get_timezone('Default camera', $ask);
+		if($camera_timezone->{name} eq 'ask') {
+			$camera_timezone = undef;
+			$ask_camera_timezone = 1;
+		}
+
+		$photo_timezone = get_timezone('Default photo', $ask);
+		if($photo_timezone->{name} eq 'ask') {
+			$photo_timezone = undef;
+			$ask_photo_timezone = 1;
+		}
+
+		print "Time adjustment (seconds): ";
+		$time_adjust = <STDIN>;
+
+		write_config($round);
 	}
 	annotate_round($round, $new);
 }
@@ -175,12 +204,20 @@ sub annotate_photo {
 
 	# parent process
 
+	my $filename = do {
+		if(-f $photo->file_raw()) {
+			$photo->file_raw();
+		} else {
+			$photo->file_crop();
+		}
+	};
+
 	# read the date from the EXIF date and time
 	# (The timestamp will be in the _camera's_ local time,
 	# which may be different from the _photo's_ local time.
 	# This will be adjusted later.)
 	my $exif = new Image::ExifTool;
-	if($exif && $exif->ExtractInfo($photo->file_raw())) {
+	if($exif && $exif->ExtractInfo($filename)) {
 		$exif->Options(DateFormat => '%s');
 		my $dates = $exif->GetInfo('CreateDate', 'ModifyDate');
 		$photo->{exifdate} =
@@ -190,12 +227,12 @@ sub annotate_photo {
 
 	unless($photo->{exifdate}) {
 		warn "Exif info not found for ",
-			$photo->file_raw(), "\n";
+			$filename, "\n";
 		# Fall back to the file mtime. This is less reliable than the
 		# EXIF date, since it is liable to be mangled if the computer's
 		# time zone doesn't match the camera's time zone.
 		$photo->{exifdate} =
-			(stat $photo->file_raw())[9];
+			(stat $filename)[9];
 	}
 	$photo->{date} = $photo->{exifdate};
 
@@ -356,4 +393,66 @@ sub get_timezone {
 	} while(!defined($new_timezone));
 
 	return $new_timezone;
+}
+
+sub read_config {
+	my $round = shift;
+	if(-f "$Jaeger::Photo::Dir/$round/.config") {
+		open CONFIG, "$Jaeger::Photo::Dir/$round/.config"
+			or die "Can't read from config file for $round: $!\n";
+
+		while(<CONFIG>) {
+			if(/^camera timezone:\s*(\w*)$/) {
+				if($1) {
+					$camera_timezone =
+						Jaeger::Timezone->Select(
+							name => $1);
+					unless($camera_timezone) {
+						warn "Unrecogonized camera time zone $1\n";
+					}
+				} else {
+					$ask_camera_timezone = 1;
+				}
+			}
+			if(/^photo timezone:\s*(\w*)$/) {
+				if($1) {
+					$photo_timezone =
+						Jaeger::Timezone->Select(
+							name => $1);
+					unless($photo_timezone) {
+						warn "Unrecogonized photo time zone $1\n";
+					}
+				} else {
+					$ask_photo_timezone = 1;
+				}
+			}
+			if(/^time adjust: (\d+)/) {
+				$time_adjust = $1;
+			}
+		}
+		close CONFIG;
+	}
+}
+
+sub write_config {
+	my $round = shift;
+
+	open CONFIG, ">", "$Jaeger::Photo::Dir/$round/.config"
+		or die "Can't write to config file for $round: $!\n";
+
+	print CONFIG "camera timezone:";
+	if(!$ask_camera_timezone && defined $camera_timezone) {
+		print CONFIG " ", $camera_timezone->name();
+	}
+	print CONFIG "\n";
+
+	print CONFIG "photo timezone:";
+	if(!$ask_photo_timezone && defined $photo_timezone) {
+		print CONFIG " ", $photo_timezone->name();
+	}
+	print CONFIG "\n";
+
+	printf CONFIG "time adjust: %d\n", $time_adjust;
+
+	close CONFIG;
 }
