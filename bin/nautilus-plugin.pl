@@ -101,6 +101,7 @@ sub update_todo {
 		return undef;
 	}
 
+	mkdir "$round_path/full" unless -d "$round_path/full";
 	mkdir "$round_path/new" unless -d "$round_path/new";
 
 	# Read the list of all the files in the raw directory
