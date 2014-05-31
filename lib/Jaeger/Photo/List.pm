@@ -33,12 +33,7 @@ sub html {
 
 	my @html;
 
-	push @html, $self->lf()->changelog_title(title => $self->title());
-
 	my $photos = $self->photos();
-
-	push @html, "<p>", scalar(@$photos), " photo",
-		(@$photos == 1 ? '' : 's'), "</p>\n";
 
 	foreach my $photo (sort {$a->{date} <=> $b->{date}} @$photos) {
 		$photo->{size} = "256x192";
@@ -59,4 +54,11 @@ sub html {
 HTML
 
 	return join('', @html);
+}
+
+sub subtitle {
+	my $self = shift;
+	my $photos = $self->photos();
+	return sprintf "%d photo%s",
+		scalar(@$photos), (@$photos == 1 ? '' : 's');
 }

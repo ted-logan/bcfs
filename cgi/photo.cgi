@@ -96,6 +96,6 @@ if($q->param('slideshow')) {
 			ref($page) eq 'Jaeger::Slideshow::Photo') {
 		print $lf->photo_main($page);
 	} else {
-		print $lf->main($page);
+		print $lf->photo_list_main($page);
 	}
 }

@@ -60,7 +60,6 @@ sub year_thumbnail {
 
 	my @html;
 
-	push @html, "<h1>$year</h1>\n";
 	for(my $month = 1; $month < 13; $month++) {
 		my $style = "padding-right: 1em; float: left;";
 		if(($month % 3) == 1) {

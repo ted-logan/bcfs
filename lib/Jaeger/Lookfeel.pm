@@ -408,6 +408,62 @@ sub _photo_main {
 	return %params;
 }
 
+sub _photo_list_main {
+	my $self = shift;
+	my $obj = shift;
+
+	my %params;
+
+	my @navlink;
+	if(my $title = $obj->title()) {
+		$params{title} = ": $title";
+		$params{description} = "$title.";
+		$params{phototitle} = $title;
+	}
+	if(my $subtitle = $obj->subtitle()) {
+		$params{subtitle} = $subtitle;
+	} else {
+		$params{subtitle} = '&nbsp;';
+	}
+
+	# set human-readable navigation links
+	$params{navlinks} = $self->navlinks(
+		prev => $obj->prev(),
+		index => $obj->index(),
+		next => $obj->next(),
+	);
+
+	# set machine-readable navigation links
+	if(my $prev = $obj->prev()) {
+		push @navlink, $self->navlink(
+			type => 'prev',
+			url => $prev->url(),
+			title => $prev->title(),
+		);
+	}
+	if(my $next = $obj->next()) {
+		push @navlink, $self->navlink(
+			type => 'next',
+			url => $next->url(),
+			title => $next->title(),
+		);
+	}
+	if(my $index = $obj->index()) {
+		push @navlink, $self->navlink(
+			type => 'parent',
+			url => $index->url(),
+			title => $index->title(),
+		);
+	}
+	$params{navlink} = join('', @navlink);
+
+	$params{screencss} = $self->screencss();
+
+	$params{content} = $obj->html();
+
+	return %params;
+}
+
 sub _slideshow {
 	my $self = shift;
 	my $obj = shift;

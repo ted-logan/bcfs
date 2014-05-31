@@ -51,4 +51,10 @@ sub _title {
 	return $self->{title} = "Photo set: " . $self->{name};
 }
 
+sub _url {
+	my $self = shift;
+
+	return $self->{url} = "photo.cgi?set=$self->{id}";
+}
+
 1;

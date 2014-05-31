@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://gmpg.org/xfn/1">
+<link REL="icon" HREF="/graphics/aicon.png" TYPE="image/png"/>
+<link rel="stylesheet" href="/jaeger.css" type="text/css"/>
+---screencss---
+---navlink---
+<title>j&auml;gerfesting---title---</title>
+</head>
+
+<body>
+
+<div id="phototitlebar" class="article">
+<div style="float:left; background:#125;">
+<a href="http://jaeger.festing.org/changelog/"><img src="/graphics/jaegerfesting.png" alt="jaegerfesting" border="0" height="46" width="283"/></a>
+</div>
+<div>
+<h1>---phototitle---</h1>
+<h3>---subtitle---</h3>
+</div>
+</div>
+
+<div id="photo_main">
+
+<div class="article">
+
+---content---
+
+<div class="articlenav" id="articlenav">
+---navlinks---
+</div>
+
+</div>
+
+<div style="font-size: small; text-align: center;">
+<p>
+&copy; 1998-2014 Theodore Logan. All rights reserved.
+</p>
+</div>
+
+</div>
+
+</body></html>
