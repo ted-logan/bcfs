@@ -219,8 +219,14 @@ sub annotate_photo {
 	my $exif = new Image::ExifTool;
 	if($exif && $exif->ExtractInfo($filename)) {
 		$exif->Options(DateFormat => '%s');
-		my $dates = $exif->GetInfo('CreateDate', 'ModifyDate');
+		# Each of my photo-taking devices populates slightly different
+		# date metadata. My Nexus 7 (2013) tablet populates a creation
+		# date that is /wrong/, so use the Date/Time Original first. My
+		# Droid 3 phone populates only Modify Date.
+		my $dates = $exif->GetInfo('DateTimeOriginal', 'CreateDate',
+			'ModifyDate');
 		$photo->{exifdate} =
+			$dates->{DateTimeOriginal} ||
 			$dates->{CreateDate} ||
 			$dates->{ModifyDate};
 	}
