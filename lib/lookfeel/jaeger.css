@@ -1,11 +1,12 @@
 /* $Id: jaeger.css,v 1.5 2006-06-22 03:49:05 jaeger Exp $ */
 BODY {
 	background: #000;
-	color: #ffc;
+	color: #ffd;
 }
 a { color: #2d2; }
 a:active { color: #fff; }
 a:visited { color: #d34; }
+b { color: #ffe; }
 div.hpane {
 	position: relative;
 	max-width: 70em;
