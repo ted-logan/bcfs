@@ -33,11 +33,7 @@ unless(@ARGV) {
 	die "What rounds to import?\n";
 }
 
-my $new = 0;
-if(grep /--new/, @ARGV) {
-	$new = 1;
-	@ARGV = grep !/--new/, @ARGV;
-}
+my $new = 1;
 
 # The number of seconds to _add_ to the time to adjust for the camera's clock
 # being behind
@@ -65,6 +61,19 @@ my $photo_timezone;
 my $ask_photo_timezone = 0;
 
 foreach my $round (@ARGV) {
+	if($round =~ s/\/(\w+)$//) {
+		my $photo = Jaeger::Photo->Select(
+			round => $round,
+			number => $1
+		);
+		if($photo) {
+			annotate_photo($photo);
+		} else {
+			warn "Cannot find an existing photo $round/$1\n";
+		}
+		next;
+	}
+
 	if(read_config($round)) {
 		# Use time zone configuration from the file
 	} elsif($round eq '272' || $round eq '274') {
@@ -204,57 +213,57 @@ sub annotate_photo {
 
 	# parent process
 
-	my $filename = do {
-		if(-f $photo->file_raw()) {
-			$photo->file_raw();
-		} else {
-			$photo->file_crop();
-		}
-	};
-
-	# read the date from the EXIF date and time
-	# (The timestamp will be in the _camera's_ local time,
-	# which may be different from the _photo's_ local time.
-	# This will be adjusted later.)
-	my $exif = new Image::ExifTool;
-	if($exif && $exif->ExtractInfo($filename)) {
-		$exif->Options(DateFormat => '%s');
-		# Each of my photo-taking devices populates slightly different
-		# date metadata. My Nexus 7 (2013) tablet populates a creation
-		# date that is /wrong/, so use the Date/Time Original first. My
-		# Droid 3 phone populates only Modify Date.
-		my $dates = $exif->GetInfo('DateTimeOriginal', 'CreateDate',
-			'ModifyDate');
-		$photo->{exifdate} =
-			$dates->{DateTimeOriginal} ||
-			$dates->{CreateDate} ||
-			$dates->{ModifyDate};
-	}
-
-	unless($photo->{exifdate}) {
-		warn "Exif info not found for ",
-			$filename, "\n";
-		# Fall back to the file mtime. This is less reliable than the
-		# EXIF date, since it is liable to be mangled if the computer's
-		# time zone doesn't match the camera's time zone.
-		$photo->{exifdate} =
-			(stat $filename)[9];
-	}
-	$photo->{date} = $photo->{exifdate};
-
-	print $photo->{round}, '/', $photo->{number}, ': Raw timestamp: ',
-		strftime("%H:%M:%S %A %d %B %Y", gmtime $photo->{date}), "\n";
-
 	unless($photo->{timezone_id}) {
+		my $filename = do {
+			if(-f $photo->file_raw()) {
+				$photo->file_raw();
+			} else {
+				$photo->file_crop();
+			}
+		};
+
+		# read the date from the EXIF date and time
+		# (The timestamp will be in the _camera's_ local time,
+		# which may be different from the _photo's_ local time.
+		# This will be adjusted later.)
+		my $exif = new Image::ExifTool;
+		if($exif && $exif->ExtractInfo($filename)) {
+			$exif->Options(DateFormat => '%s');
+			# Each of my photo-taking devices populates slightly
+			# different date metadata. My Nexus 7 (2013) tablet
+			# populates a creation date that is /wrong/, so use the
+			# Date/Time Original first. My Droid 3 phone populates
+			# only Modify Date.
+			my $dates = $exif->GetInfo('DateTimeOriginal',
+				'CreateDate', 'ModifyDate');
+			$photo->{exifdate} =
+				$dates->{DateTimeOriginal} ||
+				$dates->{CreateDate} ||
+				$dates->{ModifyDate};
+		}
+
+		unless($photo->{exifdate}) {
+			warn "Exif info not found for ",
+				$filename, "\n";
+			# Fall back to the file mtime. This is less reliable
+			# than the EXIF date, since it is liable to be mangled
+			# if the computer's time zone doesn't match the
+			# camera's time zone.
+			$photo->{exifdate} =
+				(stat $filename)[9];
+		}
+		$photo->{date} = $photo->{exifdate};
+
+		print $photo->{round}, '/', $photo->{number}, ': Raw timestamp: ',
+			strftime("%H:%M:%S %A %d %B %Y", gmtime $photo->{date}), "\n";
+
 		if($ask_photo_timezone || !defined($photo_timezone)) {
 			print $photo->{round}, '/', $photo->{number}, ': ';
 			$photo_timezone =
 				get_timezone("Photo", $photo_timezone);
 		}
 		$photo->{timezone} = $photo_timezone;
-	}
 
-	if($photo->{exifdate}) {
 		# If this is a new photo, adjust the timestamp by the given
 		# adjustment
 		$photo->{date} = $photo->{exifdate} + $time_adjust;
