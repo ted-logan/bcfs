@@ -306,14 +306,15 @@ sub html {
 	);
 }
 
-# Always use round and number to select the previous and next photos.
-# I'm fairly confident this isn't the number one best way to do this, but
-# my attempt at writing another query failed miserabally. This at least works.
+# This date-based previous/next matching will probably break on very old
+# photos, where the database does not record timestamps more precise than days,
+# so many photos have the same timestamp; but it will behave as expected for
+# everything newer.
 
 sub _prev {
 	my $self = shift;
 
-	$self->{prev} = $self->Select("((round = '$self->{round}' and number < '$self->{number}') or (round < '$self->{round}')) and not hidden order by round desc, number desc limit 1");
+	$self->{prev} = $self->Select("date < $self->{date} and not hidden order by date desc limit 1");
 
 	return $self->{prev};
 }
@@ -321,7 +322,7 @@ sub _prev {
 sub _next {
 	my $self = shift;
 
-	$self->{next} = $self->Select("((round = '$self->{round}' and number > '$self->{number}') or (round > '$self->{round}')) and not hidden order by round, number limit 1");
+	$self->{next} = $self->Select("date > $self->{date} and not hidden order by date limit 1");
 
 	return $self->{next};
 }
