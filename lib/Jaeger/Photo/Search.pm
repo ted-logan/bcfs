@@ -25,7 +25,7 @@ sub _content {
 
 	# select the photos
 	my @photos = Jaeger::Photo->Select(
-		$self->{search}->like('description')
+		$self->{search}->like('description') . 'order by date desc'
 	);
 
 	# rank the photos
