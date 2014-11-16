@@ -184,3 +184,18 @@ create table photo_set_map (
 
 create index photo_set_map_set_index on photo_set_map (photo_set_id);
 create index photo_set_map_photo_index on photo_set_map (photo_id);
+
+create table tag (
+	id		serial primary key,
+	name		text not null
+);
+
+create table changelog_tag_map (
+	tag_id		int4 references tag,
+	changelog_id	int4 references changelog,
+	unique(tag_id, changelog_id)
+);
+
+create index changelog_tag_map_tag_index on changelog_tag_map (tag_id);
+create index changelog_tag_map_changelog_index on changelog_tag_map (changelog_id);
+

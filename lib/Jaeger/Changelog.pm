@@ -35,6 +35,70 @@ sub table {
 	return 'changelog';
 }
 
+sub update {
+	my $self = shift;
+
+	# Check if any tags were changed; and if so, make the appropriate
+	# changes in the database
+	if($self->{tags}) {
+		my @new_tags;
+		foreach my $tag (@{$self->{tags}}) {
+			unless(grep {$_ eq $tag} @{$self->{_tags}}) {
+				$self->add_tag($tag);
+			}
+		}
+		if(@new_tags) {
+		}
+
+		my @delete_tags;
+		foreach my $tag (@{$self->{_tags}}) {
+			unless(grep {$_ eq $tag} @{$self->{tags}}) {
+				push @delete_tags, $tag;
+			}
+		}
+		if(@delete_tags) {
+			my $sql = "delete from changelog_tag_map " .
+				"where changelog_id = $self->{id} and " .
+				"tag_id in (" .
+				"select id from tag where name in (" .
+				join(', ', map {"'$_'"} @delete_tags) . "))";
+			Jaeger::Base::Pgdbh()->do($sql)
+				or warn "Delete tags: $sql;\n";
+		}
+
+		$self->{_tags} = $self->{tags};
+	}
+
+	return $self->SUPER::update();
+}
+
+sub add_tag {
+	my $self = shift;
+	my $tag = shift;
+
+	my $id;
+	do {
+		my $sql = "select id from tag where name = '" . $tag . "'";
+		my $tag_id = Jaeger::Base::Pgdbh()->selectcol_arrayref($sql);
+		if($tag_id) {
+			$id = $tag_id->[0];
+		} else {
+			my $sql = "insert into tag (name) values ('" .
+				$tag . "')";
+			unless(Jaeger::Base::Pgdbh()->do($sql)) {
+				warn "Insert tag: $sql;\n";
+				return;
+			}
+		}
+	} while(!defined $id);
+
+	# Now that we have the tag id, insert it
+	my $sql = "insert into changelog_tag_map " .
+		"values ($id, $self->{id})";
+	Jaeger::Base::Pgdbh()->do($sql)
+		or warn "Add tag $tag: $sql;\n";
+}
+
 # returns the newest changelog
 sub Newest {
 	my $package = shift;
@@ -145,6 +209,7 @@ sub _edit_pipe {
 	print TEMPFILE "End:    \t$self->{time_end}\n";
 	print TEMPFILE "Status: \t$self->{status}\n";
 	print TEMPFILE "Summary:\t$self->{summary}\n";
+	print TEMPFILE "Tags:   \t", join(' ', @{$self->tags()}), "\n";
 	print TEMPFILE "\n";
 	print TEMPFILE $self->{content};
 	close TEMPFILE;
@@ -266,6 +331,12 @@ sub import_file {
 
 	if(exists $header{status} && ($header{status} != $self->{status})) {
 		$self->{status} = $header{status};
+		$changed = 1;
+	}
+
+	if(exists $header{tags} &&
+			($header{tags} ne join(' ', @{$self->tags()}))) {
+		$self->{tags} = [split /\s+/, lc $header{tags}];
 		$changed = 1;
 	}
 
@@ -614,6 +685,23 @@ sub _pubDate {
 
 	return $self->{pubDate} = POSIX::strftime("%a, %d %b %Y %H:%M:%S %z",
 		localtime $self->parsetimestamp($self->time_end()));
+}
+
+sub _tags {
+	my $self = shift;
+	my $id = $self->id();
+
+	my $sql = "select name from tag " .
+		"join changelog_tag_map on tag.id = changelog_tag_map.tag_id " .
+		"where changelog_id = $id";
+	my $tags = Jaeger::Base::Pgdbh()->selectcol_arrayref($sql);
+
+	warn "Changelog->tags(): $sql;\n" unless $tags;
+
+	# Cache the tags from the database so we can compare them if we're
+	# editing the entry
+	$self->{_tags} = $tags;
+	return $self->{tags} = $tags;
 }
 
 1;
