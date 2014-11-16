@@ -47,8 +47,6 @@ sub update {
 				$self->add_tag($tag);
 			}
 		}
-		if(@new_tags) {
-		}
 
 		my @delete_tags;
 		foreach my $tag (@{$self->{_tags}}) {
@@ -439,6 +437,12 @@ sub _html {
 	}
 
 	my %params = %$self;
+
+	if($self->tags()) {
+		$params{navigation} .= $self->lf()->changelog_tags(
+			tags => join(' ', map {"<a href=\"/changelog/tag/$_\">$_</a>"} @{$self->tags()}),
+		);
+	}
 
 	my @serieses = Jaeger::Changelog::Series->new_by_changelog($self);
 	foreach my $series (@serieses) {

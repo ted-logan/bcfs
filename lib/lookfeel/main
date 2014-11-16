@@ -88,14 +88,6 @@ Downloaded ---date--- from ---url---
 <div class="navbar">
 <img src="/graphics/logo.png" width=118 height=206 alt="">
 
-<!-- twitter -->
-<div id="twitter_div">
-<h2 class="sidebar-title">Twitter Updates</h2>
-<ul id="twitter_update_list"></ul>
-<a href="http://twitter.com/calvinsdad" id="twitter-link" style="display:block;text-align:right;">follow me on Twitter</a>
-</div>
-<!-- /twitter -->
-
 </div>
 </div>
 </div>

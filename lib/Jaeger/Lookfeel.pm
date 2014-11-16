@@ -143,6 +143,11 @@ sub _browse_changelog {
 			summary => $params{summary}
 		);
 	}
+	if(@{$params{tags}}) {
+		$params{summary} .= $self->browse_changelog_summary(
+			summary => "Tags: " . join(' ', map {"<a href=\"/changelog/tag/$_\">$_</a>"} @{$params{tags}}),
+		);
+	}
 
 	return %params;
 }

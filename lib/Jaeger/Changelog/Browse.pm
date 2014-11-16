@@ -110,6 +110,7 @@ sub _html {
 			time_begin => $changelog->time_begin(),
 			visibility => $Jaeger::Changelog::Status{$changelog->status()},
 			summary => $changelog->summary(),
+			tags => $changelog->tags(),
 		);
 	}
 

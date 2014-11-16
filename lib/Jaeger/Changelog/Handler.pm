@@ -18,6 +18,7 @@ use strict;
 
 use Jaeger::Base;
 use Jaeger::Changelog;
+use Jaeger::Changelog::Tag;
 use Jaeger::Lookfeel;
 use Jaeger::User;
 use Jaeger::Comment;
@@ -140,6 +141,14 @@ sub handler {
 			# redirect to the "directory"
 			$changelog = "/changelog/$1/";
 		}
+
+	} elsif($r->uri() =~ m#/changelog/tag/([^/]+)/?#) {
+		# Show a list of changelogs attached to a particular tag
+		$changelog = Jaeger::Changelog::Tag->new($1);
+
+	} elsif($r->uri() =~ m#/changelog/tag/?#) {
+		# Show a list of all tags used by changelog
+		$changelog = Jaeger::Changelog::Tag->new();
 
 	} elsif($r->uri() eq '/changelog/') {
 		# Show the most recent changelog
