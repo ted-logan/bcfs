@@ -121,7 +121,7 @@ sub _html {
 	);
 }
 
-sub navigation {
+sub all_years {
 	my $self = shift;
 
 	my $level;
@@ -148,7 +148,20 @@ sub navigation {
 		}
 	}
 
-	return "<center>" . join(' | ', @years) . "</center>";
+	return @years;
+}
+
+sub navigation {
+	my $self = shift;
+
+	return "<center>" . join(' | ', $self->all_years()) . "</center>";
+}
+
+# Return a mini navigation bar, to be shown on the right side of the screen
+sub mininav {
+	my $self = shift;
+
+	return join(' • ', $self->all_years());
 }
 
 1;

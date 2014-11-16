@@ -18,8 +18,11 @@ use Jaeger::Base;
 
 use Jaeger::Journal;
 use Jaeger::Changelog;
+use Jaeger::Changelog::Browse;
+use Jaeger::Changelog::Tag;
 use Jaeger::Content;
 use Jaeger::Event;
+use Jaeger::Photo::Year;
 use Jaeger::Slideshow;
 use Jaeger::User;
 
@@ -341,6 +344,19 @@ sub _main {
 	}
 
 	$params{screencss} = $self->screencss();
+
+	# Show the general nav bars on the right side of the screen, which
+	# ought to provide an easy entry into my (changelog) content
+	my $tags = new Jaeger::Changelog::Tag;
+	$params{browsebytag} = $tags->mininav();
+
+	my $browse = (ref $obj[0] eq 'Jaeger::Changelog::Browse') ?
+		$obj[0] : new Jaeger::Changelog::Browse;
+	$browse->{year} = 0;
+	$params{browsebyyear} = $browse->mininav();
+
+	my $photos = new Jaeger::Photo::Year;
+	$params{photosbyyear} = $photos->mininav();
 
 	return %params;
 }

@@ -105,6 +105,36 @@ sub _index {
 	}
 }
 
+sub tag_cloud {
+	my $self = shift;
+
+	my @list;
+
+	my $tags = $self->all_tags();
+
+	my $min = undef;
+	my $max = undef;
+	foreach my $count (values %$tags) {
+		if(!defined($min) || $count < $min) {
+			$min = $count;
+		}
+		if(!defined($max) || $count > $max) {
+			$max = $count;
+		}
+	}
+
+	foreach my $tag (sort keys %$tags) {
+		my $size = ($tags->{$tag} - $min) / ($max - $min);
+		my $i = $size * (@Jaeger::Changelog::Tag::Sizes - 1);
+		my $s = $Jaeger::Changelog::Tag::Sizes[$i];
+		push @list, "<span style=\"font-size: $s\">" .
+			"<a href=\"/changelog/tag/$tag\">$tag</a>" .
+			"</span>\n"
+	}
+
+	return join('', @list);
+}
+
 # returns html for this object
 sub _html {
 	my $self = shift;
@@ -131,35 +161,19 @@ sub _html {
 			content => join('', @list),
 		);
 	} else {
-		my @list;
-
-		my $tags = $self->all_tags();
-
-		my $min = undef;
-		my $max = undef;
-		foreach my $count (values %$tags) {
-			if(!defined($min) || $count < $min) {
-				$min = $count;
-			}
-			if(!defined($max) || $count > $max) {
-				$max = $count;
-			}
-		}
-
-		foreach my $tag (sort keys %$tags) {
-			my $size = ($tags->{$tag} - $min) / ($max - $min);
-			my $i = $size * (@Jaeger::Changelog::Tag::Sizes - 1);
-			my $s = $Jaeger::Changelog::Tag::Sizes[$i];
-			push @list, "<span style=\"font-size: $s\">" .
-				"<a href=\"/changelog/tag/$tag\">$tag</a>" .
-				"</span>\n"
-		}
-
 		return $lf->changelog_tag_cloud(
 			title => $self->title(),
-			content => join('', @list),
+			content => $self->tag_cloud(),
 		);
 	}
+}
+
+# Return a mini navigation bar/tag cloud, to be shown on the right side of the
+# screen
+sub mininav {
+	my $self = shift;
+
+	return $self->tag_cloud();
 }
 
 1;
