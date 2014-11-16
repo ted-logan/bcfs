@@ -438,7 +438,7 @@ sub _html {
 
 	my %params = %$self;
 
-	if($self->tags()) {
+	if(@{$self->tags()}) {
 		$params{navigation} .= $self->lf()->changelog_tags(
 			tags => join(' ', map {"<a href=\"/changelog/tag/$_\">$_</a>"} @{$self->tags()}),
 		);
