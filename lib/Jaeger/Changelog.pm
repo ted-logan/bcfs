@@ -78,7 +78,7 @@ sub add_tag {
 	do {
 		my $sql = "select id from tag where name = '" . $tag . "'";
 		my $tag_id = Jaeger::Base::Pgdbh()->selectcol_arrayref($sql);
-		if($tag_id) {
+		if($tag_id && defined($tag_id->[0])) {
 			$id = $tag_id->[0];
 		} else {
 			my $sql = "insert into tag (name) values ('" .
