@@ -81,7 +81,8 @@ sub _next {
 # returns a link to the url of this year
 sub _url {
 	my $self = shift;
-	return $self->{url} = "$Jaeger::Base::BaseURL/changelog/$self->{year}/";
+	return $self->{url} = $Jaeger::Base::BaseURL .
+		"changelog/$self->{year}/";
 }
 
 # returns html for this object
@@ -144,7 +145,7 @@ sub all_years {
 		if($row[0] == $self->{year}) {
 			push @years, "<b>$row[0]</b>";
 		} else {
-			push @years, "<a href=\"$Jaeger::Base::BaseURL/changelog/$row[0]/\">$row[0]</a>";
+			push @years, "<a href=\"${Jaeger::Base::BaseURL}changelog/$row[0]/\">$row[0]</a>";
 		}
 	}
 
