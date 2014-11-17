@@ -111,10 +111,11 @@ sub tag_cloud {
 	my @list;
 
 	my $tags = $self->all_tags();
+	my $logtags = { map { $_, log $tags->{$_} } keys %$tags };
 
 	my $min = undef;
 	my $max = undef;
-	foreach my $count (values %$tags) {
+	foreach my $count (values %$logtags) {
 		if(!defined($min) || $count < $min) {
 			$min = $count;
 		}
@@ -123,8 +124,8 @@ sub tag_cloud {
 		}
 	}
 
-	foreach my $tag (sort keys %$tags) {
-		my $size = ($tags->{$tag} - $min) / ($max - $min);
+	foreach my $tag (sort keys %$logtags) {
+		my $size = ($logtags->{$tag} - $min) / ($max - $min);
 		my $i = $size * (@Jaeger::Changelog::Tag::Sizes - 1);
 		my $s = $Jaeger::Changelog::Tag::Sizes[$i];
 		push @list, "<span style=\"font-size: $s\">" .
