@@ -68,14 +68,14 @@ sub changelogs_by_year {
 sub _prev {
 	my $self = shift;
 
-	return Jaeger::Changelog->Browse($self->{year} - 1);
+	return Jaeger::Changelog::Browse->new($self->{year} - 1);
 }
 
 # returns an object for the next year, if any
 sub _next {
 	my $self = shift;
 
-	return Jaeger::Changelog->Browse($self->{year} + 1);
+	return Jaeger::Changelog::Browse->new($self->{year} + 1);
 }
 
 # returns a link to the url of this year

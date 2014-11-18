@@ -136,7 +136,7 @@ sub handler {
 
 		if($2) {
 			# show the year itself
-			$changelog = Jaeger::Changelog->Browse($year);
+			$changelog = new Jaeger::Changelog::Browse($year);
 		} else {
 			# redirect to the "directory"
 			$changelog = "/changelog/$1/";

@@ -121,15 +121,6 @@ sub old_id {
 	return $package->Select(id_old => $id_old);
 }
 
-# provides a list of changelogs by year
-sub Browse {
-	my $package = shift;
-
-	my $year = shift;
-
-	return Jaeger::Changelog::Browse->new($year);
-}
-
 # Use this only at the console
 # Breaks out vim to edit the current changelog and presents a short menu
 sub edit {
