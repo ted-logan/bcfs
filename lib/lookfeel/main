@@ -32,6 +32,7 @@
 
 <div class="article mobilenav">
 <a href="/search.cgi">Search</a> |
+<a href="/changelog/tag/">Tags</a> |
 <a href="/photo.cgi">Photos</a> |
 <a href="/flights.cgi">Flights</a> |
 <a href="/yoda.cgi">Gas Mileage</a>
@@ -105,6 +106,10 @@ Downloaded ---date--- from ---url---
 <p>
 ---photosbyyear---
 </p>
+
+<h2>Photo collections</h2>
+
+---photosets---
 
 </div>
 </div>

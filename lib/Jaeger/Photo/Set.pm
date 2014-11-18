@@ -54,7 +54,7 @@ sub _title {
 sub _url {
 	my $self = shift;
 
-	return $self->{url} = "photo.cgi?set=$self->{id}";
+	return $self->{url} = "/photo.cgi?set=$self->{id}";
 }
 
 1;

@@ -22,6 +22,7 @@ use Jaeger::Changelog::Browse;
 use Jaeger::Changelog::Tag;
 use Jaeger::Content;
 use Jaeger::Event;
+use Jaeger::Photo::Set;
 use Jaeger::Photo::Year;
 use Jaeger::Slideshow;
 use Jaeger::User;
@@ -357,6 +358,12 @@ sub _main {
 
 	my $photos = new Jaeger::Photo::Year;
 	$params{photosbyyear} = $photos->mininav();
+
+	my @photo_sets = sort {$a->{name} cmp $b->{name}}
+		Jaeger::Photo::Set->Select();
+	$params{photosets} = "<ul>" .
+		join('', map { "<li><a href=\"" . $_->url() . "\">" .
+			$_->name() . "</a></li>\n" } @photo_sets) . "</ul>\n";
 
 	return %params;
 }
