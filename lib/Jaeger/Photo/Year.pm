@@ -117,12 +117,12 @@ sub _next {
 sub _url {
 	my $self = shift;
 
-	return $self->{url} = "photo.cgi?year=$self->{year}";
+	return $self->{url} = "/photo.cgi?year=$self->{year}";
 }
 
 # Return a mini navigation bar, to be shown on the right side of the screen
 sub mininav {
 	my $self = shift;
 
-	return join(' • ', map { qq'<a href="photo.cgi?year=$_">$_</a>' } $self->years());
+	return join(' • ', map { qq'<a href="/photo.cgi?year=$_">$_</a>' } $self->years());
 }
