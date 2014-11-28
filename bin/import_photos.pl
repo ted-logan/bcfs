@@ -5,13 +5,18 @@ use strict;
 use POSIX;
 
 my $photodir = '/home/jaeger/graphics/photos/dc';
+my $local_backup = '/media/neuromancer/home/jaeger/graphics/photos/dc/';
 
 my @import_dirs = (
 	'/media/D5200/DCIM/100D5200',
 	'/home/jaeger/.gvfs/mtp/Internal storage/DCIM/100MEDIA',
 );
 
+# Individual files that are imported are stored in this array
 my @imports;
+
+# Each new round is stored in this array
+my @new_rounds;
 
 foreach my $dir (@import_dirs) {
 	next unless -d $dir;
@@ -29,6 +34,7 @@ foreach my $dir (@import_dirs) {
 		or die "Can't make directory $photodir/$round: $!\n";
 	mkdir "$photodir/$round/raw"
 		or die "Can't make directory $photodir/$round/raw: $!\n";
+	push @new_rounds, $round;
 
 	printf "Importing %d photos from %s to new round %s\n",
 		scalar(@files), $dir, $round;
@@ -52,8 +58,22 @@ foreach my $dir (@import_dirs) {
 }
 
 if(@imports) {
-	system("cd $photodir && ./todo.pl && ./sync_to_ziyal.sh") == 0
-		or die "Can't finish photo import\n";
+	if(-d $local_backup) {
+		# If the local backup directory is present, back up the new
+		# photos there, rather than synchronizing them to my NAS on my
+		# network at home
+		foreach my $round (@new_rounds) {
+			system("rsync -av --progress --exclude todo $photodir/$round $local_backup/") == 0
+				or die "Can't finish photo import ($round)\n";
+		}
+		system("cd $photodir && ./todo.pl") == 0
+			or die "Can't finish photo import\n";
+	} else {
+		# If the local backup directory is not present, try to sync all
+		# photos to long-term storage on Hiro
+		system("cd $photodir && ./todo.pl && ./sync_to_ziyal.sh") == 0
+			or die "Can't finish photo import\n";
+	}
 	unlink @imports;
 } else {
 	print "No photos to import\n";
