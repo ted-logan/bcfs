@@ -39,7 +39,9 @@ foreach my $set (Jaeger::Photo::Set->Select()) {
 		print "$file ($photo->{description})\n";
 		unless(-f "$dir/$file") {
 			link($photo->file_crop(), "$dir/$file")
-				or warn "Can't create link: $!\n";
+				or warn "Can't create link to ",
+					$photo->{round}, "_",
+					$photo->{number}, ": $!\n";
 			$new++;
 		}
 		$total++;

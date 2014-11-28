@@ -67,7 +67,7 @@ if($0 =~ /update-round/) {
 		} else {
 			# Update all rounds
 			opendir HERE, '.';
-			foreach my $round (grep {-d $_ && ! -l $_} grep !/^\./, readdir HERE) {
+			foreach my $round (sort grep {-d $_ && ! -l $_} grep !/^\./, readdir HERE) {
 				update_todo($round);
 			}
 			closedir HERE;
@@ -172,7 +172,8 @@ sub update_todo {
 		}
 	}
 
-	print "$round: $todo_file_count todo\n";
+	printf "%s: %3d todo\n",
+		$round, $todo_file_count;
 
 	if($todo_file_count == 0) {
 		if(-d "$round_path/todo") {
