@@ -38,6 +38,9 @@ sub table {
 sub update {
 	my $self = shift;
 
+	# Update first, so we always have an id
+	my $rv = $self->SUPER::update();
+
 	# Check if any tags were changed; and if so, make the appropriate
 	# changes in the database
 	if($self->{tags}) {
@@ -67,7 +70,7 @@ sub update {
 		$self->{_tags} = $self->{tags};
 	}
 
-	return $self->SUPER::update();
+	return $rv;
 }
 
 sub add_tag {
@@ -685,6 +688,10 @@ sub _pubDate {
 sub _tags {
 	my $self = shift;
 	my $id = $self->id();
+
+	unless($id) {
+		return [];
+	}
 
 	my $sql = "select name from tag " .
 		"join changelog_tag_map on tag.id = changelog_tag_map.tag_id " .
