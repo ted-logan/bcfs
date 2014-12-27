@@ -78,9 +78,13 @@ Attribution-ShareAlike 2.5 License</a>.
 </div>
 
 <center>
-<img src="/digitalpics/---round---/---size---/---number---.jpg" id="mobileimage" class="mobilephoto" onClick="showhidenav();" />
+<img src="/digitalpics/---round---/---size---/---number---.jpg" id="mobileimage" class="mobilephoto" onClick="showhidenav();" ontouchstart="touchStart(event,'mobileimage');"  ontouchend="touchEnd(event);" ontouchmove="touchMove(event);" ontouchcancel="touchCancel(event);"/>
 </center>
 
+<script type="text/javascript">
+var prevphoto = "---navprev---";
+var nextphoto = "---navnext---";
+</script>
 <script type="text/javascript" src="/js/photo.js"></script>
 
 </body></html>
