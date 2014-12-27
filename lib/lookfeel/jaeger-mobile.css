@@ -1,6 +1,9 @@
 div.article img {
 	width: 100%;
 }
+.photo_main img {
+	width: auto !important;
+}
 #phototitlebar, #photo_main { display: none; }
 #phototitle, #leftbutton, #rightbutton {
 	position: absolute;
