@@ -14,9 +14,11 @@
 <title>j&auml;gerfesting---title---</title>
 </head>
 
-<body>
+<body onload="resizer()">
 
-<div id="phototitlebar" class="article">
+<!-- Desktop design -->
+
+<div id="phototitlebar" class="phototitlebar article">
 <div style="float:left; background:#125;">
 <a href="http://jaeger.festing.org/changelog/"><img src="/graphics/jaegerfesting.png" alt="jaegerfesting" border="0" height="46" width="283"/></a>
 </div>
@@ -28,7 +30,7 @@
 
 </div>
 
-<div id="photo_main">
+<div id="photo_main" class="photo_main">
 
 <div class="article">
 
@@ -56,7 +58,33 @@ Attribution-ShareAlike 2.5 License</a>.
 
 </div>
 
+<!-- Mobile design -->
+
+<div id="phototitle" class="mobilephoto">
+<div>---phototitle---</div>
+<div><i>---date--- ---location---</i></div>
+</div>
+
+<a href="---navprev---" id="leftbutton" class="mobilephoto">&lt;</a>
+
+<a href="---navnext---" id="rightbutton" class="mobilephoto">&gt;</a>
+
+<div style="position:absolute; top:0; width:100%;" class="mobilephoto">
+<div id="menubutton" onClick="showhidemenu();">#</div>
+<div id="photomenu">
+<a href="/changelog/">Home</a> |
+<a href="---navup---">---navuptext---</a>
+</div>
+</div>
+
+<center>
+<img src="/digitalpics/---round---/---size---/---number---.jpg" id="mobileimage" class="mobilephoto" onClick="showhidenav();" />
+</center>
+
 <script>
+
+var visible = true;
+var menuvisible = false;
 
 resizer();
 window.addEventListener('resize', resizer);
@@ -80,6 +108,58 @@ function resizer() {
 		document.getElementById("phototitlebar").offsetHeight -
 		document.getElementById("articlenav").offsetHeight * 2.5;
 	document.getElementById("bigimage").style.maxHeight = height + "px";
+
+	resizer_mobile(winheight);
+}
+
+function resizer_mobile(winheight) {
+        // Set the maximum height of the photo such that it doesn't grow larger
+        // than the size of the window minus the size of the navigation
+        // elements
+        var height = winheight - 14;
+        document.getElementById("mobileimage").style.maxHeight = height + "px";
+
+        // vertically center the photo itself
+        var bigimageheight = document.getElementById("mobileimage").offsetHeight;
+        if(bigimageheight > 0) {
+                document.getElementById("mobileimage").style.marginTop = 
+                        (height - bigimageheight) / 2 + "px";
+        }
+
+        // vertically center the previous and next buttons
+        document.getElementById("leftbutton").style.marginTop = 
+                (height - document.getElementById("leftbutton").offsetHeight) / 2 + "px";
+        document.getElementById("rightbutton").style.marginTop =
+                (height - document.getElementById("rightbutton").offsetHeight) / 2 + "px";
+}
+
+function showhidenav() {
+        if(visible) {
+                document.getElementById("leftbutton").style.display = "none";
+                document.getElementById("rightbutton").style.display = "none";
+                document.getElementById("menubutton").style.display = "none";
+                document.getElementById("phototitle").style.display = "none";
+                visible = false;
+                if(menuvisible) {
+                        showhidemenu();
+                }
+        } else {
+                document.getElementById("leftbutton").style.display = "block";
+                document.getElementById("rightbutton").style.display = "block";
+                document.getElementById("menubutton").style.display = "block";
+                document.getElementById("phototitle").style.display = "block";
+                visible = true;
+        }
+}
+
+function showhidemenu() {
+        if(menuvisible) {
+                document.getElementById("photomenu").style.display = "none";
+                menuvisible = false;
+        } else {
+                document.getElementById("photomenu").style.display = "block";
+                menuvisible = true;
+        }
 }
 
 </script>

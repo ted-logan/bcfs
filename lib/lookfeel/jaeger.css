@@ -39,10 +39,10 @@ div.navbar ul {
 div.articlenav {
 	text-align: center;
 }
-div#photo_main {
+div.photo_main {
 	text-align: center;
 }
-div#phototitlebar h1 {
+div.phototitlebar h1 {
 	margin-bottom: 0.2em;
 }
 h1 {

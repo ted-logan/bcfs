@@ -417,6 +417,21 @@ sub _photo_main {
 	}
 	$params{navlink} = join('', @navlink);
 
+	# Set mobile nav links
+	if($obj->prev()) {
+		$params{navprev} = $obj->prev()->url();
+	}
+	if($obj->next()) {
+		$params{navnext} = $obj->next()->url();
+	}
+	if($obj->index()) {
+		$params{navup} = $obj->index()->url();
+		$params{navuptext} = $obj->index()->title();
+	} else {
+		$params{navup} = "/photos.cgi";
+		$params{navuptext} = "Photos";
+	}
+
 	$params{screencss} = $self->screencss();
 
 	# Fill in the content from the photo itself

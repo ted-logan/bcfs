@@ -11,7 +11,7 @@
 
 <body>
 
-<div id="phototitlebar" class="article">
+<div class="phototitlebar article">
 <div style="float:left; background:#125;">
 <a href="http://jaeger.festing.org/changelog/"><img src="/graphics/jaegerfesting.png" alt="jaegerfesting" border="0" height="46" width="283"/></a>
 </div>
@@ -21,7 +21,7 @@
 </div>
 </div>
 
-<div id="photo_main">
+<div class="photo_main">
 
 <div class="article">
 
