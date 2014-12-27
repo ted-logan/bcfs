@@ -181,7 +181,8 @@ sub screencss {
 
 	# If the user agent indicates this is a mobile browser, don't provide
 	# the CSS designed for full-sized browsers.
-	if($useragent !~ /iPhone/ && $useragent !~ /Mobile Safari/) {
+	if($useragent !~ /iPhone/ && $useragent !~ /Mobile Safari/ &&
+			$useragent !~ /IEMobile/ && $useragent !~ /Android/) {
 		return '<link rel="stylesheet" href="/jaeger-screen.css" type="text/css"/>';
 	} else {
 		return <<HTML;
