@@ -16,6 +16,9 @@
 
 <body onload="resizer()">
 
+<a href="---navprev---" id="leftbutton" title="---navprevtitle---">&lt;</a>
+<a href="---navnext---" id="rightbutton" title="---navnexttitle---">&gt;</a>
+
 <!-- Desktop design -->
 
 <div id="phototitlebar" class="phototitlebar article">
@@ -64,10 +67,6 @@ Attribution-ShareAlike 2.5 License</a>.
 <div>---phototitle---</div>
 <div><i>---date--- ---location---</i></div>
 </div>
-
-<a href="---navprev---" id="leftbutton" class="mobilephoto">&lt;</a>
-
-<a href="---navnext---" id="rightbutton" class="mobilephoto">&gt;</a>
 
 <div style="position:absolute; top:0; width:100%;" class="mobilephoto">
 <div id="menubutton" onClick="showhidemenu();">#</div>

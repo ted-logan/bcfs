@@ -421,9 +421,11 @@ sub _photo_main {
 	# Set mobile nav links
 	if($obj->prev()) {
 		$params{navprev} = $obj->prev()->url();
+		$params{navprevtitle} = $obj->prev()->title();
 	}
 	if($obj->next()) {
 		$params{navnext} = $obj->next()->url();
+		$params{navnexttitle} = $obj->prev()->title();
 	}
 	if($obj->index()) {
 		$params{navup} = $obj->index()->url();

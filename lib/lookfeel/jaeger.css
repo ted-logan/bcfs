@@ -116,3 +116,20 @@ div.article img {
 div.article center img {
 	max-width: 100%;
 }
+#phototitle, #leftbutton, #rightbutton {
+	position: absolute;
+	background-color:rgba(0,0,0,0.40);
+}
+#leftbutton, #rightbutton, #menubutton {
+	display: block;
+	top: 0;
+	font-weight: bold;
+	color: #ddd;
+	text-decoration: none;
+	font-size:xx-large;
+	padding: 0.5em; 
+}
+#rightbutton {
+	right: 0;
+	text-align: right;
+}
