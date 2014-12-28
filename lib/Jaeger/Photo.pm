@@ -243,8 +243,7 @@ sub resize {
 sub _title {
 	my $self = shift;
 
-	return $self->{title} = "Photo $self->{round}/$self->{number}: " .
-		$self->{description};
+	return $self->{title} = $self->{description};
 }
 
 sub _exif {
