@@ -425,7 +425,7 @@ sub _photo_main {
 	}
 	if($obj->next()) {
 		$params{navnext} = $obj->next()->url();
-		$params{navnexttitle} = $obj->prev()->title();
+		$params{navnexttitle} = $obj->next()->title();
 	}
 	if($obj->index()) {
 		$params{navup} = $obj->index()->url();
