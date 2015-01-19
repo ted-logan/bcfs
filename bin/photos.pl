@@ -441,7 +441,7 @@ sub read_config {
 					$ask_photo_timezone = 1;
 				}
 			}
-			if(/^time adjust: (\d+)/) {
+			if(/^time adjust: (-?\d+)/) {
 				$time_adjust = $1;
 			}
 		}
