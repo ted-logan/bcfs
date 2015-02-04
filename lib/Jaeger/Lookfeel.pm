@@ -140,16 +140,30 @@ sub _changelog_series {
 sub _browse_changelog {
 	my $self = shift;
 
-	my %params = @_;
+	my $changelog = shift;
 
-	if($params{summary}) {
+	my %params = (
+		url => $changelog->url(),
+		title => $changelog->title(),
+		time_begin => $changelog->time_begin(),
+		visibility => $Jaeger::Changelog::Status{$changelog->status()},
+	);
+
+	if($changelog->summary()) {
 		$params{summary} = $self->browse_changelog_summary(
-			summary => $params{summary}
+			summary => $changelog->summary()
 		);
 	}
-	if(@{$params{tags}}) {
+	my $tags = $changelog->tags();
+	if(@$tags) {
 		$params{summary} .= $self->browse_changelog_summary(
-			summary => "Tags: " . join(' ', map {"<a href=\"/changelog/tag/$_\">$_</a>"} @{$params{tags}}),
+			summary => "Tags: " . join(' ', map {"<a href=\"/changelog/tag/$_\">$_</a>"} @$tags),
+		);
+	}
+	my @series = Jaeger::Changelog::Series->new_by_changelog($changelog);
+	if(@series) {
+		$params{summary} .= $self->browse_changelog_summary(
+			summary => "Series: " . join(' ', map {$_->link()} @series),
 		);
 	}
 

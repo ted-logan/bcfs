@@ -105,14 +105,7 @@ sub _html {
 			);
 			$last_month = $month;
 		}
-		push @list, $lf->browse_changelog(
-			url => $changelog->url(),
-			title => $changelog->title(),
-			time_begin => $changelog->time_begin(),
-			visibility => $Jaeger::Changelog::Status{$changelog->status()},
-			summary => $changelog->summary(),
-			tags => $changelog->tags(),
-		);
+		push @list, $lf->browse_changelog($changelog);
 	}
 
 	return $lf->changelog(

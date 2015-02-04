@@ -147,14 +147,7 @@ sub _html {
 
 		my @changelogs = $self->changelogs_by_tag($self->{tag});
 		foreach my $changelog (@changelogs) {
-			push @list, $lf->browse_changelog(
-				url => $changelog->url(),
-				title => $changelog->title(),
-				time_begin => $changelog->time_begin(),
-				visibility => $Jaeger::Changelog::Status{$changelog->status()},
-				summary => $changelog->summary(),
-				tags => $changelog->tags(),
-			);
+			push @list, $lf->browse_changelog($changelog);
 		}
 
 		return $lf->changelog_tag_browse(

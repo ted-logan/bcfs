@@ -150,6 +150,10 @@ sub handler {
 		# Show a list of all tags used by changelog
 		$changelog = Jaeger::Changelog::Tag->new();
 
+	} elsif($r->uri() =~ m#/series/(\d+)(/?)#) {
+		# Show a list of changelogs in a particular series
+		$changelog = Jaeger::Changelog::Series->new_id($1);
+
 	} elsif($r->uri() eq '/changelog/') {
 		# Show the most recent changelog
 		$changelog = 'LATEST';

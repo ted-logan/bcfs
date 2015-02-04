@@ -53,4 +53,41 @@ sub changelogs {
 	);
 }
 
+sub _url {
+	my $self = shift;
+
+	return $self->{url} = "/changelog/series/" . $self->{id};
+}
+
+sub _title {
+	my $self = shift;
+
+	return $self->{title} = $self->{name};
+}
+
+sub _link {
+	my $self = shift;
+
+	return $self->{link} = '<a href="' . $self->url() . '">' .
+		$self->title() . '</a>';
+}
+
+sub _html {
+	my $self = shift;
+
+	my $lf = $self->lf();
+
+	my @list;
+
+	my @changelogs = $self->changelogs();
+	foreach my $changelog (@changelogs) {
+		push @list, $lf->browse_changelog($changelog);
+	}
+
+	return $lf->changelog_tag_browse(
+		title => $self->title(),
+		content => join('', @list),
+	);
+}
+
 1;
