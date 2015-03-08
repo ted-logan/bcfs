@@ -165,9 +165,164 @@ sub edit {
 			$self->update();
 			print "Postponed changelog: id=", $self->id(), "\n";
 			return 1;
+		} elsif($option eq 's') {
+			$self->_edit_series();
 		}
 	}
 	
+}
+
+# Prompt the user at the command line to add/edit the serieses of which this
+# changelog is a member
+sub _edit_series {
+	my $self = shift;
+
+	print "\n";
+
+	unless($self->{id}) {
+		print "Cannot edit series information until the changelog is submitted\n";
+		return;
+	}
+
+	my %my_serieses = map { $_->id(), $_ }
+		Jaeger::Changelog::Series->new_by_changelog($self);
+
+	if(%my_serieses) {
+		print "This changelog is part of the following series:\n";
+		foreach my $s (values %my_serieses) {
+			print "* ", $s->name(), "\n";
+		}
+	} else {
+		print "This changelog is not part of any series.\n";
+	}
+
+	my @all_serieses = Jaeger::Changelog::Series->Select();
+	my %all_serieses = map { $_->id(), $_ } @all_serieses;
+
+	my %legal_options = (
+		a => 'Add this changelog to a series',
+#		e => 'Edit the order of this changelog in a series',
+		r => 'Remove this changelog from a series',
+		q => 'Done with series',
+	);
+
+	do {
+		print "\nYour series options:\n";
+		foreach my $letter (sort keys %legal_options) {
+			print "($letter) $legal_options{$letter}\n";
+		}
+
+		print "Your choice, master?\n> ";
+
+		my $option;
+		do {
+			$option = lc <STDIN>;
+			chomp $option;
+		} while(!exists $legal_options{$option});
+
+		print "\n";
+
+		if($option eq 'a') {
+			print "ID  Name\n";
+			print "--  ----\n";
+			foreach my $s (@all_serieses) {
+				printf "%2d  %s\n",
+					$s->id(), $s->name();
+			}
+			print "\n";
+
+			print "Enter the series id to add this changelog to:\n";
+			print "> ";
+			my $id = <STDIN>;
+			chomp $id;
+
+			unless($all_serieses{$id}) {
+				print "Invalid series id \"$id\"\n";
+				next;
+			}
+			my $series = $all_serieses{$id};
+
+			print "Order  Title\n";
+			print "-----  -----\n";
+			foreach my $c ($series->changelogs()) {
+				printf "%5d  %s\n",
+					$c->sort_order(),
+					$c->title();
+			}
+			print "\n";
+
+			print "Enter the position (empty to append):\n";
+			print "> ";
+			my $pos = <STDIN>;
+			chomp $pos;
+
+			unless($pos =~ /^\d*$/) {
+				print "Invalid position \"$pos\"\n";
+				next;
+			}
+
+			if(!$series->add_changelog($self, $pos)) {
+				print "Unable to add changelog to series\n";
+				next;
+			}
+
+			print "Added changelog to series \"", $series->name(),
+				"\"\n";
+			$my_serieses{$series->id()} = $series;
+
+		} elsif($option eq 'e') {
+			my $series;
+			if((keys %my_serieses) == 0) {
+				print "No series to edit\n";
+				next;
+			} elsif((keys %my_serieses) > 1) {
+				
+			} else {
+				$series = (values %my_serieses)[0];
+			}
+
+		} elsif($option eq 'r') {
+			my $series;
+			if((keys %my_serieses) == 0) {
+				print "No series to remove from\n";
+				next;
+			} elsif((keys %my_serieses) > 1) {
+				print "ID  Name\n";
+				print "--  ----\n";
+				foreach my $s (values %my_serieses) {
+					printf "%2d  %s\n",
+						$s->id(), $s->name();
+				}
+				print "\n";
+
+				print "Enter the series id to remove from this changelog to:\n";
+				print "> ";
+				my $id = <STDIN>;
+				chomp $id;
+
+				if(!$my_serieses{$id}) {
+					print "This changelog is not part of series $id\n";
+					next;
+				}
+				$series = $my_serieses{$id};
+
+			} else {
+				$series = (values %my_serieses)[0];
+			}
+
+			if(!$series->delete_changelog($self)) {
+				print "Unable to remove changelog from series\n";
+				next;
+			}
+
+			print "Removed changelog from series \"", $series->name(),
+				"\"\n";
+			delete $my_serieses{$series->id()};
+
+		} elsif($option eq 'q') {
+			return;
+		}
+	} while(1);
 }
 
 # ensures a unique file name for each changelog we edit
@@ -227,6 +382,7 @@ sub _edit_menu {
 		q => 'Abandon the changelog',
 		p => 'Postpone the changelog',
 		a => 'Set the access level',
+		s => 'Edit series',
 	);
 
 	print "\nYour Changelogging options:\n";

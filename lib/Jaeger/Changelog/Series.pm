@@ -90,4 +90,73 @@ sub _html {
 	);
 }
 
+sub add_changelog {
+	my $self = shift;
+	my $changelog = shift;
+	my $position = shift;
+
+	my $dbh = $self->Pgdbh();
+
+	if(length($position)) {
+		# Insert the changelog at a specific point. We may need to
+		# adjust the position of existing entries.
+		my $sql = "select * from changelog_series_entry " .
+			"where series_id = $self->{id}";
+		my $data = $dbh->selectall_hashref($sql, 'sort_order')
+			or warn "$sql;\n";
+
+		# Determine if an existing changelog has the same sort order as
+		# the new changelog
+		if($data->{$position}) {
+			# Increment the sort order of every changelog >= the
+			# requested sort order, starting at the end
+			my $sql = "update changelog_series_entry " .
+				"set sort_order = ? " .
+				"where id = ?";
+			my $sth = $dbh->prepare($sql)
+				or warn "$sql;\n";
+
+			foreach my $sort_order (
+					reverse sort 
+					grep { $_ >= $position }
+					keys $data) {
+				$sth->execute($sort_order, $data->{$sort_order}->[0])
+					or warn "$sql $sort_order, $data->{$sort_order}->[0]\n";
+
+			}
+		}
+
+	} else {
+		# Position is empty; append to the end of the series.
+		my $sql = "select max(sort_order) from changelog_series_entry ".
+			"where series_id = $self->{id}";
+		my @row = $dbh->selectrow_array($sql)
+			or warn "$sql;\n";
+		$position = $row[0] + 1;
+	}
+
+	my $sql = "insert into changelog_series_entry " .
+		"(series_id, sort_order, changelog_id) values " .
+		"($self->{id}, $position, $changelog->{id})";
+	$dbh->do($sql)
+		or warn "Unable to update changelog series: $sql;\n";
+
+	return 1;
+}
+
+sub delete_changelog {
+	my $self = shift;
+	my $changelog = shift;
+
+	my $sql = "delete from changelog_series_entry " .
+		"where series_id = $self->{id} " .
+		"and changelog_id = $changelog->{id}";
+
+	my $dbh = $self->Pgdbh();
+	$dbh->do($sql)
+		or warn "Unable to update changelog series: $sql;\n";
+
+	return 1;
+}
+
 1;
