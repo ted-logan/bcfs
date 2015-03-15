@@ -13,6 +13,7 @@ die "\$BCFS must be set!\n" unless $ENV{BCFS};
 use lib "$ENV{BCFS}/lib";
 
 use Jaeger::Photo;
+use Jaeger::User;
 use Jaeger::Slideshow;
 use Jaeger::Lookfeel;
 use Jaeger::Photo::Set;
@@ -49,13 +50,38 @@ if(my $round = $q->param('round')) {
 		);
 
 		if($page) {
-			# Good. The photo exists.
-			if($q->param('size')) {
-				$page->{size} = $q->param('size');
-			} elsif($page->native() > 1024) {
-				$page->{size} = '1024x768';
+			my $status = 0;
+			my $user = Jaeger::User->Login();
+			if($user) {
+				$status = $user->{status};
 			}
-			$page->resize();
+			warn "$round/$number: user status is $status, photo status is ", $page->status(), "\n";
+			if($status >= $page->status()) {
+				# Good. The photo exists, and the user can see
+				# it.
+				if($q->param('size')) {
+					$page->{size} = $q->param('size');
+				} elsif($page->native() > 1024) {
+					$page->{size} = '1024x768';
+				}
+				$page->resize();
+
+			} elsif($user) {
+				# The photo exists, but the logged-in user does
+				# not have permission to see the photo.
+				# Redirect to the photo entry page.
+				print $q->redirect("photo.cgi");
+				exit;
+
+			} else {
+				# The photo exists, but the user is not logged
+				# in. Redirect to the login page in case the
+				# user has an account.
+				my $url = $page->url();
+				$url =~ s/([&?])/sprintf "%%%02x", ord $1/ge;
+				print $q->redirect("login.cgi?redirect=$url");
+				exit;
+			}
 
 		} else {
 			# the photo doesn't exist

@@ -16,6 +16,7 @@ use Carp;
 use Time::Local;
 
 use Jaeger::Photo;
+use Jaeger::User;
 
 @Jaeger::Photo::List::Date::ISA = qw(Jaeger::Photo::List);
 
@@ -59,25 +60,27 @@ sub _unixdate {
 	return $self->{unixdate} = timegm(0, 0, 0, reverse @date);
 }
 
+sub _statusquery {
+	my $self = shift;
+
+	my $status = 0;
+	if(my $user = Jaeger::User->Login()) {
+		$status = $user->{status};
+	}
+
+	return $self->{statusquery} = "status <= $status";
+}
+
 # returns a list reference containing the photos for this date
 sub _photos {
 	my $self = shift;
 
-	my @photos;
-
 	my $sql = "select id from photo_date where date = " .
-		$self->unixdate();
+		$self->unixdate() .
+		" and " . $self->statusquery();
 
-	my $sth = $self->{dbh}->prepare($sql);
-	$sth->execute() or warn "$sql;\n";
-
-	while(my ($id) = $sth->fetchrow_array()) {
-		push @photos, Jaeger::Photo->new_id($id);
-	}
-
-	$self->{photos} = [sort {$a->{round} cmp $b->{round} || $a->{number} cmp $b->{number}} @photos];
-
-	return $self->{photos};
+	return $self->{photos} =
+		[Jaeger::Photo->Select("id in ($sql) order by date")];
 }
 
 #
@@ -94,7 +97,8 @@ sub _prev {
 	my $self = shift;
 
 	my $sql = "select max(date) from photo_date where date < " .
-		$self->unixdate();
+		$self->unixdate() .
+		" and " . $self->statusquery();
 	my $sth = $self->{dbh}->prepare($sql);
 	$sth->execute() or warn "$sql;\n";
 
@@ -112,7 +116,8 @@ sub _next {
 	my $self = shift;
 
 	my $sql = "select min(date) from photo_date where date > " .
-		$self->unixdate();
+		$self->unixdate() .
+		" and " . $self->statusquery();
 	my $sth = $self->{dbh}->prepare($sql);
 	$sth->execute() or warn "$sql;\n";
 

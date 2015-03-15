@@ -22,6 +22,7 @@ use Carp;
 use Jaeger::Location;
 use Jaeger::Timezone;
 use Jaeger::GPS;
+use Jaeger::User;
 
 use Jaeger::Photo::List;
 use Jaeger::Photo::Year;
@@ -63,6 +64,10 @@ sub update {
 		$self->{hidden} = 'false';
 	} else {
 		$self->{hidden} = 'true';
+	}
+
+	unless(defined $self->{status}) {
+		$self->{status} = 0;
 	}
 
 	$self->SUPER::update();
@@ -305,6 +310,17 @@ sub html {
 	);
 }
 
+sub _statusquery {
+	my $self = shift;
+
+	my $status = 0;
+	if(my $user = Jaeger::User->Login()) {
+		$status = $user->{status};
+	}
+
+	return $self->{statusquery} = "status <= $status and not hidden";
+}
+
 # This date-based previous/next matching will probably break on very old
 # photos, where the database does not record timestamps more precise than days,
 # so many photos have the same timestamp; but it will behave as expected for
@@ -313,7 +329,8 @@ sub html {
 sub _prev {
 	my $self = shift;
 
-	$self->{prev} = $self->Select("date < $self->{date} and not hidden order by date desc limit 1");
+	my $statusquery = $self->statusquery();
+	$self->{prev} = $self->Select("date < $self->{date} and $statusquery order by date desc limit 1");
 
 	return $self->{prev};
 }
@@ -321,7 +338,8 @@ sub _prev {
 sub _next {
 	my $self = shift;
 
-	$self->{next} = $self->Select("date > $self->{date} and not hidden order by date limit 1");
+	my $statusquery = $self->statusquery();
+	$self->{next} = $self->Select("date > $self->{date} and $statusquery order by date limit 1");
 
 	return $self->{next};
 }
@@ -443,12 +461,4 @@ sub content {
 		longitude => $self->{longitude},
 
 	);
-}
-
-# I don't currently support restricting photo visibility, but I could. For now,
-# this will simply support RSS feeds.
-sub status {
-	my $self = shift;
-
-	return 0;
 }

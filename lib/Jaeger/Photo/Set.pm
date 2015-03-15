@@ -27,10 +27,21 @@ sub _directory {
 		'/home/jaeger/graphics/photos/sets/' . $name;
 }
 
+sub _statusquery {
+	my $self = shift;
+
+	my $status = 0;
+	if(my $user = Jaeger::User->Login()) {
+		$status = $user->{status};
+	}
+
+	return $self->{statusquery} = "status <= $status and not hidden";
+}
+
 sub _photos {
 	my $self = shift;
 	my $id = $self->id();
-	$self->{photos} = [Jaeger::Photo->Select("join photo_set_map on photo.id = photo_set_map.photo_id where photo_set_map.photo_set_id = $id order by date")];
+	$self->{photos} = [Jaeger::Photo->Select("join photo_set_map on photo.id = photo_set_map.photo_id where photo_set_map.photo_set_id = $id and " . $self->statusquery() . " order by date")];
 	return $self->{photos};
 }
 

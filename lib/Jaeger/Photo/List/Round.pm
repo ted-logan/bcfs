@@ -27,12 +27,25 @@ sub new {
 	return $self;
 }
 
+sub _statusquery {
+	my $self = shift;
+
+	my $status = 0;
+	if(my $user = Jaeger::User->Login()) {
+		$status = $user->{status};
+	}
+
+	return $self->{statusquery} = "status <= $status and not hidden";
+}
+
+
 # returns a list reference containing the photos for this date
 sub _photos {
 	my $self = shift;
 
+	my $statusquery = $self->statusquery();
 	return $self->{photos} = [Jaeger::Photo->Select(
-		"round = '$self->{round}' and not hidden order by round, number"
+		"round = '$self->{round}' and $statusquery order by round, number"
 	)];
 }
 

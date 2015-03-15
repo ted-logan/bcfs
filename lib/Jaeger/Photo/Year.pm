@@ -17,6 +17,7 @@ use Jaeger::Base;
 @Jaeger::Photo::Year::ISA = qw(Jaeger::Base);
 
 use Jaeger::Thumbnail qw(year_thumbnail);
+use Jaeger::User;
 
 use Carp;
 use Time::Local;
@@ -49,6 +50,17 @@ sub years {
 	return sort @years;
 }
 
+sub _statusquery {
+	my $self = shift;
+
+	my $status = 0;
+	if(my $user = Jaeger::User->Login()) {
+		$status = $user->{status};
+	}
+
+	return $self->{statusquery} = "status <= $status";
+}
+
 #
 # methods used by Jaeger::Lookfeel to show this page
 #
@@ -62,7 +74,7 @@ sub html {
 	my $year_begin = timegm(0, 0, 0, 1, 0, $self->{year});
 	my $year_end = timegm(0, 0, 0, 1, 0, $self->{year} + 1);
 
-	my $sql = "select date, count(*) from photo_date where date >= $year_begin and date < $year_end group by date";
+	my $sql = "select date, count(*) from photo_date where date >= $year_begin and date < $year_end and " . $self->statusquery() . " group by date";
 	my $sth = $self->{dbh}->prepare($sql);
 	$sth->execute() or warn "$sql;\n";
 	while(my ($date, $count) = $sth->fetchrow_array()) {
