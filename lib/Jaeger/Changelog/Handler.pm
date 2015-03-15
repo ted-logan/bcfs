@@ -168,7 +168,7 @@ sub handler {
 
 	if(ref($changelog) && $changelog->{status} > $level) {
 		# No access -- redirect to login page
-		$changelog = "/login.cgi?redirect=/changelog/$changelog->{id}.html";
+		$changelog = "/login.cgi?redirect=" . $changelog->url();
 	}
 
 	# Do we want to redirect to somewhere else?
