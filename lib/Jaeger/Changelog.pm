@@ -244,10 +244,18 @@ sub _edit_series {
 
 			print "Order  Title\n";
 			print "-----  -----\n";
-			foreach my $c ($series->changelogs()) {
+
+			my $dbh = Jaeger::Base::Pgdbh();
+			my $sql = "select sort_order, title " .
+				"from changelog_series_entry " .
+				"join changelog on changelog.id = changelog_series_entry.changelog_id " .
+				"where series_id = $id order by sort_order";
+			my $changelogs = $dbh->selectall_arrayref($sql);
+
+			foreach my $c (@$changelogs) {
 				printf "%5d  %s\n",
-					$c->sort_order(),
-					$c->title();
+					$c->[0],
+					$c->[1];
 			}
 			print "\n";
 
