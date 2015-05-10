@@ -44,7 +44,7 @@ print <<HTML;
 <head><title>Calvin Logan</title>
 <link rel="stylesheet" type="text/css" href="/tlogan.css" />
 <link href="/calvin_rss.cgi" rel="alternate" type="application/rss+xml" title="rss" />
-<meta name="description" content="The continuing adventures of an intrepid preschooler" />
+<meta name="description" content="The continuing adventures of an intrepid kindergartener" />
 </head>
 <body>
 
@@ -53,7 +53,7 @@ print <<HTML;
 <h1><a href="/">Calvin Logan</a></h1>
 
 <p>
-The continuing adventures of an intrepid preschooler
+The continuing adventures of an intrepid kindergartener
 </p>
 
 HTML
