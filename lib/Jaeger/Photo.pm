@@ -462,3 +462,50 @@ sub content {
 
 	);
 }
+
+sub _sets {
+	my $self = shift;
+	my $id = $self->id();
+	$self->{sets} = [Jaeger::Photo::Set->Select("join photo_set_map on photo_set.id = photo_set_map.photo_set_id where photo_set_map.photo_id = $id")];
+	return $self->{sets};
+}
+
+sub update_sets {
+	my $self = shift;
+
+	my $success = 1;
+
+	my %new_sets = map {$_, $_} @_;
+	my %old_sets = map {$_->id(), $_} @{$self->sets()};
+
+	# Determine the sets that are in %new_sets and not %old_sets. These are
+	# the sets that need to be added to the photo.
+	my $sql = "insert into photo_set_map values (?, ?)";
+	my $sth = $self->Pgdbh()->prepare($sql);
+	foreach my $set (keys %new_sets) {
+		if(!exists $old_sets{$set}) {
+			unless($sth->execute($set, $self->id())) {
+				warn "Error adding photo to set $set: $sql\n";
+				$success = 0;
+			}
+		}
+	}
+
+	# Determine the sets that are in %old_sets and not %new_sets. These are
+	# the sets that need to be deleted from the photo.
+	$sql = "delete from photo_set_map where photo_set_id = ? and photo_id = ?";
+	$sth = $self->Pgdbh()->prepare($sql);
+	foreach my $set (keys %old_sets) {
+		if(!exists $new_sets{$set}) {
+			unless($sth->execute($set, $self->id())) {
+				warn "Error removing photo from set $set: $sql\n";
+				$success = 0;
+			}
+		}
+	}
+
+	# Invalidate the cached sets
+	delete $self->{sets};
+
+	return $success;
+}

@@ -1,0 +1,32 @@
+<a href="javascript:show_edit()" id="editlink">Edit</a>
+
+<div id="edit" style="display: ---display---;">
+<form action="/photo.cgi" method="post">
+<input type="hidden" name="id" value="---id---" />
+<input type="hidden" name="round" value="---round---" />
+<input type="hidden" name="number" value="---number---" />
+<center>
+<table>
+<tr><td>Description</td> <td>Visibility</td> <td>Photo timezone</td> <td>Camera timezone</td> <td>Photo sets</td> <td></td></tr>
+<tr>
+<td><input name="title" size="40" value="---description---"/></td>
+<td>
+---status---
+</td>
+<td>
+---phototimezone---
+</td>
+<td>
+---cameratimezone---
+</td>
+<td>
+<div style="overflow-y: scroll; max-height: 4em;">
+---collections---
+</div>
+</td>
+<td><input type="submit" name="submit" value="Save"/></td>
+</tr>
+</table>
+</center>
+</form>
+</div>

@@ -22,7 +22,29 @@ my $q = Jaeger::Base::Query();
 
 my $lf = Jaeger::Base::Lookfeel();
 
+my $status = 0;
+my $user = Jaeger::User->Login();
+if($user) {
+	$status = $user->{status};
+}
+
 my $page;
+
+if(($status == 30) &&
+	($q->param('submit') eq 'Save') &&
+	(my $photo = Jaeger::Photo->new_id($q->param('id')))) {
+
+	warn "About to edit photo $photo->{round}/$photo->{number} (id=$photo->{id})\n";
+
+	$photo->{description} = $q->param('title');
+	$photo->{status} = $q->param('status');
+	$photo->{timezone_id} = $q->param('phototimezone');
+	# TODO handle camera time zone
+	# TODO update mtime?
+
+	$photo->update_sets($q->param('sets'));
+	$photo->update();
+}
 
 if(my $photo_id = $q->param('photo_id')) {
 	my $slideshow_id = $q->param('slideshow_id');
@@ -50,12 +72,6 @@ if(my $round = $q->param('round')) {
 		);
 
 		if($page) {
-			my $status = 0;
-			my $user = Jaeger::User->Login();
-			if($user) {
-				$status = $user->{status};
-			}
-			warn "$round/$number: user status is $status, photo status is ", $page->status(), "\n";
 			if($status >= $page->status()) {
 				# Good. The photo exists, and the user can see
 				# it.

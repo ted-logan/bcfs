@@ -82,6 +82,17 @@ function showhidemenu() {
         }
 }
 
+function show_edit() {
+	var edit = document.getElementById("edit");
+	if(edit.style.display == "block") {
+		edit.style.display = "none";
+		document.getElementById("editlink").innerHTML = "Edit";
+	} else {
+		edit.style.display = "block";
+		document.getElementById("editlink").innerHTML = "Close";
+	}
+}
+
 // TOUCH-EVENTS SINGLE-FINGER SWIPE-SENSING JAVASCRIPT
 // Courtesy of PADILICIOUS.COM and MACOSXAUTOMATION.COM
 // http://padilicious.com/code/touchevents/

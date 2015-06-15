@@ -465,6 +465,18 @@ sub _photo_main {
 		);
 	}
 
+	# If the user has the appropriate privilages, show the edit links
+	my $status = 0;
+	my $logged_in_user = Jaeger::User->Login();
+	if($logged_in_user && $logged_in_user->status() >= 30) {
+		$params{photoedit} = $self->photo_edit(
+			photo => $obj,
+			display => 'none',
+			description => $obj->description(),
+			status => $obj->status(),
+		);
+	}
+
 	return %params;
 }
 
@@ -520,6 +532,58 @@ sub _photo_list_main {
 	$params{screencss} = $self->screencss();
 
 	$params{content} = $obj->html();
+
+	return %params;
+}
+
+sub _photo_edit {
+	my $self = shift;
+	my %params = @_;
+
+	# html-encode the description
+	$params{description} =~ s/&/&amp;/g;
+	$params{description} =~ s/"/&quot;/g;
+	$params{description} =~ s/>/&gt;/g;
+	$params{description} =~ s/</&lt;/g;
+
+	$params{id} = $params{photo}->id();
+	$params{round} = $params{photo}->round();
+	$params{number} = $params{photo}->number();
+
+	my $status = $params{status};
+	if(!defined($status) || $status == 100) {
+		$status = 0;
+	}
+	$params{status} =
+		qq'<select name="status">\n' .
+		join('', map { qq'<option value="$_"' . ($status == $_ ? " selected" : "") . qq'>$Jaeger::Changelog::Status{$_}</option>\n' } sort { $a <=> $b } keys %Jaeger::Changelog::Status) .
+		qq'</select>\n';
+
+	# Show all the available photo timezones
+	my @timezones = Jaeger::Timezone->Select();
+	$params{phototimezone} = 
+		qq'<select name="phototimezone">\n' .
+		join('', map { qq'<option value="' . $_->id() . qq'"' .
+		($params{photo}->timezone_id() == $_->id() ? " selected" : "") .
+		qq'>' . $_->name() . qq'</option>\n' } @timezones) .
+		qq'</select>\n';
+
+	# TODO Show all the available camera timezones
+	#$params{cameratimezones} = ;
+
+	# Show all the available photo sets
+#<input type="checkbox" name="collections" value="11" checked>Dawn of the Julian Era</input><br/>
+	my @this_photo_sets = @{$params{photo}->sets()};
+	$params{collections} = join('',
+		map { qq'<input type="checkbox" name="sets" value="' .
+			$_->id() . qq'" checked>' . $_->name() . 
+			qq'</input><br/>\n'}
+		@this_photo_sets);
+	my @all_sets = Jaeger::Photo::Set->Select();
+	$params{collections} .= join('',
+		map { qq'<input type="checkbox" name="sets" value="' .
+			$_->id() . qq'">' . $_->name() . qq'</input><br/>\n'}
+		@all_sets);
 
 	return %params;
 }
