@@ -119,7 +119,7 @@ sub add_changelog {
 			foreach my $sort_order (
 					sort {$b <=> $a}
 					grep { $_ >= $position }
-					keys $data) {
+					keys %$data) {
 				$sth->execute($sort_order + 1, $data->{$sort_order}->{id})
 					or warn "$sql $sort_order, $data->{$sort_order}->{id}\n";
 
