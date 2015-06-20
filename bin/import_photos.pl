@@ -10,6 +10,7 @@ my $local_backup = '/media/neuromancer/home/jaeger/graphics/photos/dc/';
 my @import_dirs = (
 	'/media/D5200/DCIM/100D5200',
 	'/home/jaeger/.gvfs/mtp/Internal storage/DCIM/100MEDIA',
+	<'/home/jaeger/.gvfs/gphoto2 mount on usb*/DCIM/100MEDIA'>,
 );
 
 # Individual files that are imported are stored in this array
@@ -45,10 +46,10 @@ foreach my $dir (@import_dirs) {
 	foreach my $file (@files) {
 		my $newfile = sprintf "%0${places}d.jpg", ++$count;
 
-		printf "%s -> %s\n",
-			$file, $newfile;
+		printf "%s -> %s (of %d)\n",
+			$file, $newfile, scalar(@files);
 
-		system(sprintf("cp -a -v \"%s/%s\" \"%s/%s/raw/%s\"",
+		system(sprintf("cp -a \"%s/%s\" \"%s/%s/raw/%s\"",
 			$dir, $file, $photodir, $round, $newfile)) == 0
 			or die "Unable to copy file $file: $!\n";
 		chmod 0644, "$photodir/$round/raw/$newfile";
