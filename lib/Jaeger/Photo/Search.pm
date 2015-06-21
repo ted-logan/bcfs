@@ -15,6 +15,7 @@ use strict;
 
 use Jaeger::Search::Searchable;
 use Jaeger::Photo;
+use Jaeger::User;
 
 @Jaeger::Photo::Search::ISA = qw(Jaeger::Search::Searchable);
 
@@ -23,9 +24,16 @@ use Jaeger::Photo;
 sub _content {
 	my $self = shift;
 
+	my $status = 0;
+	if(my $user = Jaeger::User->Login()) {
+		$status = $user->{status};
+	}
+
 	# select the photos
 	my @photos = Jaeger::Photo->Select(
-		$self->{search}->like('description') . 'order by date desc'
+		$self->{search}->like('description') . 
+		" and status <= $status and not hidden " .
+		'order by date desc'
 	);
 
 	# rank the photos
