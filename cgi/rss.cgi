@@ -43,6 +43,7 @@ if($0 =~ /comment/) {
 	# Show photos from the last week
 	@entries = Jaeger::Photo->Select(
 		"not hidden and " .
+		"status <= 10 and " .
 		"mtime is not null and " .
 		"mtime >= now() + interval '1 week ago' " .
 		"order by mtime desc"
@@ -58,6 +59,7 @@ if($0 =~ /comment/) {
 	@entries = Jaeger::Photo->Select(
 		"description ilike '%calvin%' and " .
 		"not hidden and " .
+		"status <= 0 and " .
 		"mtime is not null and " .
 		"mtime >= now() + interval '1 week ago' " .
 		"order by mtime desc"
@@ -93,7 +95,7 @@ print "\t<channel>\n";
 print "\t\t<title>", $feed->{title}, "</title>\n";
 print "\t\t<link>http://jaeger.festing.org/changelog/</link>\n";
 print "\t\t<description>$feed->{description}</description>\n";
-print "\t\t<copyright>Copyright 1999-2013 Theodore Logan</copyright>\n";
+print "\t\t<copyright>Copyright 1999-2015 Theodore Logan</copyright>\n";
 print "\t\t<language>en-us</language>\n";
 print "\t\t<docs>http://blogs.law.harvard.edu/tech/rss</docs>\n";
 
@@ -124,7 +126,7 @@ foreach my $entry (@entries) {
 	# (3) More-secure articles (status > 10) are not shown at all; instead,
 	#     a link is provided.
 	my $content;
-	if($entry->status() == 0) {
+	if($entry->status() == 0 || ref($entry) =~ /Photo/) {
 		$content = $entry->content();
 	} elsif($entry->status() == 10) {
 		# Show only the first paragraph. Hope the first paragraph is
