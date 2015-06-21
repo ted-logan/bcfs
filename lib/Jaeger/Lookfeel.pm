@@ -458,6 +458,13 @@ sub _photo_main {
 	$params{number} = $obj->number();
 	$params{size} = $obj->size();
 
+	if($obj->status() > 0) {
+		$params{date} .= " (" .
+			$Jaeger::Changelog::Status{$obj->status()} .
+			")";
+
+	}
+
 	if(defined($obj->{longitude}) && defined($obj->{latitude})) {
 		$params{location} = $self->photo_coordinates(
 			longitude => $obj->{longitude},
