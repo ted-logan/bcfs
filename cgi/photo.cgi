@@ -17,6 +17,7 @@ use Jaeger::User;
 use Jaeger::Slideshow;
 use Jaeger::Lookfeel;
 use Jaeger::Photo::Set;
+use Jaeger::Photo::Recent;
 
 my $q = Jaeger::Base::Query();
 
@@ -124,9 +125,13 @@ if(my $round = $q->param('round')) {
 } elsif(my $set = $q->param('set')) {
 	$page = Jaeger::Photo::Set->new_id($set);
 
+} elsif(my $year = $q->param('year')) {
+	# display a thumbnail for a specific
+	$page = new Jaeger::Photo::Year($year);
+
 } else {
-	# display a thumbnail for a year, or the current year
-	$page = new Jaeger::Photo::Year($q->param('year'));
+	# Display the most recent photos
+	$page = new Jaeger::Photo::Recent();
 
 }
 

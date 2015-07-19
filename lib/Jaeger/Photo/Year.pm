@@ -89,11 +89,17 @@ sub html {
 
 	return $self->lf()->photo_year_list(
 		thumbnail => year_thumbnail($self->{year}, \%dates),
-		years => 
+		years => $self->yearlist()
+	);
+}
+
+sub yearlist {
+	my $self = shift;
+
+	return 
 		qq'<div class="articlefooter"><hr noshade><center><small>' .
 		join(' | ', map { qq'<a href="photo.cgi?year=$_">$_</a>' } $self->years()).
-		"</small></center><hr noshade></div>\n"
-	);
+		"</small></center><hr noshade></div>\n";
 }
 
 sub _title {
