@@ -35,7 +35,7 @@ sub html {
 
 	my $photos = $self->photos();
 
-	foreach my $photo (sort {$a->{date} <=> $b->{date}} @$photos) {
+	foreach my $photo (@$photos) {
 		$photo->{size} = "256x192";
 		$photo->resize();
 
