@@ -133,3 +133,8 @@ div.article center img {
 	right: 0;
 	text-align: right;
 }
+div.inline-photo {
+	text-align: center;
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
