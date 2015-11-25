@@ -48,16 +48,24 @@ if($0 =~ /comment/) {
 		"mtime >= now() + interval '1 week ago' " .
 		"order by mtime desc"
 	);
-} elsif($0 =~ /calvin/) {
-	# This is Calvin's photo feed
-	$feed->{title} = "Calvin's Pictures";
-	$feed->{description} =
-		"The continuing adventures of an intrepid preschooler";
+} elsif($0 =~ /(calvin|julian)/) {
+	# This is Calvin or Julian's photo feed
+	my $name = $1;
+	my $ucname = ucfirst $name;
+
+	$feed->{title} = "${ucname}'s Pictures";
+	if($name eq 'calvin') {
+		$feed->{description} =
+			"The continuing adventures of an intrepid preschooler";
+	} elsif($name eq 'julian') {
+		$feed->{description} =
+			"The continuing adventures of an intrepid infant";
+	}
 	$feed->{noun} = "photo";
 
-	# Show Calvin photos from the last week
+	# Show photos from the last week
 	@entries = Jaeger::Photo->Select(
-		"description ilike '%calvin%' and " .
+		"description ilike '%$name%' and " .
 		"not hidden and " .
 		"status <= 0 and " .
 		"mtime is not null and " .
@@ -65,12 +73,12 @@ if($0 =~ /comment/) {
 		"order by mtime desc"
 	);
 
-	# Permute the url to point to Calvin's site instead of my site
+	# Permute the url to point to the appropriate site instead of my site
 	foreach my $photo (@entries) {
 		my $month = $photo->date();
 		$month =~ s/^(\d\d\d\d-\d\d).*/\1-01/;
 
-		$photo->{url} = "http://calvinlogan.com/?month=$month#" .
+		$photo->{url} = "http://${name}logan.com/?month=$month#" .
 			$photo->{round} . "/" . $photo->{number};
 
 		$photo->{description} =~ s/Kiesa/Mommy/;
