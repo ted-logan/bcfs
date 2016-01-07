@@ -38,8 +38,15 @@ foreach my $set (Jaeger::Photo::Set->Select()) {
 	foreach my $photo (@{$set->photos()}) {
 		$i++;
 		next if $photo->{hidden};
-		my $file = sprintf "%04d-%s_%s.jpg",
-			$i, $photo->{round}, $photo->{number};
+
+		my $name = lc $photo->description();
+		$name =~ s/'//g;
+		$name =~ s/^\W+//;
+		$name =~ s/\W+$//;
+		$name =~ s/\W+/_/g;
+
+		my $file = sprintf "%04d-%s_%s-%s.jpg",
+			$i, $photo->{round}, $photo->{number}, $name;
 		print "$file ($photo->{description})\n";
 		unless(-f "$dir/$file") {
 			link($photo->file_crop(), "$dir/$file")
