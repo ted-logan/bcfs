@@ -229,12 +229,37 @@ sub _edit_series {
 				printf "%2d  %s\n",
 					$s->id(), $s->name();
 			}
+			print " n  Create a new series\n";
 			print "\n";
 
 			print "Enter the series id to add this changelog to:\n";
 			print "> ";
 			my $id = <STDIN>;
 			chomp $id;
+
+			if(lc($id) eq 'n') {
+				print "Enter the new series name to add:\n";
+				print "> ";
+				my $name = <STDIN>;
+				chomp $name;
+
+				unless($name) {
+					next;
+				}
+
+				my $new_series = new Jaeger::Changelog::Series;
+				$new_series->{name} = $name;
+				if(!$new_series->update()) {
+					print "Unable to add new series\n";
+					next;
+				}
+
+				if(!$new_series->add_changelog($self, 1)) {
+					print "Unable to add changelog to series\n";
+					next;
+				}
+				next;
+			}
 
 			unless($all_serieses{$id}) {
 				print "Invalid series id \"$id\"\n";
