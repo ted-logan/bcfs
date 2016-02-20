@@ -399,7 +399,7 @@ sub get_timezone {
 		} else {
 			$new_timezone = Jaeger::Timezone->Select(name => $name);
 			if($new_timezone) {
-				printf "Selected timezone %s (GMT%+d)\n",
+				printf "Selected timezone %s (GMT%+.1f)\n",
 					$name, $new_timezone->{ofst};
 			} else {
 				print "Unrecogonized timezone '$name'\n";
