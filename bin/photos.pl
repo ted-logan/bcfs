@@ -137,6 +137,9 @@ foreach my $round (@ARGV) {
 }
 
 if(@ARGV) {
+	# Update photo sets, based on the beginning and ending date of the set
+	Jaeger::Photo::Set->AutoUpdateSets();
+
 	# Automatically update the thumbnails on the server
 	#
 	# Note that ssh executes this command in a non-login shell, so any
