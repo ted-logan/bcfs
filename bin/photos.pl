@@ -330,32 +330,6 @@ sub import_round {
 
 	my %photos;
 
-	# read the uncropped photos
-	if(-d "$Jaeger::Photo::Dir/$round/raw") {
-		print "Round $round: Scanning raw photos ";
-
-		opendir DIR, "$Jaeger::Photo::Dir/$round/raw";
-
-		foreach my $file (grep /\.jpg/, readdir DIR) {
-			print '.';
-
-			my ($number) = $file =~ /(.*)\.jpg/;
-
-			my $photo = new Jaeger::Photo;
-			$photo->{round} = $round;
-			$photo->{number} = $number;
-
-			# Don't read the photo's date yet. Wait to do that
-			# until we solicit time zone input from the user.
-
-			$photos{$number} = $photo;
-		}
-
-		closedir DIR;
-
-		print "\n";
-	}
-
 	# read the cropped photos
 	if(-d "$Jaeger::Photo::Dir/$round/new") {
 		print "Round $round: Scanning cropped photos ";
