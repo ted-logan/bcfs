@@ -22,12 +22,13 @@
 <!-- Desktop design -->
 
 <div id="phototitlebar" class="phototitlebar article">
-<div style="float:left; background:#125;">
-<a href="http://jaeger.festing.org/changelog/"><img src="/graphics/jaegerfesting.png" alt="jaegerfesting" border="0" height="46" width="283"/></a>
-</div>
-
 <div>
 <h1>---phototitle---</h1>
+<div style="float:right">
+<a href="/changelog/">Home</a> &bull;
+<a href="/search.cgi">Search</a> &bull;
+<a href="/photo.cgi">Recent Photos</a>
+</div>
 <h3>---date--- ---location---</h3>
 </div>
 
