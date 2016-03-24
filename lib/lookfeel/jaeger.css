@@ -116,7 +116,7 @@ div.article img {
 div.article center img {
 	max-width: 100%;
 }
-#phototitle, #leftbutton, #rightbutton {
+#phototitle, #leftbutton, #rightbutton, #editlink {
 	position: absolute;
 	background-color:rgba(0,0,0,0.40);
 }

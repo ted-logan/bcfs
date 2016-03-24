@@ -28,7 +28,7 @@
 		margin-bottom: 1em;
 	}
 	#editlink {
-		float: right;
+		right: 1em;
 	}
 	#edit {
 		position: absolute;
