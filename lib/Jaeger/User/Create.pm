@@ -85,8 +85,8 @@ sub html1 {
 	);
 }
 
-# this step verifies the user's input, inserts him into the database, and
-# sends him an e-mail
+# this step verifies the user's input, inserts her into the database, and
+# sends her an e-mail
 sub step1 {
 	my $self = shift;
 
@@ -97,18 +97,43 @@ sub step1 {
 	my $name = $q->param('name');
 	my $email = $q->param('email');
 
-	unless($login && $name && $email) {
+	my $user = $self->step1_adduser(
+		login => $login,
+		name => $name,
+		email => $email,
+	);
+
+	# send the user e-mail
+	my $msg = new MIME::Lite(
+		From	=> 'New jaegerfesting account <jaeger@festing.org>',
+		To	=> $email,
+		BCC	=> 'jaeger@festing.org',
+		Subject	=> 'New jaegerfesting account',
+		Data	=> $self->lf()->user_create_email(%$user)
+	);
+
+	$msg->send();
+
+	# all done
+}
+
+sub step1_adduser {
+	my $self = shift;
+
+	my %user = @_;
+
+	unless($user{login} && $user{name} && $user{email}) {
 		die "All fields must be filled.\n";
 	}
 
 	# check that the login doesn't already exist
-	if(Jaeger::User->Count(login => $login)) {
-		die "The login \"$login\" is already taken.\n";
+	if(Jaeger::User->Count(login => $user{login})) {
+		die "The login \"$user{login}\" is already taken.\n";
 	}
 
 	# check that the name/alias doesn't already exist
-	if(Jaeger::User->Count(name => $name)) {
-		die "Someone is already using the name \"$name\".\n";
+	if(Jaeger::User->Count(name => $user{name})) {
+		die "Someone is already using the name \"$user{name}\".\n";
 	}
 
 	# pick a random password (for e-mail verification)
@@ -125,26 +150,15 @@ sub step1 {
 
 	# insert the user
 	my $user = new Jaeger::User;
-	$user->login($login);
+	$user->login($user{login});
 	$user->password($password);
-	$user->name($name);
-	$user->email($email);
-	$user->status(0);
+	$user->name($user{name});
+	$user->email($user{email});
+	$user->status(defined($user{status}) ? $user{status} : 0);
 
 	$user->update();
 
-	# send the user e-mail
-	my $msg = new MIME::Lite(
-		From	=> 'New jaegerfesting account <jaeger@festing.org>',
-		To	=> $email,
-		BCC	=> 'jaeger@festing.org',
-		Subject	=> 'New jaegerfesting account',
-		Data	=> $self->lf()->user_create_email(%$user)
-	);
-
-	$msg->send();
-
-	# all done
+	return $user;
 }
 
 sub html2 {
