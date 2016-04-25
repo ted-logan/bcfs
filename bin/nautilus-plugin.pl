@@ -40,19 +40,34 @@ my $pwd = getcwd;
 if($0 =~ /ignore-photo/) {
 	# Sanity-check that we're in a directory we expect to be
 
-	if($pwd =~ m#photos/dc/[^/]+/todo$#) {
+	if($pwd =~ m#photos/dc/([^/]+)/todo$#) {
 		# Ignore all the photos on the command line
 		if(@ARGV) {
 			open IGNORE, ">>../.ignore";
 			foreach my $file (@ARGV) {
 				print IGNORE "$file\n";
 				unlink $file;
+				unlink "../../todo/$1_$file";
 			}
 			close IGNORE;
 		}
 
 		# Update the photos in the todo directory
 		update_todo('..');
+	} elsif($pwd =~ m#photos/dc/todo$#) {
+		# This is the master todo directory. Photos are listed here as
+		# "round_number.jpg". Figure out the round and number for each
+		# photo on the command line.
+		foreach my $file (@ARGV) {
+			if(my ($round, $number) =
+					$file =~ /^([^_]+)_([^_]+)\.jpg$/) {
+				open IGNORE, ">>../$round/.ignore";
+				print IGNORE "$number.jpg\n";
+				close IGNORE;
+				unlink $file;
+				unlink "../$round/todo/$number.jpg";
+			}
+		}
 	}
 }
 
@@ -157,6 +172,7 @@ sub update_todo {
 			# File has been cropped; remove it from the todo dir
 			unlink "$round_path/todo/$file"
 				if -f "$round_path/todo/$file";
+			unlink "$round_path/../todo/${round}_${file}";
 		} else {
 			# Check whether the file should be ignored
 			unless($ignore{$file}) {
