@@ -73,7 +73,7 @@ sub AUTOLOAD {
 			$content =~ s/---$p---/$params{$p}/g;
 		}
 
-		$content =~ s/---\w*?---//g;
+		$content =~ s/---[a-zA-Z0-9_]+?---//g;
 		return $content;
 	} else {
 		# content isn't in database; pass method on to master class
