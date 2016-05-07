@@ -24,7 +24,7 @@
 </div>
 <div id="graphic">
 <div class="article">
-<a href="http://jaeger.festing.org/changelog/"><img src="/graphics/jaegerfesting.png" alt="jaegerfesting" border="0" height="46" width="283"/></a>
+<a href="/changelog/"><img src="/graphics/jaegerfesting.png" alt="jaegerfesting" border="0" height="46" width="283"/></a>
 </div>
 </div>
 
@@ -62,11 +62,11 @@
 <a href="mailto:jaeger@festing.org">jaeger@festing.org</a><br/>
 </i>
 <div class="screenfooter instapaper_ignore">
-<a href="http://jaeger.festing.org/theodore_logan.asc">PGP key</a><br/>
+<a href="/theodore_logan.asc">PGP key</a><br/>
 RSS:
-<a href="http://jaeger.festing.org/rss.cgi---rsscookie---">Entries</a>
-<a href="http://jaeger.festing.org/rss_comment.cgi---rsscookie---">Comments</a>
-<a href="http://jaeger.festing.org/rss_photo.cgi">Photos</a>
+<a href="/rss.cgi---rsscookie---">Entries</a>
+<a href="/rss_comment.cgi---rsscookie---">Comments</a>
+<a href="/rss_photo.cgi">Photos</a>
 </div>
 <div class="printfooter instapaper_ignore">
 <hr noshade>
@@ -98,8 +98,8 @@ Downloaded ---date--- from ---url---
 <h2>Things to read</h2>
 
 <ul>
-<li><a href="http://jaeger.festing.org/changelog/series/14">China 2016</a></li>
-<li><a href="http://jaeger.festing.org/changelog/1663.html">India 2015</a></li>
+<li><a href="/changelog/series/14">China 2016</a></li>
+<li><a href="/changelog/1663.html">India 2015</a></li>
 </ul>
 
 <h2>Entries by year</h2>
