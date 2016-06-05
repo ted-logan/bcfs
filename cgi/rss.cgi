@@ -12,6 +12,7 @@ use Jaeger::Changelog;
 use Jaeger::Comment;
 use Jaeger::Photo;
 use Jaeger::User;
+use POSIX qw(strftime);
 
 my $status = 0;
 
@@ -30,6 +31,7 @@ if($0 =~ /comment/) {
 	$feed->{title} = "jaegerfesting Comments";
 	$feed->{description} = "Comments posted on jaeger.festing.org.";
 	$feed->{noun} = "comment";
+	$feed->{link} = 'http://jaeger.festing.org/changelog/';
 
 	@entries = Jaeger::Comment->Select(
 		"status <= $status order by date desc limit 10"
@@ -39,6 +41,7 @@ if($0 =~ /comment/) {
 	$feed->{title} = "jaegerfesting photos";
 	$feed->{description} = "Photos posted on jaeger.festing.org.";
 	$feed->{noun} = "photo";
+	$feed->{link} = 'http://jaeger.festing.org/photo.cgi';
 
 	# Show photos from the last week
 	@entries = Jaeger::Photo->Select(
@@ -56,12 +59,13 @@ if($0 =~ /comment/) {
 	$feed->{title} = "${ucname}'s Pictures";
 	if($name eq 'calvin') {
 		$feed->{description} =
-			"The continuing adventures of an intrepid preschooler";
+			"The continuing adventures of an intrepid gradeschooler";
 	} elsif($name eq 'julian') {
 		$feed->{description} =
-			"The continuing adventures of an intrepid infant";
+			"The continuing adventures of an intrepid toddler";
 	}
 	$feed->{noun} = "photo";
+	$feed->{link} = "http://${name}logan.com/";
 
 	# Show photos from the last week
 	@entries = Jaeger::Photo->Select(
@@ -87,13 +91,16 @@ if($0 =~ /comment/) {
 } else {
 	# This is a changelog feed
 	$feed->{title} = "jaegerfesting";
-	$feed->{description} = "Random content from a hacker in Boulder, Colorado.";
+	$feed->{description} = "Random content from a hacker in San Francisco.";
 	$feed->{noun} = "entry";
+	$feed->{link} = 'http://jaeger.festing.org/changelog/';
 
 	@entries = Jaeger::Changelog->Select(
 		"status <= $status order by time_end desc limit 10"
 	);
 }
+
+my $year = strftime("%Y", localtime time);
 
 print "content-type: text/xml\n\n";
 
@@ -101,9 +108,9 @@ print "<?xml version=\"1.0\"?>\n";
 print "<rss version=\"2.0\">\n";
 print "\t<channel>\n";
 print "\t\t<title>", $feed->{title}, "</title>\n";
-print "\t\t<link>http://jaeger.festing.org/changelog/</link>\n";
+print "\t\t<link>$feed->{link}</link>\n";
 print "\t\t<description>$feed->{description}</description>\n";
-print "\t\t<copyright>Copyright 1999-2015 Theodore Logan</copyright>\n";
+print "\t\t<copyright>Copyright 1999-$year Theodore Logan</copyright>\n";
 print "\t\t<language>en-us</language>\n";
 print "\t\t<docs>http://blogs.law.harvard.edu/tech/rss</docs>\n";
 
