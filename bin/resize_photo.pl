@@ -14,6 +14,7 @@ use lib '/home/jaeger/src/bcfs/lib';
 use Jaeger::Photo;
 
 use Image::Magick;
+use File::Path qw(make_path);
 
 if(@ARGV != 3) {
 	die "$0: ROUND NUMBER SIZE\n";
@@ -36,9 +37,9 @@ unless($photo) {
 }
 
 # Make the correct directory, if it doesn't already exist
-my $newdir = "$Jaeger::Photo::Dir/$round/${width}x${height}";
+my $newdir = "$Jaeger::Photo::CacheDir/$round/${width}x${height}";
 unless(-d $newdir) {
-	mkdir $newdir;
+	make_path $newdir;
 }
 
 my $newfile = "$newdir/$number.jpg";
