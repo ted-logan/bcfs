@@ -53,7 +53,7 @@ print <<HTML;
 <h1><a href="/">Calvin Logan</a></h1>
 
 <p>
-The continuing adventures of an intrepid kindergartener
+The continuing adventures of an intrepid gradeschooler
 </p>
 
 HTML
