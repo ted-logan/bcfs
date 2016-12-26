@@ -296,8 +296,10 @@ sub _main {
 
 	if($user) {
 		push @navbar, $self->login_status_user(user => $user->name());
+		$params{mobilelogin} = qq'<a href="/logout.cgi">Log out</a>';
 	} else {
 		push @navbar, $self->login_status_nonuser();
+		$params{mobilelogin} = qq'<a href="/login.cgi">Log in</a>';
 	}
 
 	# populate the navigation links
