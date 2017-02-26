@@ -353,7 +353,7 @@ sub parsetimestamp {
 
 	my $timestamp = shift;
 
-	my $sql = "select extract(epoch from timestamp '$timestamp')";
+	my $sql = "select extract(epoch from timestamp with time zone '$timestamp')";
 	my $sth = $self->{dbh}->prepare($sql);
 	$sth->execute
 		or warn "$sql;\n";
