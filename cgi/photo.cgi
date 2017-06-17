@@ -78,8 +78,8 @@ if(my $round = $q->param('round')) {
 				# it.
 				if($q->param('size')) {
 					$page->{size} = $q->param('size');
-				} elsif($page->native() > 1024) {
-					$page->{size} = '1024x768';
+				} elsif($page->native() > 1600) {
+					$page->{size} = '1600x1200';
 				}
 				$page->resize();
 
