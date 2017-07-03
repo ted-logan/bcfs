@@ -635,15 +635,18 @@ sub _html {
 		);
 	}
 
+	my $reply = "/changelog/$self->{id}.html/reply#reply";
+
 	if($user) {
 		# show the users who have viewed the changelog
 		$params{navigation} .= '<p>These people have read this changelog: ' . join(', ', map {$_->link()} sort {$a->{name} cmp $b->{name}} @{$self->user_views()}) . '</p>';
 
 		# Invite the user to post a comment
-		$params{navigation} .= qq'<p><a href="/changelog/$self->{id}.html/reply">Post comment</a></p>';
+		$params{navigation} .= qq'<p><a href="$reply">Post comment</a></p>';
 	} else {
 		# Invite the user to log in to post
-		$params{navigation} .= '<p><a href="/login.cgi">Log In</a> to post a comment.</p>';
+		$reply =~ s/#/%23/;
+		$params{navigation} .= qq'<p><a href="/login.cgi?redirect=$reply" rel="nofollow">Log In</a> to post a comment.</p>';
 	}
 
 	# show the comments attached to this changelog

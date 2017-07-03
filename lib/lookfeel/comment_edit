@@ -1,3 +1,4 @@
+<a name="reply"></a>
 <h1>Create ---header---</h1>
 <form action="---uri---" method="post">
 <input type="hidden" name="changelog_id" value="---changelog_id---">
