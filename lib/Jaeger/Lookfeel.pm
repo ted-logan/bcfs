@@ -626,10 +626,10 @@ sub navlinks {
 	my @link;
 
 	if(ref $params{prev}) {
-		push @link, '&lt; - <a href="' . $params{prev}->url() .
+		push @link, '&lt; <a href="' . $params{prev}->url() .
 			'">Previous: ' . $params{prev}->title() . '</a>';
 	} else {
-		push @link, '&lt;- Previous';
+		push @link, '&lt; Previous';
 	}
 
 	if(ref $params{index}) {
@@ -641,9 +641,9 @@ sub navlinks {
 
 	if(ref $params{next}) {
 		push @link, '<a href="' . $params{next}->url() . '">Next: ' .
-			$params{next}->title() . '</a> -&gt;';
+			$params{next}->title() . '</a> &gt;';
 	} else {
-		push @link, 'Next -&gt;';
+		push @link, 'Next &gt;';
 	}
 
 	return join '', @link;
