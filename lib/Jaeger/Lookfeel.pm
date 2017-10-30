@@ -910,6 +910,22 @@ sub _flight_row {
 			$self->flight_comment(comment => $params{comment});
 	}
 
+	if($params{distance} > 9999) {
+		$params{distance} =~ s/(\d\d\d)$/,$1/;
+	}
+
+	return %params;
+}
+
+sub _flight_total {
+	my $self = shift;
+
+	my %params = @_;
+
+	if($params{distance} > 9999) {
+		$params{distance} =~ s/(\d\d\d)$/,$1/;
+	}
+
 	return %params;
 }
 
