@@ -21,6 +21,7 @@ use lib "$ENV{BCFS}/lib";
 use Jaeger::Lookfeel;
 use Jaeger::UserBox;
 
+use Encode;
 use XML::RSS;
 use LWP::UserAgent;
 
@@ -48,7 +49,7 @@ foreach my $link (@links) {
 $lf->{dbh}->do("delete from lookfeel where label like 'rss_links%'");
 
 my $sql = "insert into lookfeel values ('rss_links', now(), " .
-	$lf->{dbh}->quote(join('', @html)) . ")";
+	$lf->{dbh}->quote(Encode::encode_utf8(join('', @html))) . ")";
 $lf->{dbh}->do($sql);
 
 # Update personal rss boxes
@@ -88,8 +89,9 @@ sub parse_url {
 		return undef;
 	}
 
+	my $content = Encode::decode_utf8($response->content());
+
 	# Clean up broken XML for Diaryland, et al
-	my $content = $response->content();
 	$content =~ s#<description>.*?</description>##g;
 
 	my $rss = new XML::RSS;
