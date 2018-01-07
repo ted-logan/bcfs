@@ -456,7 +456,7 @@ sub _photo_main {
 
 	# Fill in the content from the photo itself
 	$params{phototitle} = $obj->{description};
-	$params{date} = $obj->date_format();
+	$params{date} = $obj->date_format() || "&nbsp;";
 	$params{round} = $obj->round();
 	$params{number} = $obj->number();
 	$params{size} = $obj->size();
