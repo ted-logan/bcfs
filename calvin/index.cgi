@@ -76,7 +76,7 @@ foreach my $photo (@photos) {
 <a name="$photo->{round}/$photo->{number}"></a>
 <h3><a href="/?month=$month#$photo->{round}/$photo->{number}">$photo->{description}</a></h3>
 <p><i>$date</i></p>
-<p><img src="http://jaeger.festing.org/digitalpics/$photo->{round}/$photo->{size}/$photo->{number}.jpg" /></p>
+<p><img src="https://jaeger.festing.org/digitalpics/$photo->{round}/$photo->{size}/$photo->{number}.jpg" /></p>
 HTML
 }
 
@@ -108,7 +108,7 @@ upper left of the picture is his nose.
 <h3>7 Weeks</h3>
 
 <p>
-<img src="http://jaeger.festing.org/changelog/2008-08-30/calvin_or_jade.jpg" alt="Calvin? Jade? You decide." />
+<img src="https://jaeger.festing.org/changelog/2008-08-30/calvin_or_jade.jpg" alt="Calvin? Jade? You decide." />
 </p>
 HTML
 }

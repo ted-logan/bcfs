@@ -108,7 +108,7 @@ HTML
 <a name="$photo->{round}/$photo->{number}"></a>
 <h3><a href="/?month=$month#$photo->{round}/$photo->{number}">$photo->{description}</a></h3>
 <p><i>$date</i></p>
-<p><img src="http://jaeger.festing.org/digitalpics/$photo->{round}/$photo->{size}/$photo->{number}.jpg" /></p>
+<p><img src="https://jaeger.festing.org/digitalpics/$photo->{round}/$photo->{size}/$photo->{number}.jpg" /></p>
 HTML
 	}
 
