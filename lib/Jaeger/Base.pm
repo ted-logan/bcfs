@@ -20,16 +20,19 @@ use Carp;
 
 use CGI;
 
-# Depending on the hostname, connect either to the local database or to the
-# database tunneled via ssh. (It'd also be nice to detect when we have a
-# VPN up and running and use that as well.)
+# Connect to the Postgres database running on Honor. Note that I've set up the
+# database to expose a non-standard port (port 1284), since I've made the port
+# accessible over the open internet so I can connect to it remotely without the
+# cumbersome ssh tunnel.
+#
+# On Honor (ie, when the hostname starts with honor), connect to localhost.
+# On other hosts, connect to honor2.festing.org.
 
-# By default, connect to the TCP port tunneled via ssh.
-my $connection = "host=localhost;port=1284;user=jaeger;";
+my $connection = "host=honor2.festing.org;port=1284;user=jaeger;";
 $Jaeger::Base::BaseURL = 'http://localhost/';
 if(`hostname` =~ /^honor/) {
 	# If we're on Honor, connect locally.
-	$connection = "";
+	$connection = "host=localhost;port=1284;user=jaeger;";
 	$Jaeger::Base::BaseURL = 'https://jaeger.festing.org/';
 }
 
