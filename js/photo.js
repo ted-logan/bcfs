@@ -93,6 +93,33 @@ function show_edit() {
 	}
 }
 
+// Handle left-arrow and right-arrow keys to go to the previous or next photo
+document.onkeydown = checkKeycode;
+
+function checkKeycode(event) {
+	// handling Internet Explorer stupidity with window.event
+	// @see http://stackoverflow.com/a/3985882/517705
+	var keyDownEvent = event || window.event,
+		keycode = (keyDownEvent.which) ? keyDownEvent.which : keyDownEvent.keyCode;
+
+	switch(keycode) {
+		case 37: // Left arrow
+			if(prevphoto) {
+				window.location.href = prevphoto;
+			}
+			break;
+		case 39: // Right arrow
+			if(nextphoto) {
+				window.location.href = nextphoto;
+			}
+			break;
+		default:
+			break;
+	}
+
+	return false;
+}
+
 // TOUCH-EVENTS SINGLE-FINGER SWIPE-SENSING JAVASCRIPT
 // Courtesy of PADILICIOUS.COM and MACOSXAUTOMATION.COM
 // http://padilicious.com/code/touchevents/
