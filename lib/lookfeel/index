@@ -2,7 +2,17 @@
 <html>
 <meta name="keywords" content="jaeger, festing, ted logan">
 <link REL="icon" HREF="/graphics/aicon.png" TYPE="image/png">
-<head><title>j&auml;gerfesting</title></head>
+<head><title>j&auml;gerfesting</title>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-122895627-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-122895627-1');
+</script>
+</head>
 <body bgcolor="#000000" text="#c0c0c0" alink="#ffffff" link="#20d020" vlink="#d03040">
 <center>
 <table width="560">
