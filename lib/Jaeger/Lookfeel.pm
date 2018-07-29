@@ -74,7 +74,8 @@ sub AUTOLOAD {
 		}
 
 		$content =~ s/---[a-zA-Z0-9_]+?---//g;
-		$content =~ s/http:\/\/jaeger\.festing\.org\//\//g;
+		$content =~
+			s/https?:\/\/(alpha|beta|jaeger)\.festing\.org\//\//g;
 		return $content;
 	} else {
 		# content isn't in database; pass method on to master class
