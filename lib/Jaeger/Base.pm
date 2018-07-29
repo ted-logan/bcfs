@@ -33,7 +33,11 @@ $Jaeger::Base::BaseURL = 'http://localhost/';
 if(`hostname` =~ /^honor/) {
 	# If we're on Honor, connect locally.
 	$connection = "host=localhost;port=1284;user=jaeger;";
-	$Jaeger::Base::BaseURL = 'https://jaeger.festing.org/';
+	if($ENV{SERVER_NAME}) {
+		$Jaeger::Base::BaseURL = "https://$ENV{SERVER_NAME}/";
+	} else {
+		$Jaeger::Base::BaseURL = 'https://jaeger.festing.org/';
+	}
 }
 
 $Jaeger::Base::Pgdbh = undef;
