@@ -384,11 +384,7 @@ sub _main {
 		join('', map { "<li><a href=\"" . $_->url() . "\">" .
 			$_->name() . "</a></li>\n" } @photo_sets) . "</ul>\n";
 
-	# Include Google Analytics tracking, unless the logged-in user is
-	# Jaeger, to avoid poluting the analytics data.
-	unless($user && $user->status() >= 30) {
-		$params{analytics} = $self->analytics();
-	}
+	$params{analytics} = $self->analytics();
 
 	return %params;
 }
@@ -494,11 +490,7 @@ sub _photo_main {
 		);
 	}
 
-	# Include Google Analytics tracking, unless the logged-in user is
-	# Jaeger, to avoid poluting the analytics data.
-	unless($logged_in_user && $logged_in_user->status() >= 30) {
-		$params{analytics} = $self->analytics();
-	}
+	$params{analytics} = $self->analytics();
 
 	return %params;
 }
@@ -556,12 +548,7 @@ sub _photo_list_main {
 
 	$params{content} = $obj->html();
 
-	my $logged_in_user = Jaeger::User->Login();
-	# Include Google Analytics tracking, unless the logged-in user is
-	# Jaeger, to avoid poluting the analytics data.
-	unless($logged_in_user && $logged_in_user->status() >= 30) {
-		$params{analytics} = $self->analytics();
-	}
+	$params{analytics} = $self->analytics();
 
 	return %params;
 }
@@ -616,6 +603,27 @@ sub _photo_edit {
 		@all_sets);
 
 	return %params;
+}
+
+sub analytics {
+	my $self = shift;
+
+	# Do not include analytics in any pre-production environment (in
+	# particular, alpha.festing.org and beta.festing.org).
+	
+	if($Jaeger::Base::BaseURL !~ /jaeger\.festing\.org/) {
+		return "";
+	}
+
+	# Do not include analytics tracking if the logged-in user is Jaeger, to
+	# avoid poluting the analytics data.
+	my $user = Jaeger::User->Login();
+
+	if($user && $user->status() >= 30) {
+		return "";
+	}
+
+	return $self->_lookfeel('analytics');
 }
 
 sub _slideshow {
