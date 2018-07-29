@@ -34,6 +34,7 @@ sub table {
 }
 
 $Jaeger::Photo::Dir = '/home/jaeger/graphics/photos/dc';
+$Jaeger::Photo::CacheDir = '/var/www/cache/dc';
 
 @Jaeger::Photo::Sizes = qw(640x480 800x600 1024x768 1280x960 1600x1200 2048x1536 3000x2000);
 
@@ -112,7 +113,7 @@ sub _file {
 	my $self = shift;
 
 	if($self->{size}) {
-		my $file = "$Jaeger::Photo::Dir/$self->{round}/$self->{size}/$self->{number}.jpg";
+		my $file = "$Jaeger::Photo::CacheDir/$self->{round}/$self->{size}/$self->{number}.jpg";
 		if(-f $file) {
 			return $self->{file} = $file;
 		}
@@ -170,7 +171,7 @@ sub _file_raw {
 sub _thumbnail {
 	my $self = shift;
 
-	return $self->{thumbnail} = "$Jaeger::Photo::Dir/$self->{round}/thumbnail/$self->{number}.jpg";
+	return $self->{thumbnail} = "$Jaeger::Photo::CacheDir/$self->{round}/thumbnail/$self->{number}.jpg";
 }
 
 # returns a Perl-compatible boolean for the hidden boolean parameter
@@ -193,7 +194,7 @@ sub size {
 	}
 
 	if($self->file_crop()) {
-		return $self->{size} = 'new';
+		return $self->{size} = $self->native();
 	}
 
 	if($self->file_raw()) {
@@ -232,12 +233,31 @@ sub _native {
 sub resize {
 	my $self = shift;
 
-	if($self->size()) {
-		my $file = "$Jaeger::Photo::Dir/$self->{round}/$self->{size}/$self->{number}.jpg";
+	my $size = shift;
+	unless($size) {
+		$size = $self->size();
+	}
+
+	if($size) {
+		my $file = "$Jaeger::Photo::CacheDir/$self->{round}/$size/$self->{number}.jpg";
 
 		unless(-f $file) {
-			system "$ENV{BCFS}/bin/resize_photo.pl $self->{round} $self->{number} $self->{size}";
+			system "$ENV{BCFS}/bin/resize_photo.pl $self->{round} $self->{number} $size";
 		}
+	}
+
+	my $cache_newdir = "$Jaeger::Photo::CacheDir/$self->{round}/new";
+	unless(-d $cache_newdir) {
+		mkdir($cache_newdir)
+			or warn "Unable to create dir $cache_newdir: $!";
+	}
+	my $newfile = "$cache_newdir/$self->{number}.jpg";
+	my $exist_newfile = 
+		"$Jaeger::Photo::Dir/$self->{round}/$size/$self->{number}.jpg";
+	unless(-f $newfile) {
+		symlink($exist_newfile, $newfile)
+			or warn "Unable to update file symlink ($newfile -> " .
+				$exist_newfile . "): $!";
 	}
 }
 

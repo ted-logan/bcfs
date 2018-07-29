@@ -87,6 +87,8 @@ if($0 =~ /comment/) {
 
 		$photo->{description} =~ s/Kiesa/Mommy/;
 		$photo->{description} =~ s/Jaeger/Daddy/;
+
+		$photo->resize();
 	}
 } else {
 	# This is a changelog feed
