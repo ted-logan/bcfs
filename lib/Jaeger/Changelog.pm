@@ -15,6 +15,7 @@ use Jaeger::Base;
 use Jaeger::Comment;
 use Jaeger::Changelog::Browse;
 use Jaeger::Changelog::Series;
+use Jaeger::Changelog::Tag;
 use Jaeger::Photo;
 
 use POSIX;
@@ -30,6 +31,122 @@ use POSIX;
 	30	=> 'Jaeger himself',
 	100	=> 'Postponed'
 );
+
+sub Urimap {
+	my ($uri, $user) = @_;
+
+	my $changelog;
+
+	if($uri =~ m#^//#) {
+		# We ended up with one too many slashes at the beginning
+		$changelog = $uri;
+		$changelog =~ s#^/+#/#;
+
+	} elsif($uri =~ m#/changelog/(\d+)\.html$#) {
+		# Show changelog by specific id
+		$changelog = Jaeger::Changelog->new_id($1);
+		unless($changelog) {
+			$changelog = new Jaeger::Changelog;
+			$changelog->{title} = 'No changelog';
+			$changelog->{content} = 'No changelog was found with the given id';
+		}
+
+	} elsif($uri =~ m#/changelog/(\d+)\.html/reply#) {
+		# Post a reply to the changelog
+		my $replyto = Jaeger::Changelog->new_id($1);
+		if($replyto) {
+			# Are we logged in?
+			if($user) {
+				$changelog = new Jaeger::Comment::Post($replyto);
+			} else {
+				# Redirect to the login page
+				$changelog = "/login.cgi?redirect=/changelog/$1.html/reply";
+			}
+
+
+		} else {
+			$changelog = new Jaeger::Changelog;
+			$changelog->{title} = 'No changelog';
+			$changelog->{content} = 'No changelog was found with the given id';
+		}
+
+	} elsif($uri =~ m#/changelog/comment/(\d+)\.html/reply#) {
+		# Post a reply to the comment
+		my $replyto = Jaeger::Comment->new_id($1);
+		if($replyto) {
+			# Are we logged in?
+			if($user) {
+				$changelog = new Jaeger::Comment::Post(
+					$replyto->changelog(), $replyto
+				);
+			} else {
+				# Redirect to the login page
+				$changelog = "/login.cgi?redirect=/changelog/comment/$1.html/reply";
+			}
+
+		} else {
+			$changelog = new Jaeger::Changelog;
+			$changelog->{title} = 'No comment';
+			$changelog->{content} = 'No comment was found with the given id';
+		}
+
+	} elsif($uri =~ m#/changelog/comment/(\d+)\.html#) {
+		# show a changelog comment
+		$changelog = Jaeger::Comment->new_id($1);
+		unless($changelog) {
+			$changelog = new Jaeger::Changelog;
+			$changelog->{title} = 'No Comment';
+			$changelog->{content} = 'No comment was found with the given id';
+		}
+
+	} elsif($uri =~ m#/changelog/(\d\d\d\d)(/?)#) {
+		# Browse changelogs by year
+		my $year = $1;
+
+		if($2) {
+			# show the year itself
+			$changelog = new Jaeger::Changelog::Browse($year);
+		} else {
+			# redirect to the "directory"
+			$changelog = "/changelog/$1/";
+		}
+
+	} elsif($uri =~ m#/changelog/tag/([^/]+)/?#) {
+		# Show a list of changelogs attached to a particular tag
+		$changelog = Jaeger::Changelog::Tag->new($1);
+
+	} elsif($uri =~ m#/changelog/tag/?#) {
+		# Show a list of all tags used by changelog
+		$changelog = Jaeger::Changelog::Tag->new();
+
+	} elsif($uri =~ m#/series/(\d+)(/?)#) {
+		# Show a list of changelogs in a particular series
+		$changelog = Jaeger::Changelog::Series->new_id($1);
+
+	} elsif($uri eq '/changelog/') {
+		# Show the most recent changelog
+		$changelog = 'LATEST';
+
+	} else {
+		# quietly redirect to the most recent changelog
+		$changelog = 'LATEST';
+	}
+
+	# Check to see if we have access to this changelog or comment
+	my $level = $user ? $user->{status} : 0;
+
+	if(ref($changelog) && $changelog->{status} > $level) {
+		# No access -- redirect to login page
+		$changelog = "/login.cgi?redirect=" . $changelog->url();
+	}
+
+	if($changelog eq 'LATEST') {
+		my $latest = Newest Jaeger::Changelog;
+		$changelog = $latest->url();
+	}
+
+	return $changelog;
+}
 
 sub table {
 	return 'changelog';

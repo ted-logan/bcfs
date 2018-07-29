@@ -13,7 +13,12 @@
 
 use strict;
 
+use lib "$ENV{BCFS}/lib";
+
 use CGI;
+
+use Jaeger::Base;
+use Jaeger::Changelog;
 
 my $q = new CGI;
 
@@ -28,5 +33,23 @@ if(my $id = $q->param('id')) {
 	$url = "$year/";
 }
 
-# redirect accordingly
-print $q->redirect("http://jaeger.festing.org/changelog/$url");
+# If anyone is still using the old, pre-2002 url scheme, redirect.
+# (There are a *bunch* of hits in my weblog from this url scheme, which all
+# appear to be crawlers. Perhaps I should use a 301-redirect instead of a 302.)
+if($url) {
+	# redirect accordingly
+	print $q->redirect($Jaeger::Base::BaseURL . "/changelog/$url");
+	exit;
+}
+
+my $user = Jaeger::User->Login();
+
+my $changelog = Jaeger::Changelog::Urimap($ENV{REQUEST_URI}, $user);
+
+unless(ref $changelog) {
+	print $q->redirect($changelog);
+	exit;
+}
+
+print $q->header('text/html; charset=UTF-8');
+print Jaeger::Base::Lookfeel()->main($changelog);
