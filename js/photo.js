@@ -106,18 +106,21 @@ function checkKeycode(event) {
 		case 37: // Left arrow
 			if(prevphoto) {
 				window.location.href = prevphoto;
+				return false;
 			}
 			break;
 		case 39: // Right arrow
 			if(nextphoto) {
 				window.location.href = nextphoto;
+				return false;
 			}
 			break;
 		default:
 			break;
 	}
 
-	return false;
+	// Event not handled
+	return true;
 }
 
 // TOUCH-EVENTS SINGLE-FINGER SWIPE-SENSING JAVASCRIPT
