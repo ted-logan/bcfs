@@ -910,7 +910,7 @@ sub Navbar {
 				my $cc = @{$changelog->comments()};
 				if($cc == 1) {
 					$new = " (1 comment)";
-				} else {
+				} elsif($cc > 1) {
 					$new = " ($cc comments)";
 				}
 			}
