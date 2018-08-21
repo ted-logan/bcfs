@@ -317,11 +317,7 @@ sub _main {
 
 	push @navbar, Jaeger::Comment->Navbar();
 
-	if((ref $obj[0]) eq 'Jaeger::Content') {
-		push @navbar, $obj[0]->Navbar();
-	} else {
-		push @navbar, Jaeger::Content->Navbar();
-	}
+	push @navbar, Jaeger::Content->Navbar();
 
 	push @navbar, $self->rss_links();
 
