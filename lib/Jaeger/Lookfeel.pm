@@ -32,6 +32,8 @@ use POSIX qw(ceil strftime);
 
 @Jaeger::Lookfeel::ISA = qw(Jaeger::Base);
 
+$Jaeger::Lookfeel::Templatedir = $ENV{BCFS} . '/lib/lookfeel';
+
 sub new {
 	my $package = shift;
 	my $self = $package->SUPER::new(@_);
@@ -41,15 +43,24 @@ sub new {
 	return $self;
 }
 
-# grabs the appropiate field from the look and feel table
+# grabs the appropiate template from the look-and-feel directory
 sub _lookfeel {
 	my $self = shift;
 	my $section = shift;
 
-	my $sql = "select value from lookfeel where label = '$section'";
-	my $sth = $self->{dbh}->prepare($sql);
-	$sth->execute();
-	return ($sth->fetchrow_array)[0];
+	my $file = $Jaeger::Lookfeel::Templatedir . '/' . $section;
+
+	my $template = undef;
+
+	if(open LOOKFEEL, $file) {
+		local $/ = undef;
+		$template = <LOOKFEEL>;
+		close LOOKFEEL;
+	} else {
+		warn "Can't open $file: $!";
+	}
+
+	return $template;
 }
 
 sub AUTOLOAD {
@@ -80,6 +91,27 @@ sub AUTOLOAD {
 	} else {
 		# content isn't in database; pass method on to master class
 		return undef;
+	}
+}
+
+# Updates the template with the given content
+sub Update {
+	my $package = shift;
+
+	my ($template, $content) = @_;
+
+	if($template =~ m#/#) {
+		warn "Template name with suspicous '/'";
+		return 0;
+	}
+	my $file = $Jaeger::Lookfeel::Templatedir . '/' . $template;
+	if(open TEMPLATE, ">", $file) {
+		print TEMPLATE $content;
+		close TEMPLATE;
+		return 1;
+	} else {
+		warn "Unable to open $file for writing: $!";
+		return 0;
 	}
 }
 

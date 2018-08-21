@@ -46,11 +46,7 @@ foreach my $link (@links) {
 	}
 }
 
-$lf->{dbh}->do("delete from lookfeel where label like 'rss_links%'");
-
-my $sql = "insert into lookfeel values ('rss_links', now(), " .
-	$lf->{dbh}->quote(Encode::encode_utf8(join('', @html))) . ")";
-$lf->{dbh}->do($sql);
+Jaeger::Lookfeel->Update('rss_links', Encode::encode_utf8(join('', @html)));
 
 # Update personal rss boxes
 
@@ -67,10 +63,8 @@ foreach my $box (Jaeger::UserBox->Select('1=1 order by title')) {
 foreach my $uid (keys %user_boxes) {
 	my $user = Jaeger::User->new_id($uid);
 
-	my $sql = "insert into lookfeel values ('rss_links_$user->{login}', " .
-		"now(), " . $lf->{dbh}->quote($user_boxes{$uid}) . ")";
-
-	$lf->{dbh}->do($sql);
+	Jaeger::Lookfeel->Update('rss_links_' . $user->{login},
+		$user_boxes{$uid});
 }
 
 exit;
