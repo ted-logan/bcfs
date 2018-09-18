@@ -20,6 +20,8 @@ use CGI;
 use Jaeger::Base;
 use Jaeger::Changelog;
 
+my $http_home = '/home/jaeger/web/jaeger.festing.org';
+
 my $q = new CGI;
 
 my $url;
@@ -39,6 +41,12 @@ if(my $id = $q->param('id')) {
 if($url) {
 	# redirect accordingly
 	print $q->redirect($Jaeger::Base::BaseURL . "/changelog/$url");
+	exit;
+}
+
+if(-f $http_home . $ENV{REQUEST_URI}) {
+	print $q->header(status => 404);
+	print "Ok so I kind of broke static content, I'm going to fix it soon.";
 	exit;
 }
 
