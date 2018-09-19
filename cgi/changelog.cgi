@@ -45,8 +45,11 @@ if($url) {
 }
 
 if(-f $http_home . $ENV{REQUEST_URI}) {
-	print $q->header(status => 404);
-	print "Ok so I kind of broke static content, I'm going to fix it soon.";
+	# This shouldn't happen -- the Apache alias match is supposed to serve
+	# static files directly. But in case that's broken, explicitly serve a
+	# 500 so it's obvious something's wrong.
+	print $q->header(status => 500);
+	print "Error serving static content";
 	exit;
 }
 
