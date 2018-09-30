@@ -11,7 +11,16 @@
 
 use lib "$ENV{BCFS}/lib";
 
+use Getopt::Long;
 use Jaeger::Changelog;
+
+my $outdir = '';
+GetOptions('outdir=s' => \$outdir);
+
+if($outdir) {
+	chdir $outdir
+		or die "Can't cd to $outdir: $!";
+}
 
 update_changelog_sitemap();
 
