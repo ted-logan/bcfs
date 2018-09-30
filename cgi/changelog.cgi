@@ -37,10 +37,10 @@ if(my $id = $q->param('id')) {
 
 # If anyone is still using the old, pre-2002 url scheme, redirect.
 # (There are a *bunch* of hits in my weblog from this url scheme, which all
-# appear to be crawlers. Perhaps I should use a 301-redirect instead of a 302.)
+# appear to be crawlers.)
 if($url) {
 	# redirect accordingly
-	print $q->redirect($Jaeger::Base::BaseURL . "/changelog/$url");
+	print $q->redirect($Jaeger::Base::BaseURL . "changelog/$url");
 	exit;
 }
 
