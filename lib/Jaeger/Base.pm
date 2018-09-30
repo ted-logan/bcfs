@@ -131,8 +131,16 @@ sub new_id {
 	return $list->{$id};
 }
 
-# selects one or more objects from the relevant database
-sub Select {
+# Creates a database query and returns an iterator that will select the next
+# row from the database.
+#
+# Example:
+#
+# my $iter = Jaeger::Changelog->Prepare("status = 0 order by time_begin");
+# while(my $changelog = $iter->next()) {
+#   ...
+# }
+sub Prepare {
 	my $package = shift;
 	if(ref $package) {
 		$package = ref $package;
@@ -167,22 +175,30 @@ sub Select {
 	$sth->execute()
 		or warn "$sql;\n";
 
+	return Jaeger::Base::Iterator->new($package, $sth);
+}
+
+# selects one or more objects from the relevant database
+sub Select {
+	my $package = shift;
+	if(ref $package) {
+		$package = ref $package;
+	}
+
+	my $iter = $package->Prepare(@_);
+
 	# do we want just one, or multiple results?
 	if(wantarray) {
 		my @results;
 
-		while(my $result = $sth->fetchrow_hashref()) {
-			push @results, $package->new($result);
+		while(my $item = $iter->next()) {
+			push @results, $item;
 		}
 
 		return @results;
 
 	} else {
-		if(my $result = $sth->fetchrow_hashref()) {
-			return $package->new($result);
-		} else {
-			return undef;
-		}
+		return $iter->next();
 	}
 }
 
@@ -425,6 +441,31 @@ sub Quote {
 		} else {
 			return _Quote(@_);
 		}
+	}
+}
+
+package Jaeger::Base::Iterator;
+
+sub new {
+	my $package = shift;
+	my $child = shift;
+	my $sth = shift;
+
+	my $self = {
+		package => $child,
+		sth => $sth,
+	};
+
+	return bless $self, $package;
+}
+
+sub next {
+	my $self = shift;
+
+	if(my $result = $self->{sth}->fetchrow_hashref()) {
+		return $self->{package}->new($result);
+	} else {
+		return undef;
 	}
 }
 
