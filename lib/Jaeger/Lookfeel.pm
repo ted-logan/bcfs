@@ -149,6 +149,16 @@ sub _changelog {
 	return %params;
 }
 
+sub _changelog_inline_photo {
+	my $self = shift;
+
+	my %params = @_;
+
+	$params{baseurl} = $Jaeger::Base::BaseURL;
+
+	return %params;
+}
+
 sub _changelog_series {
 	my $self = shift;
 

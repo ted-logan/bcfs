@@ -1,4 +1,4 @@
 <div class="inline-photo">
-<div><a href="---url---"><img src="/digitalpics/---round---/---size---/---number---.jpg" border="0" alt="---caption---" /></a></div>
+<div><a href="---url---"><img src="---baseurl---digitalpics/---round---/---size---/---number---.jpg" border="0" alt="---caption---" /></a></div>
 ---caption---
 </div>
