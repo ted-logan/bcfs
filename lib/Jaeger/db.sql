@@ -199,3 +199,8 @@ create table changelog_tag_map (
 create index changelog_tag_map_tag_index on changelog_tag_map (tag_id);
 create index changelog_tag_map_changelog_index on changelog_tag_map (changelog_id);
 
+create table photo_xref_map (
+	photo_id	int4 references photo,
+	changelog_id	int4 references changelog,
+	unique(photo_id, changelog_id)
+);

@@ -187,6 +187,8 @@ sub update {
 		$self->{_tags} = $self->{tags};
 	}
 
+	$self->update_photo_xref();
+
 	return $rv;
 }
 
@@ -836,6 +838,85 @@ sub _image {
 	}
 
 	return undef;
+}
+
+sub update_photo_xref {
+	my $self = shift;
+
+	# All of the photos referenced in this changelog via a "<photo>" tag
+	my %photos;
+
+	print "Looking for photo cross-references for ", $self->id(), "...\n";
+
+	my $content = $self->{content};
+	while($content =~ /(<photo .*?\/>)/g) {
+		my $tag = $1;
+
+		if($tag =~ /nofollow/) {
+			# Add a tag like 'rel="nofollow"' to signal that the
+			# image is being used as a spacer or an illustration or
+			# something, and we shouldn't generate a cross-
+			# reference here.
+			print "Skipping $tag\n";
+			next;
+		}
+
+		my ($round) = $tag =~ /round="(\w+)"/;
+		my ($number) = $tag =~ /number="(\w+)"/;
+
+		print "Looking up $round/$number\n";
+
+		my $photo = Jaeger::Photo->Select(
+			round => $round, number => $number);
+
+		if(!defined($photo)) {
+			warn "Changelog ", $self->id(),
+				" references missing photo $round/$number\n";
+		} else {
+			if($photos{$photo->id()}) {
+				warn "Changelog ", $self->id(),
+					" references photo $round/$number multiple times\n";
+			} else {
+				$photos{$photo->id()} = $photo;
+			}
+		}
+	}
+
+	# TODO also consider links to all photos on a single day (but consider
+	# the related case where this isn't a relevant cross-reference)
+	while($content =~ /photo\.cgi?date=(\d\d\d\d-\d\d-\d\d)/g) {
+	}
+
+	my $photo_xref = $self->dbh()->selectcol_arrayref(
+		"select photo_id from photo_xref_map where changelog_id = " . $self->id());
+	if(!defined($photo_xref) || $DBI::err) {
+		warn "Can't select photo cross-references: $DBI::errstr";
+		return undef;
+	}
+
+	foreach my $xref_id (keys %photos) {
+		unless(grep {$_ == $xref_id} @$photo_xref) {
+			my $sql = "insert into photo_xref_map values (" .
+				"$xref_id, " . $self->id() . ")";
+			print "Adding cross-reference to $xref_id\n";
+			$self->dbh()->do($sql)
+				or warn "Insert photo-changelog xref: $sql";
+		}
+	}
+
+	my @delete_xref;
+	foreach my $xref_id (@$photo_xref) {
+		unless(grep {$_ == $xref_id} keys %photos) {
+			my $sql = "delete from photo_xref_map where " .
+				"photo_id = $xref_id and " .
+				"changelog_id = " . $self->id();
+			print "Deleting cross-reference to $xref_id\n";
+			$self->dbh()->do($sql)
+				or warn "Delete photo-changelog xref: $sql";
+		}
+	}
+
+	return 1;
 }
 
 # returns the Postgres-compatible date of this object so we can show related
