@@ -332,6 +332,8 @@ sub _main {
 
 	$params{quote} = $quote;
 
+	$params{featuredphoto} = $self->featured_photo();
+
 	my @navbar;
 
 	# the first "navigation box" will be the user logged-in status
