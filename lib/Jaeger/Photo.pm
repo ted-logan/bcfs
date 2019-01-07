@@ -529,3 +529,19 @@ sub update_sets {
 
 	return $success;
 }
+
+sub _xrefs {
+	my $self = shift;
+
+	my $subquery = 
+		"select changelog_id from photo_xref_map where photo_id = " .
+		$self->id();
+
+	my $status = 0;
+	if(my $user = Jaeger::User->Login()) {
+		$status = $user->{status};
+	}
+
+	return $self->{xrefs} = [Jaeger::Changelog->Select(
+		"id in ($subquery) and status <= $status")];
+}

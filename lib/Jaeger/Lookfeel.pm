@@ -532,6 +532,13 @@ sub _photo_main {
 
 	$params{analytics} = $self->analytics();
 
+	my $xrefs = $obj->xrefs();
+	if(@$xrefs > 0) {
+		$params{xrefs} = "Read more: " .
+			join(",\n", map {'<a href="' . $_->url() . '">' .
+				$_->title() . "</a>"} @$xrefs);
+	}
+
 	return %params;
 }
 
