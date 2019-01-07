@@ -17,6 +17,7 @@ use Jaeger::Changelog::Browse;
 use Jaeger::Changelog::Series;
 use Jaeger::Changelog::Tag;
 use Jaeger::Photo;
+use Jaeger::Photo::List::Date;
 
 use POSIX;
 
@@ -882,9 +883,48 @@ sub update_photo_xref {
 		}
 	}
 
+	my @days;
+
+	# If the summary starts with a date (in the form "1st January 2019" or
+	# "1 January 2019"), it references the entire day, so make sure photos
+	# from that day are included.
+	if($self->{summary} =~ /^((\d+)(st|nd|rd|th)? (\w+) (\d+))/) {
+		print "Found summary referencing date: $1\n";
+		# TODO surely there's a better way to parse the date than this
+		# :-/
+		for(my $month = 1; $month < @Jaeger::Base::Months; $month++) {
+			if($Jaeger::Base::Months[$month] eq $4) {
+				push @days, "$5-$month-$2";
+				last;
+			}
+		}
+	}
+
 	# TODO also consider links to all photos on a single day (but consider
 	# the related case where this isn't a relevant cross-reference)
-	while($content =~ /photo\.cgi?date=(\d\d\d\d-\d\d-\d\d)/g) {
+	while($content =~ /photo\.cgi\?date=(\d\d\d\d-\d\d-\d\d)/g) {
+		print "Found link referencing date: $1\n";
+		push @days, $1;
+	}
+
+	foreach my $day (@days) {
+		# TODO note that this includes a user status query, which
+		# defaults to status=0. Instead this should consider all photos
+		# in the database, since this is being used to update data in
+		# the database, and is filtered later when it's displayed.
+		my $photos_by_date = Jaeger::Photo::List::Date->new($day);
+		my ($photo_count_by_date, $new_photo_count_by_date);
+		foreach my $photo (@{$photos_by_date->photos()}) {
+			# Here it's ok if the photos here overlap the photos
+			# we've already added to the list of relevant photos.
+			$photo_count_by_date++;
+			unless($photos{$photo->id()}) {
+				$new_photo_count_by_date++;
+			}
+			$photos{$photo->id()} = $photo;
+		}
+		printf "Found %d photos total (%d new photos) for date %s\n",
+			$photo_count_by_date, $new_photo_count_by_date, $day;
 	}
 
 	my $photo_xref = $self->dbh()->selectcol_arrayref(
