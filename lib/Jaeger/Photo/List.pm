@@ -56,6 +56,29 @@ HTML
 	return join('', @html);
 }
 
+sub _xrefs {
+	my $self = shift;
+
+	my $photos = $self->photos();
+	if(@$photos == 0) {
+		return $self->{xrefs} = [];
+	}
+	my @photo_ids = map {$_->id()} @$photos;
+
+	my $status = 0;
+	if(my $user = Jaeger::User->Login()) {
+		$status = $user->{status};
+	}
+
+	# Select all of the cross-references for all the photos in the list
+	my $where = "id in (select changelog_id from photo_xref_map " .
+		"where photo_id in (" . join(', ', @photo_ids) . ")) " .
+		"and status <= $status " .
+		"order by time_begin";
+
+	return $self->{xrefs} = [Jaeger::Changelog->Select($where)];
+}
+
 sub subtitle {
 	my $self = shift;
 	my $photos = $self->photos();

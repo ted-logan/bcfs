@@ -139,6 +139,12 @@ sub _url {
 	return $self->{url} = "/photo.cgi?year=$self->{year}";
 }
 
+sub _xrefs {
+	my $self = shift;
+
+	return $self->{xrefs} = [];
+}
+
 # Return a mini navigation bar, to be shown on the right side of the screen
 sub mininav {
 	my $self = shift;

@@ -560,6 +560,13 @@ sub _photo_list_main {
 		$params{subtitle} = '&nbsp;';
 	}
 
+	my $xrefs = $obj->xrefs();
+	if(@$xrefs > 0) {
+		$params{xrefs} = "Read more: " .
+			join(",\n", map {'<a href="' . $_->url() . '">' .
+				$_->title() . "</a>"} @$xrefs);
+	}
+
 	# set human-readable navigation links
 	$params{navlinks} = $self->navlinks(
 		prev => $obj->prev(),
