@@ -46,6 +46,12 @@ my @tests = (
 		exclude => "Geordi LaForge",
 	},
 	{
+		# Typo in url ending in "
+		uri => "/changelog/1629.html\"",
+		success => 1,
+		expect => "2015 Hugo Awards",
+	},
+	{
 		uri => "/changelog/2018/",
 		success => 1,
 		expect => "Hawaiian Volcano Week",
