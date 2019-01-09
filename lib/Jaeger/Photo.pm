@@ -254,7 +254,7 @@ sub resize {
 	my $newfile = "$cache_newdir/$self->{number}.jpg";
 	my $exist_newfile = 
 		"$Jaeger::Photo::Dir/$self->{round}/$size/$self->{number}.jpg";
-	unless(-f $newfile) {
+	unless(-f $newfile or -l $newfile) {
 		symlink($exist_newfile, $newfile)
 			or warn "Unable to update file symlink ($newfile -> " .
 				$exist_newfile . "): $!";
