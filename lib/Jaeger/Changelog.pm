@@ -43,6 +43,12 @@ sub Urimap {
 		$changelog = $uri;
 		$changelog =~ s#^/+#/#;
 
+	} elsif($uri =~ m#"$# || $uri =~ m#%22$#) {
+		# A typo gave a link with an extra " at the end. Redirect to
+		# the correct page.
+		$changelog = $uri;
+		$changelog =~ s/("|%22)$//;
+
 	} elsif($uri =~ m#/changelog/(\d+)\.html$#) {
 		# Show changelog by specific id
 		$changelog = Jaeger::Changelog->new_id($1);
@@ -100,7 +106,7 @@ sub Urimap {
 			$changelog->{content} = 'No comment was found with the given id';
 		}
 
-	} elsif($uri =~ m#/changelog/(\d\d\d\d)(/?)#) {
+	} elsif($uri =~ m#/changelog/(\d\d\d\d)(/?)$#) {
 		# Browse changelogs by year
 		my $year = $1;
 
