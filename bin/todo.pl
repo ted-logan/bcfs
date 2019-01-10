@@ -12,7 +12,7 @@ use POSIX qw(strftime);
 #
 # First, update each round's "todo" directory
 #
-system("~/.gnome2/nautilus-scripts/update-round") == 0
+system("~/.local/share/nautilus/scripts/update-round") == 0
 	or warn "Unable to update pending rounds: $!\n";
 
 #

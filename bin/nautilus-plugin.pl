@@ -4,7 +4,7 @@
 
 # Nautilus plugin for updating rounds of photos.
 #
-# This script should be installed in ~/.gnome2/nautilus-scripts
+# This script should be installed in ~/.local/share/nautilus/scripts/
 #
 # We maintain a "todo" directory under the round heigharchy, which contains
 # the photos that have not yet been cropped or ignored.
