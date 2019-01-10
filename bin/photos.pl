@@ -142,11 +142,10 @@ if(@ARGV) {
 
 	# Automatically update the thumbnails on the server
 	#
-	# Note that ssh executes this command in a non-login shell, so any
-	# necessary environment variables (namely, $BCFS) must be set in
-	# .bashrc before the interactive-shell test.
-	print "Updating thumbnails\n";
-	system "ssh honor2.festing.org src/bcfs/bin/thumbnail.pl @ARGV";
+	# TODO this is broken now. This should be replaced by an http query
+	# targeting the public site.
+#	print "Updating thumbnails\n";
+#	system "ssh honor2.festing.org src/bcfs/bin/thumbnail.pl @ARGV";
 }
 
 exit;
