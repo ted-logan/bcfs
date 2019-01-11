@@ -19,6 +19,10 @@ system("~/.local/share/nautilus/scripts/update-round") == 0
 # Next, update the global todo directory with every pending file
 #
 
+unless(-d "todo") {
+	mkdir "todo";
+}
+
 # The contents of the current "todo" directory
 my %todo = map {$_, undef} <todo/*>;
 
