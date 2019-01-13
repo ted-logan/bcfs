@@ -12,9 +12,23 @@
 
 use strict;
 
+use File::Basename;
 use LWP::UserAgent;
 
-my $baseurl = "https://jaeger.festing.org";
+my $baseurl;
+
+# Look for the file ".probecfg" in the running directory for the script, which
+# (if it exists) has the base url for this site.
+
+my $dirname = dirname(__FILE__);
+
+if(open(PROBECFG, "$dirname/.probecfg")) {
+	$baseurl = <PROBECFG>;
+	chomp $baseurl;
+	close PROBECFG;
+} else {
+	$baseurl = "https://jaeger.festing.org";
+}
 
 my @tests = (
 	{
