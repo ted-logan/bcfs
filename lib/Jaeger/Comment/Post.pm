@@ -14,7 +14,6 @@ use strict;
 
 use Jaeger::Base;
 use Jaeger::Lookfeel;
-use Jaeger::Comment::Post;
 
 use Carp;
 
@@ -89,14 +88,14 @@ sub _html {
 		);
 
 		return $self->{html} = $reply_to->html() . $self->lf()->comment_preview(
-			uri => $self->query()->uri(),
+			uri => $ENV{REQUEST_URI} . "#preview",
 			changelog_id => $self->{changelog}->id(),
 			response_to_id => $self->{comment} ? $self->{comment}->id() : "",
 			title => $title,
 			body => $body,
 			status => $self->query()->param('status'),
 		) . $self->lf()->comment_edit(
-			uri => $self->query()->uri(),
+			uri =>  $ENV{REQUEST_URI} . "#preview",
 			changelog_id => $self->{changelog}->id(),
 			response_to_id => $self->{comment} ? $self->{comment}->id() : "",
 			header => $self->title(),
@@ -107,7 +106,7 @@ sub _html {
 		
 	} else {
 		return $self->{html} = $reply_to->html() . $self->lf()->comment_edit(
-			uri => $self->query()->uri(),
+			uri =>  $ENV{REQUEST_URI} . "#preview",
 			changelog_id => $self->{changelog}->id(),
 			response_to_id => $self->{comment} ? $self->{comment}->id() : "",
 			header => $self->title(),

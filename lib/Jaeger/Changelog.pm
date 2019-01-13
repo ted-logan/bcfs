@@ -13,6 +13,7 @@ use strict;
 
 use Jaeger::Base;
 use Jaeger::Comment;
+use Jaeger::Comment::Post;
 use Jaeger::Changelog::Browse;
 use Jaeger::Changelog::Series;
 use Jaeger::Changelog::Tag;
