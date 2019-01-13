@@ -28,6 +28,7 @@ use Jaeger::Photo::List;
 use Jaeger::Photo::Year;
 
 use Image::Magick;
+use LWP::UserAgent;
 
 sub table {
 	return 'photo';
@@ -234,7 +235,7 @@ sub _native {
 #	return $self->{native} = "${width}x${height}";
 }
 
-# Make sure the photo exists for the desired size
+# Make sure the photo exists for the desired size, on the local system.
 sub resize {
 	my $self = shift;
 
@@ -264,6 +265,35 @@ sub resize {
 			or warn "Unable to update file symlink ($newfile -> " .
 				$exist_newfile . "): $!";
 	}
+}
+
+# Make sure the photo exists for the desired size, on the web server. This
+# generates an HTTP call to thumbnail.cgi on the web server, which results in
+# resize() being called.
+sub remote_resize {
+	my $self = shift;
+
+	my $size = shift;
+	unless($size) {
+		$size = $self->size();
+	}
+
+	my $url = "https://jaeger.festing.org/thumbnail.cgi?" .
+		"round=$self->{round}&number=$self->{number}&size=$size";
+
+	print "Sending http request to:\n$url\n";
+
+	my $ua = new LWP::UserAgent;
+
+	my $request = HTTP::Request->new(GET => $url);
+	my $response = $ua->request($request);
+
+	if(!$response->is_success()) {
+		warn "Sent http resize request to $url; got ",
+	       		$response->status_line(), "\n";
+	}
+
+	return $response->is_success();
 }
 
 #

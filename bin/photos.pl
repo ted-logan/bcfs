@@ -314,6 +314,8 @@ sub annotate_photo {
 	# kill the photo display
 	kill 1, $child_pid;
 	wait;
+
+	$photo->remote_resize($Jaeger::Photo::ThumbnailSize);
 }
 
 #
