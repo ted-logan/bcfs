@@ -91,6 +91,36 @@ my @tests = (
 		success => 1,
 		expect => "My First Long-Haul Flight",
 	},
+	{
+		uri => "/changelog/99999.html",
+		success => 0,
+		expect => "Not found",
+		exclude => "/changelog//",
+	},
+	{
+		uri => "/changelog/comment/99999.html",
+		success => 0,
+		expect => "Not found",
+		exclude => "/changelog//",
+	},
+	{
+		uri => "/changelog/9999/",
+		success => 0,
+		expect => "Not found",
+		exclude => "/changelog//",
+	},
+	{
+		uri => "/changelog/series/9999",
+		success => 0,
+		expect => "Not found",
+		exclude => "/changelog//",
+	},
+	{
+		uri => "/changelog/bogus",
+		success => 0,
+		expect => "Not found",
+		exclude => "/changelog//",
+	},
 
 	# Comments
 	{

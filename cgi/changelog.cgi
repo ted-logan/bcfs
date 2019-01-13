@@ -62,5 +62,5 @@ unless(ref $changelog) {
 	exit;
 }
 
-print $q->header('text/html; charset=UTF-8');
+print $q->header('text/html; charset=UTF-8', $changelog->http_status());
 print Jaeger::Base::Lookfeel()->main($changelog);

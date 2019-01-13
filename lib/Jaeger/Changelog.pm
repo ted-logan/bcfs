@@ -17,6 +17,7 @@ use Jaeger::Comment::Post;
 use Jaeger::Changelog::Browse;
 use Jaeger::Changelog::Series;
 use Jaeger::Changelog::Tag;
+use Jaeger::Notfound;
 use Jaeger::Photo;
 use Jaeger::Photo::List::Date;
 
@@ -53,11 +54,6 @@ sub Urimap {
 	} elsif($uri =~ m#/changelog/(\d+)\.html$#) {
 		# Show changelog by specific id
 		$changelog = Jaeger::Changelog->new_id($1);
-		unless($changelog) {
-			$changelog = new Jaeger::Changelog;
-			$changelog->{title} = 'No changelog';
-			$changelog->{content} = 'No changelog was found with the given id';
-		}
 
 	} elsif($uri =~ m#/changelog/(\d+)\.html/reply#) {
 		# Post a reply to the changelog
@@ -70,12 +66,6 @@ sub Urimap {
 				# Redirect to the login page
 				$changelog = "/login.cgi?redirect=/changelog/$1.html/reply";
 			}
-
-
-		} else {
-			$changelog = new Jaeger::Changelog;
-			$changelog->{title} = 'No changelog';
-			$changelog->{content} = 'No changelog was found with the given id';
 		}
 
 	} elsif($uri =~ m#/changelog/comment/(\d+)\.html/reply#) {
@@ -91,21 +81,11 @@ sub Urimap {
 				# Redirect to the login page
 				$changelog = "/login.cgi?redirect=/changelog/comment/$1.html/reply";
 			}
-
-		} else {
-			$changelog = new Jaeger::Changelog;
-			$changelog->{title} = 'No comment';
-			$changelog->{content} = 'No comment was found with the given id';
 		}
 
 	} elsif($uri =~ m#/changelog/comment/(\d+)\.html#) {
 		# show a changelog comment
 		$changelog = Jaeger::Comment->new_id($1);
-		unless($changelog) {
-			$changelog = new Jaeger::Changelog;
-			$changelog->{title} = 'No Comment';
-			$changelog->{content} = 'No comment was found with the given id';
-		}
 
 	} elsif($uri =~ m#/changelog/(\d\d\d\d)(/?)$#) {
 		# Browse changelogs by year
@@ -131,13 +111,13 @@ sub Urimap {
 		# Show a list of changelogs in a particular series
 		$changelog = Jaeger::Changelog::Series->new_id($1);
 
-	} elsif($uri eq '/changelog/') {
+	} elsif($uri eq '/changelog/' or $uri eq '/changelog') {
 		# Show the most recent changelog
 		$changelog = 'LATEST';
+	}
 
-	} else {
-		# quietly redirect to the most recent changelog
-		$changelog = 'LATEST';
+	unless($changelog) {
+		$changelog = new Jaeger::Notfound;
 	}
 
 	# Check to see if we have access to this changelog or comment
