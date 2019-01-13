@@ -149,21 +149,9 @@ foreach my $test (@tests) {
 		if(!$response->is_success()) {
 			$result = 0;
 			$reason = "expected success, got " .
-				$result->status_line();
+				$response->status_line();
 		} else {
 			$result = 1;
-			if($test->{expect} &&
-				$response->content() !~ /$test->{expect}/) {
-				$result = 0;
-				$reason = "expected pattern /" .
-					$test->{expect} . "/ not found";
-			}
-			if($test->{exclude} &&
-				$response->content() =~ /$test->{exclude}/) {
-				$result = 0;
-				$reason = "excluded pattern /" .
-					$test->{exclude} . "/ found";
-			}
 		}
 	} else {
 		if($response->is_success()) {
@@ -172,6 +160,19 @@ foreach my $test (@tests) {
 		} else {
 			$result = 1;
 		}
+	}
+
+	if($test->{expect} &&
+		$response->content() !~ /$test->{expect}/) {
+		$result = 0;
+		$reason = "expected pattern /" .
+			$test->{expect} . "/ not found";
+	}
+	if($test->{exclude} &&
+		$response->content() =~ /$test->{exclude}/) {
+		$result = 0;
+		$reason = "excluded pattern /" .
+			$test->{exclude} . "/ found";
 	}
 
 	if($result) {
