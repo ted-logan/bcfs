@@ -22,6 +22,13 @@ sub new {
 
 	if($tag) {
 		$self->{tag} = $tag;
+
+		# If no visible changelogs exist for this tag, return undef,
+		# which the Uri mapper will interpret as a 404.
+		my $changelog_by_tag = $self->changelogs_by_tag($self->{tag});
+		unless(@$changelog_by_tag) {
+			return undef;
+		}
 	}
 
 	return $self;
@@ -59,21 +66,21 @@ sub _all_tags {
 	return $self->{all_tags} = { map {$_->[0], $_->[1]} @$tags };
 }
 
-sub changelogs_by_tag {
+sub _changelogs_by_tag {
 	my $self = shift;
 
 	my $tag = shift;
 
 	my $level = $self->level();
 
-	return Jaeger::Changelog->Select(
+	return $self->{changelog_by_tag} = [Jaeger::Changelog->Select(
 		"join changelog_tag_map " .
 		"on changelog.id = changelog_tag_map.changelog_id " .
 		"join tag on tag.id = changelog_tag_map.tag_id " .
 		"where status <= $level and " .
 		"tag.name = '$tag' " .
 		"order by time_begin desc"
-	);
+	)];
 }
 
 sub _title {
@@ -145,8 +152,8 @@ sub _html {
 	if($self->{tag}) {
 		my @list;
 
-		my @changelogs = $self->changelogs_by_tag($self->{tag});
-		foreach my $changelog (@changelogs) {
+		my $changelogs = $self->changelogs_by_tag($self->{tag});
+		foreach my $changelog (@$changelogs) {
 			push @list, $lf->browse_changelog($changelog);
 		}
 

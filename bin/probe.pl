@@ -85,6 +85,20 @@ my @tests = (
 		uri => "/changelog/tag/",
 		success => 1,
 		expect => "washington",
+		exclude => "anxiety",
+	},
+	{
+		# Missing tag
+		uri => "/changelog/tag/worlcon-76",
+		success => 0,
+		expect => "Not found",
+		exclude => 
+	},
+	{
+		# Valid tag, but no entries visible to the default user
+		uri => "/changelog/tag/anxiety",
+		success => 0,
+		expect => "Not found",
 	},
 	{
 		uri => "/changelog/series/4",
