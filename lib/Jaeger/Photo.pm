@@ -38,6 +38,11 @@ $Jaeger::Photo::CacheDir = '/var/www/cache/dc';
 
 @Jaeger::Photo::Sizes = qw(640x480 800x600 1024x768 1280x960 1600x1200 2048x1536 3000x2000);
 
+# The size used for photos on the list pages
+$Jaeger::Photo::ThumbnailSize = "256x192";
+# The size used for photos embedded into changelogs
+$Jaeger::Photo::ChangelogEmbedSize = "640x480";
+
 # makes sure timezone_id and location_id are set
 sub update {
 	my $self = shift;

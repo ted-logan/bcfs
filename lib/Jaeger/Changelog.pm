@@ -810,7 +810,7 @@ sub inline_photo {
 
 	if($photo) {
 		# Make sure an appropiate thumbnail exists
-		$photo->{size} = "640x480";
+		$photo->{size} = $Jaeger::photo::ChangelogEmbedSize;
 		$photo->resize();
 
 		return $self->lf()->changelog_inline_photo(

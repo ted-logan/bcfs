@@ -36,7 +36,7 @@ sub html {
 	my $photos = $self->photos();
 
 	foreach my $photo (@$photos) {
-		$photo->{size} = "256x192";
+		$photo->{size} = $Jaeger::Photo::ThumbnailSize;
 		$photo->resize();
 
 		push @html, $self->lf()->photo_list(
