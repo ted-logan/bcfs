@@ -98,7 +98,7 @@ my @tests = (
 		uri => "/changelog/tag/worlcon-76",
 		success => 0,
 		expect => "Not found",
-		exclude => 
+		exclude => "worlcon-76",
 	},
 	{
 		# Valid tag, but no entries visible to the default user
