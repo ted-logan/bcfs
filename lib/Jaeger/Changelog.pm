@@ -51,7 +51,7 @@ sub Urimap {
 		$changelog = $uri;
 		$changelog =~ s/("|%22)$//;
 
-	} elsif($uri =~ m#/changelog/(\d+)\.html$#) {
+	} elsif($uri =~ m#/changelog/(\d+)\.html#) {
 		# Show changelog by specific id
 		$changelog = Jaeger::Changelog->new_id($1);
 

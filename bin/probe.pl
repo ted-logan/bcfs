@@ -60,6 +60,12 @@ my @tests = (
 		exclude => "Geordi LaForge",
 	},
 	{
+		# Query params at end of url
+		uri => "/changelog/1819.html?utm_source=probe",
+		success => 1,
+		expect => "Image embed test",
+	},
+	{
 		# Typo in url ending in "
 		uri => "/changelog/1629.html\"",
 		success => 1,
