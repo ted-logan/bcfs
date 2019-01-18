@@ -10,6 +10,8 @@ my $google_drive_dir = '/home/jaeger/gdrive/Google Photos';
 
 my @import_dirs = (
 	'/media/D5200/DCIM/100D5200',
+	'/media/jaeger/D5200/DCIM/100D5200',
+	'/media/jaeger/NIKON D5200/DCIM/100D5200',
 	'/home/jaeger/.gvfs/mtp/Internal storage/DCIM/100MEDIA',
 	<'/home/jaeger/.gvfs/gphoto2 mount on usb*/DCIM/100MEDIA'>,
 );
