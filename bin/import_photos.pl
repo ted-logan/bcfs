@@ -5,7 +5,7 @@ use strict;
 use POSIX;
 
 my $photodir = '/home/jaeger/graphics/photos/dc';
-my $local_backup = '/media/neuromancer/home/jaeger/graphics/photos/dc/';
+my $local_backup = '/media/jaeger/neuromancer/home/jaeger/graphics/photos/dc/';
 my $google_drive_dir = '/home/jaeger/gdrive/Google Photos';
 
 my @import_dirs = (
