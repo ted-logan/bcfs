@@ -244,11 +244,19 @@ sub edit {
 		my $option = $self->_edit_menu();
 
 		if($option eq 'y') {
+			my $tempfile = "$ENV{HOME}/changelog-" .
+				POSIX::strftime("%Y-%m-%d-%H:%M:%S",
+				       	localtime(time)) .
+				".html";
+			$self->export_file($tempfile);
 			# submit the changelog into the global Content
 			# Solutions Infrastructure
-			$self->update();
-			print "Committed changelog: id=", $self->id(), "\n";
-			return 1;
+			if($self->update()) {
+				unlink $tempfile;
+				print "Committed changelog: id=", $self->id(),
+			       		"\n";
+				return 1;
+			}
 
 		} elsif($option eq 'i') {
 			# ispell
@@ -489,17 +497,7 @@ sub _edit_pipe {
 		$unlink_tempfile = 1;
 	}
 
-	open TEMPFILE, ">$tempfile"
-		or die "Can't write to tempfile: $!\n";
-	print TEMPFILE "Title:  \t$self->{title}\n";
-	print TEMPFILE "Begin:  \t$self->{time_begin}\n";
-	print TEMPFILE "End:    \t$self->{time_end}\n";
-	print TEMPFILE "Status: \t$self->{status}\n";
-	print TEMPFILE "Summary:\t$self->{summary}\n";
-	print TEMPFILE "Tags:   \t", join(' ', @{$self->tags()}), "\n";
-	print TEMPFILE "\n";
-	print TEMPFILE $self->{content};
-	close TEMPFILE;
+	$self->export_file($tempfile);
 
 	system "$command $tempfile";
 
@@ -634,6 +632,23 @@ sub import_file {
 	}
 
 	return $changed;
+}
+
+sub export_file {
+	my $self = shift;
+	my $filename = shift;
+
+	open TEMPFILE, ">$filename"
+		or die "Can't write to tempfile: $!\n";
+	print TEMPFILE "Title:  \t$self->{title}\n";
+	print TEMPFILE "Begin:  \t$self->{time_begin}\n";
+	print TEMPFILE "End:    \t$self->{time_end}\n";
+	print TEMPFILE "Status: \t$self->{status}\n";
+	print TEMPFILE "Summary:\t$self->{summary}\n";
+	print TEMPFILE "Tags:   \t", join(' ', @{$self->tags()}), "\n";
+	print TEMPFILE "\n";
+	print TEMPFILE $self->{content};
+	close TEMPFILE;
 }
 
 sub columns {
