@@ -48,7 +48,7 @@ sub Pgdbh {
 			DBI->connect("DBI:Pg:${connection}dbname=jaeger", "",
 				"");
 		unless($Jaeger::Base::Pgdbh) {
-			die "Jaeger::Base: Unable to connect to pg database\n";
+			confess "Jaeger::Base: Unable to connect to pg database";
 		}
 	}
 	return $Jaeger::Base::Pgdbh;
