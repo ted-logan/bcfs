@@ -866,6 +866,11 @@ sub update_photo_xref {
 					" references photo $round/$number multiple times\n";
 			} else {
 				$photos{$photo->id()} = $photo;
+				# Make sure the photo is resized for the
+				# correct size to be embedded in the changelog
+				# before the changelog is posted
+				$photo->remote_resize(
+					$Jaeger::Photo::ChangelogEmbedSize);
 			}
 		}
 	}
