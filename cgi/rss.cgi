@@ -62,7 +62,7 @@ if($0 =~ /comment/) {
 			"The continuing adventures of an intrepid gradeschooler";
 	} elsif($name eq 'julian') {
 		$feed->{description} =
-			"The continuing adventures of an intrepid toddler";
+			"The continuing adventures of an intrepid preschooler";
 	}
 	$feed->{noun} = "photo";
 	$feed->{link} = "http://${name}logan.com/";
