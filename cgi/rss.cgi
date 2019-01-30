@@ -117,6 +117,9 @@ print "\t\t<copyright>Copyright 1999-$year Theodore Logan</copyright>\n";
 print "\t\t<language>en-us</language>\n";
 print "\t\t<docs>http://blogs.law.harvard.edu/tech/rss</docs>\n";
 
+my $utm_source = "utm_source=rss-feed&utm_medium=rss&" .
+	"utm_campaign=$feed->{noun}-feed";
+
 # grab recent entries or articles and print them out here
 foreach my $entry (@entries) {
 	print "\t\t<item>\n";
@@ -125,7 +128,13 @@ foreach my $entry (@entries) {
 		print "\t\t\t<author><![CDATA[", $entry->user()->name(),
 			"]]></author>\n";
 	}
-	print "\t\t\t<link><![CDATA[", $entry->url(), "]]></link>\n";
+	my $url = $entry->url();
+	if($url =~ /\?/) {
+		$url =~ s/(\?.*?)(#|$)/$1&$utm_source$2/;
+	} else {
+		$url .= "?" . $utm_source;
+	}
+	print "\t\t\t<link><![CDATA[$url]]></link>\n";
 	print "\t\t\t<guid isPermaLink=\"true\"><![CDATA[", $entry->url(),
 		"]]></guid>\n";
 	print "\t\t\t<pubDate>", $entry->pubDate(), "</pubDate>\n";
