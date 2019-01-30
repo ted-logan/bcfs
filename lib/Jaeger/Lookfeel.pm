@@ -1039,6 +1039,8 @@ sub _photo_rss {
 
 	my %params = @_;
 
+	$params{baseurl} = $Jaeger::Base::BaseURL;
+
 	if(defined($params{longitude}) && defined($params{latitude})) {
 		$params{location} = $self->photo_coordinates(
 			longitude => $params{longitude},
