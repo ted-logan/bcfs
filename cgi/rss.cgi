@@ -93,7 +93,8 @@ if($0 =~ /comment/) {
 } else {
 	# This is a changelog feed
 	$feed->{title} = "jaegerfesting";
-	$feed->{description} = "Random content from a hacker in San Francisco.";
+	$feed->{description} = "Random content from a hacker temporarily " .
+		"displaced from San Francisco.";
 	$feed->{noun} = "entry";
 	$feed->{link} = 'http://jaeger.festing.org/changelog/';
 
