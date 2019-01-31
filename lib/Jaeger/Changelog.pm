@@ -51,10 +51,6 @@ sub Urimap {
 		$changelog = $uri;
 		$changelog =~ s/("|%22)$//;
 
-	} elsif($uri =~ m#/changelog/(\d+)\.html#) {
-		# Show changelog by specific id
-		$changelog = Jaeger::Changelog->new_id($1);
-
 	} elsif($uri =~ m#/changelog/(\d+)\.html/reply#) {
 		# Post a reply to the changelog
 		my $replyto = Jaeger::Changelog->new_id($1);
@@ -67,6 +63,10 @@ sub Urimap {
 				$changelog = "/login.cgi?redirect=/changelog/$1.html/reply";
 			}
 		}
+
+	} elsif($uri =~ m#/changelog/(\d+)\.html#) {
+		# Show changelog by specific id
+		$changelog = Jaeger::Changelog->new_id($1);
 
 	} elsif($uri =~ m#/changelog/comment/(\d+)\.html/reply#) {
 		# Post a reply to the comment

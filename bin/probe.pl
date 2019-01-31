@@ -53,10 +53,16 @@ my @tests = (
 		expect => "Tomales Bay",
 	},
 	{
+		# Post a reply to a changelog
+		uri => "/changelog/1807.html/reply",
+		success => 1,
+		expect => "Password",
+	},
+	{
 		# Changelog only visible to logged-in users
 		uri => '/changelog/1768.html',
 		success => 1,
-		expect => "Log In",
+		expect => "Password",
 		exclude => "Geordi LaForge",
 	},
 	{
@@ -149,9 +155,14 @@ my @tests = (
 		expect => "Sibblings",
 	},
 	{
+		uri => "/changelog/comment/185.html/reply",
+		success => 1,
+		expect => "Password",
+	},
+	{
 		uri => "/changelog/comment/846.html",
 		success => 1,
-		expect => "Log In",
+		expect => "Password",
 		exclude => "Congrats",
 	},
 
@@ -170,7 +181,7 @@ my @tests = (
 		# Elite users only photo
 		uri => "/photo.cgi?round=519&number=31",
 		success => 1,
-		expect => "Log In",
+		expect => "Password",
 		exclude => "Shanghai bottle opener",
 	},
 	{
