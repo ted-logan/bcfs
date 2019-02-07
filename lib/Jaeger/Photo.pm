@@ -281,14 +281,20 @@ sub remote_resize {
 	my $url = "https://jaeger.festing.org/thumbnail.cgi?" .
 		"round=$self->{round}&number=$self->{number}&size=$size";
 
-	print "Sending http request to:\n$url\n";
+	{
+		local $| = 1;
+		print "Resizing $self->{round}/$self->{number} to $size... ";
+	}
 
 	my $ua = new LWP::UserAgent;
 
 	my $request = HTTP::Request->new(GET => $url);
 	my $response = $ua->request($request);
 
-	if(!$response->is_success()) {
+	if($response->is_success()) {
+		print "ok.\n";
+	} else {
+		print "error ", $response->code(), "\n";
 		warn "Sent http resize request to $url; got ",
 	       		$response->status_line(), "\n";
 	}
