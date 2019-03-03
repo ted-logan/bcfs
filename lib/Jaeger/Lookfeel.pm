@@ -193,6 +193,10 @@ sub _browse_changelog {
 		visibility => $Jaeger::Changelog::Status{$changelog->status()},
 	);
 
+	if(my $image = $changelog->image()) {
+		$params{photo} = $self->browse_changelog_image($image);
+	}
+
 	if($changelog->summary()) {
 		$params{summary} = $self->browse_changelog_summary(
 			summary => $changelog->summary()
@@ -210,6 +214,24 @@ sub _browse_changelog {
 			summary => "Series: " . join(' ', map {$_->link()} @series),
 		);
 	}
+
+	return %params;
+}
+
+sub _browse_changelog_image {
+	my $self = shift;
+	my $photo = shift;
+
+	$photo->{size} = $Jaeger::Photo::ThumbnailSize;
+	$photo->resize();
+
+	my %params = (
+		baseurl => $Jaeger::Base::BaseURL,
+		round => $photo->round(),
+		size => $photo->size(),
+		number => $photo->number(),
+		caption => $photo->description(),
+	);
 
 	return %params;
 }
