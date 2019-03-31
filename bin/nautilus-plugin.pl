@@ -168,6 +168,17 @@ sub update_todo {
 			}
 		}
 
+		if($round eq 'lg360') {
+			if(-f "$round_path/new/$file" &&
+			       	!-f "$round_path/lg360/$file") {
+				if(!-d "$round_path/lg360") {
+					mkdir "$round_path/lg360";
+				}
+				link "$round_path/raw/$file",
+					"$round_path/lg360/$file";
+			}
+		}
+
 		if(-f "$round_path/new/$file") {
 			# File has been cropped; remove it from the todo dir
 			unlink "$round_path/todo/$file"
