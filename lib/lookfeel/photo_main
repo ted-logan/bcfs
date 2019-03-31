@@ -79,6 +79,7 @@ Attribution-ShareAlike 2.5 License</a>.
 <div id="menubutton" onClick="showhidemenu();">#</div>
 <div id="photomenu">
 <a href="/changelog/">Home</a> |
+<a href="/search.cgi">Search</a> |
 <a href="---navup---">---navuptext---</a>
 </div>
 </div>
