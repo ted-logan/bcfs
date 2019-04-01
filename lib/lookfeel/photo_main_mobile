@@ -20,52 +20,26 @@
 <a href="---navprev---" id="leftbutton" title="---navprevtitle---">&lt;</a>
 <a href="---navnext---" id="rightbutton" title="---navnexttitle---">&gt;</a>
 
-<!-- Desktop design -->
+<!-- Mobile design -->
 
-<div id="phototitlebar" class="phototitlebar article">
-<div>
-<h1>---phototitle---</h1>
-<div style="float:right">
-<a href="/changelog/">Home</a> &bull;
-<a href="/search.cgi">Search</a> &bull;
-<a href="/photo.cgi">Recent Photos</a>
-</div>
-<h3>---date--- ---location---</h3>
-</div>
-
-</div>
-
-<div id="photo_main" class="photo_main">
-
-<div class="article">
-
----photoedit---
-
-<img src="/digitalpics/---round---/---size---/---number---.jpg" border="0" id="bigimage" ontouchstart="touchStart(event,'bigimage');"  ontouchend="touchEnd(event);" ontouchmove="touchMove(event);" ontouchcancel="touchCancel(event);"/>
-
-<div class="articlenav" id="articlenav">
----navlinks---
-</div>
-
+<div id="phototitle" class="mobilephoto">
+<div>---phototitle---</div>
+<div><i>---date--- ---location---</i></div>
 ---xrefs---
-
 </div>
 
-<div style="font-size: small; text-align: center;">
-<p>
-&copy; 1998-2019 Theodore Logan.
-</p>
-<p>
-<a href="http://creativecommons.org/licenses/by-sa/2.5/"><img src="/graphics/somerights20.png" alt="Creative Commons some rights reserved" border="0"/></a>
-</p>
-<p>
-This photo is licensed under a
-<a href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons
-Attribution-ShareAlike 2.5 License</a>.
-</p>
+<div style="position:absolute; top:0; width:100%;" class="mobilephoto">
+<div id="menubutton" onClick="showhidemenu();">#</div>
+<div id="photomenu">
+<a href="/changelog/">Home</a> |
+<a href="/search.cgi">Search</a> |
+<a href="---navup---">---navuptext---</a>
+</div>
 </div>
 
-</div>
+<center>
+<img src="/digitalpics/---round---/---size---/---number---.jpg" id="mobileimage" class="mobilephoto" onClick="showhidenav();" ontouchstart="touchStart(event,'mobileimage');"  ontouchend="touchEnd(event);" ontouchmove="touchMove(event);" ontouchcancel="touchCancel(event);"/>
+</center>
 
 <script type="text/javascript">
 var prevphoto = "---navprev---";

@@ -141,7 +141,11 @@ if($q->param('slideshow')) {
 } else {
 	if(ref($page) eq 'Jaeger::Photo' or
 			ref($page) eq 'Jaeger::Slideshow::Photo') {
-		print $lf->photo_main($page);
+		if($lf->ismobilebrowser()) {
+			print $lf->photo_main_mobile($page);
+		} else {
+			print $lf->photo_main($page);
+		}
 	} else {
 		print $lf->photo_list_main($page);
 	}
