@@ -246,29 +246,45 @@ sub _comment {
 	return %params;
 }
 
+sub ismobilebrowser {
+	my $self = shift;
+
+	unless(defined $self->{ismobilebrowser}) {
+		my $useragent;
+
+		if(ref $self->query() eq 'CGI') {
+			# Get the user agent from the CGI environment
+			$useragent = $self->query()->user_agent();
+		}
+		if(ref $self->query() eq 'Apache2::Request') {
+			$useragent =
+				$self->query()->headers_in->get('User-Agent');
+		}
+
+		if($useragent !~ /iPhone/ && $useragent !~ /Mobile Safari/ &&
+				$useragent !~ /IEMobile/ &&
+				$useragent !~ /Android/) {
+			$self->{ismobilebrowser} = 0;
+		} else {
+			$self->{ismobilebrowser} = 1;
+		}
+	}
+
+	return $self->{ismobilebrowser};
+}
+
 sub screencss {
 	my $self = shift;
 
-	my $useragent;
-
-	if(ref $self->query() eq 'CGI') {
-		# Get the user agent from the CGI environment
-		$useragent = $self->query()->user_agent();
-	}
-	if(ref $self->query() eq 'Apache2::Request') {
-		$useragent = $self->query()->headers_in->get('User-Agent');
-	}
-
 	# If the user agent indicates this is a mobile browser, don't provide
 	# the CSS designed for full-sized browsers.
-	if($useragent !~ /iPhone/ && $useragent !~ /Mobile Safari/ &&
-			$useragent !~ /IEMobile/ && $useragent !~ /Android/) {
-		return '<link rel="stylesheet" href="/jaeger-screen.css" type="text/css"/>';
-	} else {
+	if($self->ismobilebrowser()) {
 		return <<HTML;
 <link rel="stylesheet" href="/jaeger-mobile.css" type="text/css"/>
 <meta name="viewport" content="width=device-width, user-scalable=no" />
 HTML
+	} else {
+		return '<link rel="stylesheet" href="/jaeger-screen.css" type="text/css"/>';
 	}
 }
 
