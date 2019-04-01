@@ -16,36 +16,44 @@ function resizer() {
 		// Can't get window height; give up.
 		return;
 	}
-	// Set the maximum height of the photo such that it doesn't grow larger
-	// than the size of the window minus the size of the navigation
-	// elements
-	var height = winheight -
-		document.getElementById("phototitlebar").offsetHeight -
-		document.getElementById("articlenav").offsetHeight * 2.5;
-	document.getElementById("bigimage").style.maxHeight = height + "px";
+
+	var bigimage = document.getElementById("bigimage");
+	if(bigimage) {
+		// Set the maximum height of the photo such that it doesn't
+		// grow larger than the size of the window minus the size of
+		// the navigation elements
+		var height = winheight -
+			document.getElementById("phototitlebar").offsetHeight -
+			document.getElementById("articlenav").offsetHeight * 2.5;
+		bigimage.style.maxHeight = height + "px";
+	}
 
 	resizer_mobile(winheight);
-}
-
-function resizer_mobile(winheight) {
-        // Set the maximum height of the photo such that it doesn't grow larger
-        // than the size of the window minus the size of the navigation
-        // elements
-        var height = winheight - 14;
-        document.getElementById("mobileimage").style.maxHeight = height + "px";
-
-        // vertically center the photo itself
-        var bigimageheight = document.getElementById("mobileimage").offsetHeight;
-        if(bigimageheight > 0) {
-                document.getElementById("mobileimage").style.marginTop = 
-                        (height - bigimageheight) / 2 + "px";
-        }
 
         // vertically center the previous and next buttons
         document.getElementById("leftbutton").style.marginTop = 
-                (height - document.getElementById("leftbutton").offsetHeight) / 2 + "px";
+                (winheight - document.getElementById("leftbutton").offsetHeight) / 2 + "px";
         document.getElementById("rightbutton").style.marginTop =
-                (height - document.getElementById("rightbutton").offsetHeight) / 2 + "px";
+                (winheight - document.getElementById("rightbutton").offsetHeight) / 2 + "px";
+}
+
+function resizer_mobile(winheight) {
+	var mobileimage = document.getElementById("mobileimage");
+
+	if(mobileimage) {
+		// Set the maximum height of the photo such that it doesn't
+		// grow larger than the size of the window minus the size of
+		// the navigation elements
+		var height = winheight - 14;
+		mobileimage.style.maxHeight = height + "px";
+
+		// vertically center the photo itself
+		var bigimageheight = mobileimage.offsetHeight;
+		if(bigimageheight > 0) {
+			mobileimage.style.marginTop = 
+				(height - bigimageheight) / 2 + "px";
+		}
+	}
 }
 
 // In the mobile view, show and hide the navigation items in response to the
