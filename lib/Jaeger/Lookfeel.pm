@@ -373,7 +373,7 @@ sub _main {
 
 	my $q = Jaeger::Base::Query();
 
-	push @navbar, $self->search_box(q => $q->param('q'));
+	push @navbar, $self->search_box(q => scalar $q->param('q'));
 
 	if(ref $obj[0] eq 'Jaeger::Changelog') {
 		push @navbar, $obj[0]->Navbar();

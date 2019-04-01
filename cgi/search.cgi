@@ -18,7 +18,7 @@ use Jaeger::Lookfeel;
 my $q = Jaeger::Base::Query();
 my $lf = Jaeger::Base::Lookfeel();
 
-my $search = new Jaeger::Search($q->param('q'));
+my $search = new Jaeger::Search(scalar $q->param('q'));
 
 print "content-type: text/html; charset=UTF-8\n\n";
 print $lf->main($search);
