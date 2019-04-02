@@ -586,3 +586,12 @@ sub _xrefs {
 	return $self->{xrefs} = [Jaeger::Changelog->Select(
 		"id in ($subquery) and status <= $status")];
 }
+
+sub _has_photosphere {
+	my $self = shift;
+
+	my $photosphere = "$Jaeger::Photo::Dir/$self->{round}/photosphere/" .
+		$self->{number} . ".jpg";
+
+	return $self->{photosphere} = -f $photosphere;
+}
