@@ -170,12 +170,12 @@ sub update_todo {
 
 		if($round eq 'lg360') {
 			if(-f "$round_path/new/$file" &&
-			       	!-f "$round_path/lg360/$file") {
-				if(!-d "$round_path/lg360") {
-					mkdir "$round_path/lg360";
+			       	!-f "$round_path/photosphere/$file") {
+				if(!-d "$round_path/photosphere") {
+					mkdir "$round_path/photosphere";
 				}
 				link "$round_path/raw/$file",
-					"$round_path/lg360/$file";
+					"$round_path/photosphere/$file";
 			}
 		}
 
