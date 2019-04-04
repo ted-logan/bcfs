@@ -809,12 +809,18 @@ sub inline_photo {
 		$photo->{size} = $Jaeger::Photo::ChangelogEmbedSize;
 		$photo->resize();
 
+		my $photo_icon_sphere;
+		if($photo->has_photosphere()) {
+			$photo_icon_sphere = $self->lf()->photo_icon_sphere();
+		}
+
 		return $self->lf()->changelog_inline_photo(
 			url => $photo->url(),
 			round => $photo->round(),
 			size => $photo->size(),
 			number => $photo->number(),
 			caption => $photo->description(),
+			photo_icon_sphere => $photo_icon_sphere,
 		);
 	}
 

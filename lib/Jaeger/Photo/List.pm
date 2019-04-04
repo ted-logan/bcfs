@@ -39,6 +39,11 @@ sub html {
 		$photo->{size} = $Jaeger::Photo::ThumbnailSize;
 		$photo->resize();
 
+		my $photo_icon_sphere;
+		if($photo->has_photosphere()) {
+			$photo_icon_sphere = $self->lf()->photo_icon_sphere();
+		}
+
 		push @html, $self->lf()->photo_list(
 			url => $photo->url(),
 			thumbnail => "/digitalpics/$photo->{round}/$photo->{size}/$photo->{number}.jpg",
@@ -46,6 +51,7 @@ sub html {
 			date => $photo->date_format(),
 			latitude => $photo->latitude(),
 			longitude => $photo->longitude(),
+			photo_icon_sphere => $photo_icon_sphere,
 		);
 	}
 
