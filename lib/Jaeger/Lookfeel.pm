@@ -593,11 +593,20 @@ sub _photo_main {
 
 sub _photo_main_mobile {
 	my $self = shift;
+	my $obj = shift;
 
 	# Delegate to _photo_main; since this is a wholesale copy but with a
 	# different template optimized for mobile.
 
-	return $self->_photo_main(@_);
+	my %params = $self->_photo_main($obj);
+
+	$params{img} = $self->photo_img_mobile(
+		round => $obj->round(),
+		number => $obj->number(),
+		size => $obj->size(),
+	);
+
+	return %params;
 }
 
 sub _photo_list_main {
