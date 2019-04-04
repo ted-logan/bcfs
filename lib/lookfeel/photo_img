@@ -1,0 +1,1 @@
+<img src="/digitalpics/---round---/---size---/---number---.jpg" border="0" id="bigimage" ontouchstart="touchStart(event,'bigimage');"  ontouchend="touchEnd(event);" ontouchmove="touchMove(event);" ontouchcancel="touchCancel(event);"/>

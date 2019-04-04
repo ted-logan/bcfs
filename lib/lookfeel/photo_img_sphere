@@ -1,0 +1,19 @@
+<!--
+<img src="/digitalpics/---round---/---size---/---number---.jpg" border="0" id="bigimage" ontouchstart="touchStart(event,'bigimage');"  ontouchend="touchEnd(event);" ontouchmove="touchMove(event);" ontouchcancel="touchCancel(event);"/>
+-->
+
+<script src="https://storage.googleapis.com/vrview/2.0/build/vrview.min.js"></script>
+<div id='vrview'></div>
+<script>
+window.addEventListener('load', onVrViewLoad);
+
+function onVrViewLoad() {
+  // Selector '#vrview' finds element with id 'vrview'.
+  var vrView = new VRView.Player('#vrview', {
+    image: '---baseurl---digitalpics/---round---/---size---/---number---.jpg',
+    width: 1024,
+    height: 768,
+    is_stereo: false
+  });
+}
+</script>

@@ -538,9 +538,20 @@ sub _photo_main {
 	# Fill in the content from the photo itself
 	$params{phototitle} = $obj->{description};
 	$params{date} = $obj->date_format() || "&nbsp;";
-	$params{round} = $obj->round();
-	$params{number} = $obj->number();
-	$params{size} = $obj->size();
+	if($obj->has_photosphere()) {
+		$params{img} = $self->photo_img_sphere(
+			baseurl => $Jaeger::Base::BaseURL,
+			round => $obj->round(),
+			number => $obj->number(),
+			size => 'photosphere',
+		);
+	} else {
+		$params{img} = $self->photo_img(
+			round => $obj->round(),
+			number => $obj->number(),
+			size => $obj->size(),
+		);
+	}
 
 	if($obj->status() > 0) {
 		$params{date} .= " (" .
