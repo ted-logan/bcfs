@@ -42,6 +42,24 @@ unless(-d $newdir) {
 	make_path $newdir;
 }
 
+if($photo->has_photosphere()) {
+	my $cached_photosphere_dir =
+		"$Jaeger::Photo::CacheDir/$round/photosphere";
+	unless(-d $cached_photosphere_dir) {
+		unless(mkdir $cached_photosphere_dir) {
+			warn "mkdir $cached_photosphere_dir failed: $!";
+		}
+	}
+	my $cached_photosphere = "$cached_photosphere_dir/$number.jpg";
+	unless(-f $cached_photosphere) {
+		my $photosphere =
+			"$Jaeger::Photo::Dir/$round/photosphere/$number.jpg";
+		unless(symlink $photosphere, $cached_photosphere) {
+			warn "symlink $photosphere, $cached_photosphere failed: $!"
+		}
+	}
+}
+
 my $newfile = "$newdir/$number.jpg";
 
 if($photo->native() eq "${width}x${height}") {
