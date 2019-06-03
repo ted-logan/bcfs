@@ -90,11 +90,13 @@ sub auto_update_set {
 	return unless $self->{date_begin};
 	return unless $self->{date_end};
 
+	# Use the photo_date view, which takes into account the time zone
+	# offset; so we interpret the start and end dates for each photo set in
+	# the photo's native time zone.
 	my $sql = "insert into photo_set_map " .
-		"select $self->{id}, id from photo " .
+		"select $self->{id}, id from photo_date " .
 		"where date >= extract(epoch from timestamp '$self->{date_begin}') " .
 		"and date <= extract(epoch from timestamp '$self->{date_end}') " .
-		"and not hidden " .
 		"and id not in (select photo_id from photo_set_map where photo_set_id = $self->{id})";
 
 	warn "About to update photo set $self->{id}: $self->{date_begin} -- $self->{date_end}\n";
