@@ -114,6 +114,9 @@ sub Urimap {
 	} elsif($uri eq '/changelog/' or $uri eq '/changelog') {
 		# Show the most recent changelog
 		$changelog = 'LATEST';
+
+	} else {
+		$changelog = Jaeger::Changelog->Select(uri => $uri);
 	}
 
 	unless($changelog) {
@@ -205,6 +208,29 @@ sub add_tag {
 		"values ($id, $self->{id})";
 	Jaeger::Base::Pgdbh()->do($sql)
 		or warn "Add tag $tag: $sql;\n";
+}
+
+sub create_uri {
+	my $self = shift;
+
+	my $time_begin = $self->parsetimestamp($self->time_begin());
+
+	my $date = POSIX::strftime("%Y/%m/%d", localtime $time_begin);
+
+	my $title = lc $self->title();
+	$title =~ s/['"]//g;
+	$title =~ s/&auml;/ae/g;
+	$title =~ s/^[^a-z0-9]*//;
+	$title =~ s/[^a-z0-9]*$//;
+	$title =~ s/[^a-z0-9]+/-/g;
+
+	unless($title) {
+		# Very old changelogs have no title. Make sure we have unique
+		# names by including the time as well.
+		$title = POSIX::strftime("%H-%M-%S", localtime $time_begin);
+	}
+
+	return '/changelog/' . $date . '/' . $title;
 }
 
 # returns the newest changelog
@@ -497,6 +523,10 @@ sub _edit_pipe {
 		$unlink_tempfile = 1;
 	}
 
+	if(!$self->{uri} && $self->{title} && $self->{time_begin}) {
+		$self->{uri} = $self->create_uri();
+	}
+
 	$self->export_file($tempfile);
 
 	system "$command $tempfile";
@@ -610,6 +640,19 @@ sub import_file {
 		$changed = 1;
 	}
 
+	if(exists $header{uri} && ($header{uri} ne $self->{uri})) {
+		$self->{uri} = $header{uri};
+		$changed = 1;
+	}
+	
+	if(!$self->{uri} && $self->{title} && $self->{time_begin}) {
+		my $uri = $self->create_uri();
+		if($self->{uri} ne $uri) {
+			print "Calculated new uri: $uri\n";
+			$changed = 1;
+		}
+	}
+
 	if($header{summary} && ($header{summary} ne $self->{summary})) {
 		$self->{summary} = $header{summary};
 		$changed = 1;
@@ -643,6 +686,7 @@ sub export_file {
 	print TEMPFILE "Title:  \t$self->{title}\n";
 	print TEMPFILE "Begin:  \t$self->{time_begin}\n";
 	print TEMPFILE "End:    \t$self->{time_end}\n";
+	print TEMPFILE "Uri:    \t$self->{uri}\n";
 	print TEMPFILE "Status: \t$self->{status}\n";
 	print TEMPFILE "Summary:\t$self->{summary}\n";
 	print TEMPFILE "Tags:   \t", join(' ', @{$self->tags()}), "\n";
@@ -720,8 +764,8 @@ sub _index {
 # returns a link to the url of this changelog
 sub _url {
 	my $self = shift;
-#	return $self->{url} = "$self->{id}.html";
-	return $self->{url} = $Jaeger::Base::BaseURL . "changelog/$self->{id}.html";
+	return $self->{url} = $Jaeger::Base::BaseURL .
+		"changelog/$self->{id}.html";
 }
 
 sub _link {
