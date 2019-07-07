@@ -43,11 +43,37 @@ foreach my $file (sort {(stat $a)[9] <=> (stat $b)[9]} <*/todo/*>) {
 unlink keys %todo;
 
 print "\n";
+my $last_year = undef;
+my $year_total = 0;
+my $total = 0;
 foreach my $month (sort keys %months) {
+	my ($year) = $month =~ /^(\d\d\d\d)/;
+	if(defined($last_year) && $last_year != $year) {
+		printf "%4d:   %4d photo%s\n",
+			$last_year, $year_total,
+			$year_total != 1 ? "s" : " ";
+		print "\n";
+		$year_total = 0;
+	}
+
 	printf "%s: %3d photo%s  (round%s ",
 		$month, $months{$month}->{count},
 		$months{$month}->{count} > 1 ? "s" : " ",,
 		%{$months{$month}->{round}} > 1 ? "s" : " ";
 	print join(' ', sort keys %{$months{$month}->{round}});
 	print ")\n";
+
+	$last_year = $year;
+	$year_total += $months{$month}->{count};
+	$total += $months{$month}->{count};
 }
+
+if(defined($last_year)) {
+	printf "%4d:   %4d photo%s\n",
+		$last_year, $year_total,
+		$year_total != 1 ? "s" : " ";
+}
+
+print "        ----\n";
+printf "        %4d photo%s\n",
+	$total, $total != 1 ? "s" : " ";
