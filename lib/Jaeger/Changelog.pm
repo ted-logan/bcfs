@@ -210,6 +210,24 @@ sub add_tag {
 		or warn "Add tag $tag: $sql;\n";
 }
 
+sub find_key_date {
+	my $self = shift;
+
+	# If the summary starts with a date (in the form "1st January 2019" or
+	# "1 January 2019"), this is the key date.
+	if($self->{summary} =~ /^((\d+)(st|nd|rd|th)? (\w+) (\d+))/) {
+		# TODO surely there's a better way to parse the date than this
+		# :-/
+		for(my $month = 1; $month < @Jaeger::Base::Months; $month++) {
+			if($Jaeger::Base::Months[$month] eq $4) {
+				return "$5-$month-$2";
+			}
+		}
+	}
+
+	return undef;
+}
+
 sub create_uri {
 	my $self = shift;
 
@@ -942,19 +960,9 @@ sub update_photo_xref {
 
 	my @days;
 
-	# If the summary starts with a date (in the form "1st January 2019" or
-	# "1 January 2019"), it references the entire day, so make sure photos
-	# from that day are included.
-	if($self->{summary} =~ /^((\d+)(st|nd|rd|th)? (\w+) (\d+))/) {
-		print "Found summary referencing date: $1\n";
-		# TODO surely there's a better way to parse the date than this
-		# :-/
-		for(my $month = 1; $month < @Jaeger::Base::Months; $month++) {
-			if($Jaeger::Base::Months[$month] eq $4) {
-				push @days, "$5-$month-$2";
-				last;
-			}
-		}
+	if(my $key_date = $self->find_key_date()) {
+		print "Found summary referencing date: $key_date\n";
+		push @days, $key_date;
 	}
 
 	# TODO also consider links to all photos on a single day (but consider
