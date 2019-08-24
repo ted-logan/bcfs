@@ -233,7 +233,13 @@ sub create_uri {
 
 	my $time_begin = $self->parsetimestamp($self->time_begin());
 
-	my $date = POSIX::strftime("%Y/%m/%d", localtime $time_begin);
+	my $date;
+	if($self->key_date()) {
+		$date = $self->key_date();
+		$date =~ s/\//-/g;
+	} else {
+		$date = POSIX::strftime("%Y/%m/%d", localtime $time_begin);
+	}
 
 	my $title = lc $self->title();
 	$title =~ s/['"]//g;
