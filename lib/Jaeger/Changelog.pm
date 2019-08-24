@@ -236,7 +236,7 @@ sub create_uri {
 	my $date;
 	if($self->key_date()) {
 		$date = $self->key_date();
-		$date =~ s/\//-/g;
+		$date =~ s/-/\//g;
 	} else {
 		$date = POSIX::strftime("%Y/%m/%d", localtime $time_begin);
 	}
