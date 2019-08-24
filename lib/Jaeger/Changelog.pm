@@ -220,7 +220,7 @@ sub find_key_date {
 		# :-/
 		for(my $month = 1; $month < @Jaeger::Base::Months; $month++) {
 			if($Jaeger::Base::Months[$month] eq $4) {
-				return "$5-$month-$2";
+				return sprintf "%4d-%02d-%02d", $5, $month, $2;
 			}
 		}
 	}
