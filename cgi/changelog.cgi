@@ -61,7 +61,16 @@ my $user = Jaeger::User->Login();
 my $changelog = Jaeger::Changelog::Urimap($ENV{REQUEST_URI}, $user);
 
 unless(ref $changelog) {
-	print $q->redirect($changelog);
+	# Redirect to a different url.
+	# If the url includes "login.cgi", issue a temporary redirect.
+	# Otherwise, issue a permanent redirect.
+	if($changelog =~ /login\.cgi/) {
+		print $q->redirect($changelog);
+	} else {
+		print $q->redirect(
+			-uri => $changelog,
+			-status => '301 Moved Permanently');
+	}
 	exit;
 }
 
