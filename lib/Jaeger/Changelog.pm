@@ -658,7 +658,7 @@ sub import_file {
 		$changed = 1;
 	}
 
-	if($header{key_date} ne $self->{key_date}) {
+	if($header{date} ne $self->{key_date}) {
 		$self->{key_date} = $header{date};
 		$changed = 1;
 	} elsif(!$self->{key_date}) {
