@@ -36,11 +36,14 @@ if(my $id = $q->param('id')) {
 }
 
 # If anyone is still using the old, pre-2002 url scheme, redirect.
-# (There are a *bunch* of hits in my weblog from this url scheme, which all
-# appear to be crawlers.)
+# As of August 2019, there are a few hits per day, virtually all of which
+# appear to be crawlers. The perverse part is that these old changelogs are
+# restricted-access, so they're not really getting what they expect.
 if($url) {
 	# redirect accordingly
-	print $q->redirect($Jaeger::Base::BaseURL . "changelog/$url");
+	print $q->redirect(
+		-uri => $Jaeger::Base::BaseURL . "changelog/$url",
+		-status => '301 Moved Permanently');
 	exit;
 }
 

@@ -60,6 +60,22 @@ my @tests = (
 		expect => "/changelog/2019/07/25/victoria-clipper/reply",
 	},
 	{
+		# Very old, pre-2002 url scheme. 
+		# As of August 2019, there are a few hits per day, virtually
+		# all of which appear to be crawlers. The perverse part is that
+		# these old changelogs are restricted-access, so they're not
+		# really getting what they expect.
+		uri => "/changelog.cgi?id=1811",
+		success => 1,
+		expect => "Wallingford",
+	},
+	{
+		# The same, pre-2002 url scheme.
+		uri => "/changelog.cgi?browse=2019",
+		success => 1,
+		expect => "Haleakala",
+	},
+	{
 		# Post a reply to a changelog
 		uri => "/changelog/1807.html/reply",
 		success => 1,
