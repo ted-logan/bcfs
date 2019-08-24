@@ -265,6 +265,7 @@ foreach my $test (@tests) {
 print "\n";
 print $success, " total successful probes\n";
 if($failure) {
-	print $failure, " total failing probe", ($failure == 1 ? '' : 's');
+	print $failure, " total failing probe", ($failure == 1 ? '' : 's'),
+		"\n";
 	exit 1;
 }
