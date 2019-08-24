@@ -209,6 +209,9 @@ my @tests = (
 
 my $ua = new LWP::UserAgent;
 
+my $success = 0;
+my $failure = 0;
+
 foreach my $test (@tests) {
 	my $url = $baseurl . $test->{uri};
 
@@ -252,7 +255,16 @@ foreach my $test (@tests) {
 
 	if($result) {
 		print "PASS\n";
+		$success++;
 	} else {
 		print "FAIL ($reason)\n";
+		$failure++;
 	}
+}
+
+print "\n";
+print $success, " total successful probes\n";
+if($failure) {
+	print $failure, " total failing probe", ($failure == 1 ? '' : 's');
+	exit 1;
 }
