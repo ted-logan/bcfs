@@ -54,8 +54,20 @@ my @tests = (
 		expect => "Tomales Bay",
 	},
 	{
+		# Regular changelog with human-readable url
+		uri => "/changelog/2019/07/25/victoria-clipper",
+		success => 1,
+		expect => "/changelog/2019/07/25/victoria-clipper/reply",
+	},
+	{
 		# Post a reply to a changelog
 		uri => "/changelog/1807.html/reply",
+		success => 1,
+		expect => "Password",
+	},
+	{
+		# Post a reply to a changelog, human-readable url
+		uri => "/changelog/2019/07/25/victoria-clipper/reply",
 		success => 1,
 		expect => "Password",
 	},
@@ -67,10 +79,23 @@ my @tests = (
 		exclude => "Geordi LaForge",
 	},
 	{
+		# Changelog only visible to logged-in users, human-readable url
+		uri => '/changelog/2019/03/24/rain',
+		success => 1,
+		expect => "Password",
+		exclude => "citation needed",
+	},
+	{
 		# Query params at end of url
 		uri => "/changelog/1819.html?utm_source=probe",
 		success => 1,
 		expect => "Image embed test",
+	},
+	{
+		# Query params at end of url, human-readable url
+		uri => "/changelog/2019/07/04/fireworks-at-the-gasworks?utm_source=probe",
+		success => 1,
+		expect => "Fireworks at the Gasworks",
 	},
 	{
 		# Typo in url ending in "

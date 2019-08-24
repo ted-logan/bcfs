@@ -52,21 +52,17 @@ sub Urimap {
 		$changelog =~ s/("|%22)$//;
 
 	} elsif($uri =~ m#/changelog/(\d+)\.html/reply#) {
-		# Post a reply to the changelog
 		my $replyto = Jaeger::Changelog->new_id($1);
-		if($replyto) {
-			# Are we logged in?
-			if($user) {
-				$changelog = new Jaeger::Comment::Post($replyto);
-			} else {
-				# Redirect to the login page
-				$changelog = "/login.cgi?redirect=/changelog/$1.html/reply";
-			}
-		}
+		$changelog = "/login.cgi?redirect=" . $replyto->uri() . "/reply";
 
 	} elsif($uri =~ m#/changelog/(\d+)\.html#) {
 		# Show changelog by specific id
 		$changelog = Jaeger::Changelog->new_id($1);
+		if($changelog && $changelog->uri()) {
+			# If a canonical uri is given, it will be different
+			# than the id-based uri scheme. Redirect there instead.
+			$changelog = $changelog->url();
+		}
 
 	} elsif($uri =~ m#/changelog/comment/(\d+)\.html/reply#) {
 		# Post a reply to the comment
@@ -115,7 +111,21 @@ sub Urimap {
 		# Show the most recent changelog
 		$changelog = 'LATEST';
 
+	} elsif($uri =~ m#(/changelog/.*)/reply#) {
+		# Post a reply to the changelog
+		my $replyto = Jaeger::Changelog->Select(uri => $1);
+		if($replyto) {
+			# Are we logged in?
+			if($user) {
+				$changelog = new Jaeger::Comment::Post($replyto);
+			} else {
+				# Redirect to the login page
+				$changelog = "/login.cgi?redirect=" . $replyto->uri() . "/reply";
+			}
+		}
+
 	} else {
+		$uri =~ s/\?.*//;
 		$changelog = Jaeger::Changelog->Select(uri => $uri);
 	}
 
@@ -804,8 +814,14 @@ sub _index {
 # returns a link to the url of this changelog
 sub _url {
 	my $self = shift;
-	return $self->{url} = $Jaeger::Base::BaseURL .
-		"changelog/$self->{id}.html";
+	if($self->{uri}) {
+		my $baseurl = $Jaeger::Base::BaseURL;
+		$baseurl =~ s#/$##;
+		return $self->{url} = $baseurl . $self->{uri};
+	} else {
+		return $self->{url} = $Jaeger::Base::BaseURL .
+			"changelog/$self->{id}.html";
+	}
 }
 
 sub _link {
@@ -841,7 +857,7 @@ sub _html {
 		);
 	}
 
-	my $reply = "/changelog/$self->{id}.html/reply#reply";
+	my $reply = $self->uri() . "/reply#reply";
 
 	if($user) {
 		# show the users who have viewed the changelog
