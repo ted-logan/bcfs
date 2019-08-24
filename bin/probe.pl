@@ -14,6 +14,7 @@ use strict;
 
 use File::Basename;
 use LWP::UserAgent;
+use Term::ANSIColor;
 
 my $baseurl;
 
@@ -254,10 +255,10 @@ foreach my $test (@tests) {
 	}
 
 	if($result) {
-		print "PASS\n";
+		print color('green'), "PASS", color('reset'), "\n";
 		$success++;
 	} else {
-		print "FAIL ($reason)\n";
+		print color('red'), "FAIL", color('reset'), " ($reason)\n";
 		$failure++;
 	}
 }
