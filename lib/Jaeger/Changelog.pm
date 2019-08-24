@@ -658,6 +658,21 @@ sub import_file {
 		$changed = 1;
 	}
 
+	if($header{key_date} ne $self->{key_date}) {
+		$self->{key_date} = $header{date};
+		$changed = 1;
+	} elsif(!$self->{key_date}) {
+		$self->{key_date} = $self->find_key_date();
+	}
+	
+	if(!$self->{uri} && $self->{title} && $self->{time_begin}) {
+		my $uri = $self->create_uri();
+		if($self->{uri} ne $uri) {
+			print "Calculated new uri: $uri\n";
+			$changed = 1;
+		}
+	}
+
 	if(exists $header{uri} && ($header{uri} ne $self->{uri})) {
 		$self->{uri} = $header{uri};
 		$changed = 1;
@@ -704,6 +719,7 @@ sub export_file {
 	print TEMPFILE "Title:  \t$self->{title}\n";
 	print TEMPFILE "Begin:  \t$self->{time_begin}\n";
 	print TEMPFILE "End:    \t$self->{time_end}\n";
+	print TEMPFILE "Date:   \t$self->{key_date}\n";
 	print TEMPFILE "Uri:    \t$self->{uri}\n";
 	print TEMPFILE "Status: \t$self->{status}\n";
 	print TEMPFILE "Summary:\t$self->{summary}\n";
