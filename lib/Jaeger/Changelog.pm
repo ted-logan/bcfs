@@ -20,6 +20,7 @@ use Jaeger::Changelog::Tag;
 use Jaeger::Notfound;
 use Jaeger::Photo;
 use Jaeger::Photo::List::Date;
+use Jaeger::Redirect;
 
 use POSIX;
 
@@ -42,18 +43,27 @@ sub Urimap {
 
 	if($uri =~ m#^//#) {
 		# We ended up with one too many slashes at the beginning
-		$changelog = $uri;
-		$changelog =~ s#^/+#/#;
+		$uri =~ s#^/+#/#;
+		$changelog = new Jaeger::Redirect($uri,
+			Jaeger::Redirect::MOVED_PERMANENTLY);
 
 	} elsif($uri =~ m#"$# || $uri =~ m#%22$#) {
 		# A typo gave a link with an extra " at the end. Redirect to
 		# the correct page.
-		$changelog = $uri;
-		$changelog =~ s/("|%22)$//;
+		$uri =~ s/("|%22)$//;
+		$changelog = new Jaeger::Redirect($uri,
+			Jaeger::Redirect::MOVED_PERMANENTLY);
 
 	} elsif($uri =~ m#/changelog/(\d+)\.html/reply#) {
 		my $replyto = Jaeger::Changelog->new_id($1);
-		$changelog = "/login.cgi?redirect=" . $replyto->uri() . "/reply";
+		if($user) {
+			$changelog = new Jaeger::Redirect(
+				$replyto->uri() . "/reply",
+				Jaeger::Redirect::MOVED_PERMANENTLY);
+		} else {
+			$changelog = new Jaeger::Redirect(
+				"/login.cgi?redirect=" . $replyto->uri() . "/reply");
+		}
 
 	} elsif($uri =~ m#/changelog/(\d+)\.html#) {
 		# Show changelog by specific id
@@ -61,7 +71,9 @@ sub Urimap {
 		if($changelog && $changelog->uri()) {
 			# If a canonical uri is given, it will be different
 			# than the id-based uri scheme. Redirect there instead.
-			$changelog = $changelog->url();
+			$changelog = new Jaeger::Redirect(
+				$changelog->url(),
+				Jaeger::Redirect::MOVED_PERMANENTLY);
 		}
 
 	} elsif($uri =~ m#/changelog/comment/(\d+)\.html/reply#) {
@@ -75,7 +87,8 @@ sub Urimap {
 				);
 			} else {
 				# Redirect to the login page
-				$changelog = "/login.cgi?redirect=/changelog/comment/$1.html/reply";
+				$changelog = new Jaeger::Redirect(
+					"/login.cgi?redirect=/changelog/comment/$1.html/reply");
 			}
 		}
 
@@ -92,7 +105,8 @@ sub Urimap {
 			$changelog = new Jaeger::Changelog::Browse($year);
 		} else {
 			# redirect to the "directory"
-			$changelog = "/changelog/$1/";
+			$changelog = Jaeger::Redirect("/changelog/$1/",
+				Jaeger::Redirect::MOVED_PERMANENTLY);
 		}
 
 	} elsif($uri =~ m#/changelog/tag/([^/]+)/?#) {
@@ -109,7 +123,8 @@ sub Urimap {
 
 	} elsif($uri eq '/changelog/' or $uri eq '/changelog') {
 		# Show the most recent changelog
-		$changelog = 'LATEST';
+		my $latest = Newest Jaeger::Changelog;
+		$changelog = new Jaeger::Redirect($latest->url());
 
 	} elsif($uri =~ m#(/changelog/.*)/reply#) {
 		# Post a reply to the changelog
@@ -120,7 +135,8 @@ sub Urimap {
 				$changelog = new Jaeger::Comment::Post($replyto);
 			} else {
 				# Redirect to the login page
-				$changelog = "/login.cgi?redirect=" . $replyto->uri() . "/reply";
+				$changelog = new Jaeger::Redirect(
+					"/login.cgi?redirect=" . $replyto->uri() . "/reply");
 			}
 		}
 
@@ -138,12 +154,8 @@ sub Urimap {
 
 	if(ref($changelog) && $changelog->{status} > $level) {
 		# No access -- redirect to login page
-		$changelog = "/login.cgi?redirect=" . $changelog->url();
-	}
-
-	if($changelog eq 'LATEST') {
-		my $latest = Newest Jaeger::Changelog;
-		$changelog = $latest->url();
+		$changelog = new Jaeger::Redirect(
+			"/login.cgi?redirect=" . $changelog->url());
 	}
 
 	return $changelog;
