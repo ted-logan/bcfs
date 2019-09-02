@@ -18,6 +18,7 @@ use Jaeger::Changelog::Browse;
 use Jaeger::Changelog::Series;
 use Jaeger::Changelog::Tag;
 use Jaeger::Notfound;
+use Jaeger::PageRedirect;
 use Jaeger::Photo;
 use Jaeger::Photo::List::Date;
 use Jaeger::Redirect;
@@ -143,6 +144,15 @@ sub Urimap {
 	} else {
 		$uri =~ s/\?.*//;
 		$changelog = Jaeger::Changelog->Select(uri => $uri);
+		unless($changelog) {
+			my $redirect = Jaeger::PageRedirect->Select(
+				uri => $uri);
+			if($redirect) {
+				$changelog = new Jaeger::Redirect(
+					$redirect->{redirect},
+					Jaeger::Redirect::MOVED_PERMANENTLY);
+			}
+		}
 	}
 
 	unless($changelog) {

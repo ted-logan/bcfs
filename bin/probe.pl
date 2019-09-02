@@ -189,6 +189,17 @@ my @tests = (
 		expect => "Not found",
 		exclude => "/changelog//",
 	},
+	# Page was moved via redirect
+	{
+		uri => "/changelog/2019/01/23/new-years-2019",
+		success => 1,
+		expect => "an easy walk from my house in Wallingford",
+	},
+	{
+		uri => "/changelog/2019/01/01/new-years-2019",
+		success => 1,
+		expect => "an easy walk from my house in Wallingford",
+	},
 
 	# Comments
 	{

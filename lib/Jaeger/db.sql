@@ -204,3 +204,9 @@ create table photo_xref_map (
 	changelog_id	int4 references changelog,
 	unique(photo_id, changelog_id)
 );
+
+create table redirect (
+	id		serial primary key,
+	uri		text not null unique,
+	redirect	text not null
+);
