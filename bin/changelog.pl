@@ -8,13 +8,13 @@
 # Ted Logan
 
 use strict;
-use POSIX qw(floor);
 use Getopt::Long;
 
 die "\$BCFS must be set!\n" unless $ENV{BCFS};
 
 use lib "$ENV{BCFS}/lib";
 use Jaeger::Changelog;
+use Jaeger::User;
 
 my $id;
 my $import;
@@ -34,10 +34,31 @@ if($help) {
 	exit;
 }
 
-my $tempfile = shift;
-
 my $changelog;
-if($id) {
+if(@ARGV) {
+	my $arg = $ARGV[0];
+	# One command-line argument is provided. If it's a url, edit that
+	# changelog. If it's a file, import it.
+	if($arg =~ /^http/) {
+		$arg =~ s(^https?://.*?/)(/);
+		my $user = Jaeger::User->Select(login => 'jaeger');
+		$changelog = Jaeger::Changelog::Urimap($arg, $user);
+		if($changelog) {
+			print "Found changelog with uri $arg\n";
+		} else {
+			die "Unable to find changelog with uri $arg\n";
+		}
+
+	} elsif(-f $arg) {
+		$changelog = new Jaeger::Changelog();
+
+		$changelog->{status} = 0;
+
+		$changelog->import_file($arg);
+	} else {
+		die "Unrecogonized argument '$arg'\n";
+	}
+} elsif($id) {
 	$changelog = Jaeger::Changelog->new_id($id);
 	unless($changelog) {
 		die "Changelog with id = $id doesn't exist\n";
@@ -59,4 +80,4 @@ if($id) {
 	$changelog->{time_begin} = scalar localtime time;
 }
 
-$changelog->edit($tempfile);
+$changelog->edit();
