@@ -200,6 +200,17 @@ my @tests = (
 		success => 1,
 		expect => "an easy walk from my house in Wallingford",
 	},
+	# Page was moved via redirect
+	{
+		uri => "/changelog/2019/02/27/visiting-the-sun",
+		success => 1,
+		expect => "I need to go visit the sun in the winter",
+	},
+	{
+		uri => "/changelog/2019/02/17/visiting-the-sun",
+		success => 1,
+		expect => "I need to go visit the sun in the winter",
+	},
 
 	# Comments
 	{

@@ -178,6 +178,15 @@ sub table {
 sub update {
 	my $self = shift;
 
+	if($self->{olduri}) {
+		print "Adding redirect from $self->{olduri} to $self->{uri}\n";
+		my $redirect = new Jaeger::PageRedirect();
+		$redirect->{uri} = $self->{olduri};
+		$redirect->{redirect} = $self->{uri};
+		$redirect->update();
+		$self->{olduri} = undef;
+	}
+
 	# Update first, so we always have an id
 	my $rv = $self->SUPER::update();
 
@@ -707,11 +716,18 @@ sub import_file {
 		my $uri = $self->create_uri();
 		if($self->{uri} ne $uri) {
 			print "Calculated new uri: $uri\n";
+			$self->{uri} = $uri;
 			$changed = 1;
 		}
 	}
 
 	if(exists $header{uri} && ($header{uri} ne $self->{uri})) {
+		if($self->{uri} && !$self->{olduri}) {
+			# If the uri changes, be prepared to create a redirect
+			# from the old uri to the new uri. This redirect is
+			# created when the changelog is updated.
+			$self->{olduri} = $self->{uri};
+		}
 		$self->{uri} = $header{uri};
 		$changed = 1;
 	}
