@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
+use utf8;
 
 # Test case for Jaeger::Uri
 
@@ -22,4 +23,28 @@ is(Jaeger::Uri::MakeUriFromTitle('Everything is fine (really)'),
 is(Jaeger::Uri::MakeUriFromTitle('    whitespace ----'), 'whitespace');
 is(Jaeger::Uri::MakeUriFromTitle('J&auml;ger'), 'jaeger');
 is(Jaeger::Uri::MakeUriFromTitle('Quotes "go away"'), 'quotes-go-away');
+
+# Other html entities
+is(Jaeger::Uri::MakeUriFromTitle('Resum&eacute;'), 'resume');
+
+# D&D
+is(Jaeger::Uri::MakeUriFromTitle('People play D&D'), 'people-play-dnd');
+
+# Unicode code points
+is(Jaeger::Uri::MakeUriFromTitle('Dessert at Häagen-Dazs in Hong Kong'),
+	'dessert-at-haeagen-dazs-in-hong-kong');
+is(Jaeger::Uri::MakeUriFromTitle(
+	'Diagonal elevator at Sörnäinen metro station'),
+	'diagonal-elevator-at-sornaeinen-metro-station');
+is(Jaeger::Uri::MakeUriFromTitle('Øresund Straight under an A320 wing'),
+	'oresund-straight-under-an-a320-wing');
+is(Jaeger::Uri::MakeUriFromTitle('Spire on Børsen'), 'spire-on-borsen');
+is(Jaeger::Uri::MakeUriFromTitle('Fog shrouds Haleakalā'),
+	'fog-shrouds-haleakala');
+is(Jaeger::Uri::MakeUriFromTitle(
+	'TF-ISL flies over Reykjavík on approach to KEF'),
+	'tf-isl-flies-over-reykjavik-on-approach-to-kef');
+
+#is(Jaeger::Uri::MakeUriFromTitle(''), '');
+
 done_testing();
