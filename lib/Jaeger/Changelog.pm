@@ -22,6 +22,7 @@ use Jaeger::PageRedirect;
 use Jaeger::Photo;
 use Jaeger::Photo::List::Date;
 use Jaeger::Redirect;
+use Jaeger::Uri;
 
 use POSIX;
 
@@ -282,12 +283,7 @@ sub create_uri {
 		$date = POSIX::strftime("%Y/%m/%d", localtime $time_begin);
 	}
 
-	my $title = lc $self->title();
-	$title =~ s/['"]//g;
-	$title =~ s/&auml;/ae/g;
-	$title =~ s/^[^a-z0-9]*//;
-	$title =~ s/[^a-z0-9]*$//;
-	$title =~ s/[^a-z0-9]+/-/g;
+	my $title = Jaeger::Uri::MakeUriFromTitle($self->title());
 
 	unless($title) {
 		# Very old changelogs have no title. Make sure we have unique
