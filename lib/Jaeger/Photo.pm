@@ -19,9 +19,13 @@ use Jaeger::Lookfeel;
 
 use Carp;
 
+use Encode qw(decode);
+
 use Jaeger::Location;
 use Jaeger::Timezone;
 use Jaeger::GPS;
+use Jaeger::PageRedirect;
+use Jaeger::Uri;
 use Jaeger::User;
 
 use Jaeger::Photo::List;
@@ -73,11 +77,83 @@ sub update {
 		$self->{hidden} = 'true';
 	}
 
+	unless($self->hidden()) {
+		my $olduri = $self->{uri};
+
+		$self->{uri} = $self->create_uri();
+
+		unless($olduri) {
+			warn "Creating new photo uri for ",
+				"$self->{round}/$self->{number}:\n",
+				"\t$self->{uri}\n";
+		}
+
+		if($olduri && $olduri ne $self->{uri}) {
+			warn "Creating redirect for ",
+				"$self->{round}/$self->{number}:\n",
+				"\tfrom $olduri\n",
+				"\tto $self->{uri}\n";
+
+			my $redirect = new Jaeger::PageRedirect();
+			$redirect->{uri} = $olduri;
+			$redirect->{redirect} = $self->{uri};
+			$redirect->update();
+		}
+	}
+
 	unless(defined $self->{status}) {
 		$self->{status} = 0;
 	}
 
 	$self->SUPER::update();
+}
+
+sub create_uri {
+	my $self = shift;
+	# If specified, all_uris is a reference to a hash containing all of the
+	# photo uris that exist. This is specified during debugging this
+	# algorithm, while updating all of the photo uris at once. In
+	# production, we expect photos to be updated one at a time, so this
+	# function will query the database for each photo.
+	my $all_uris = shift;
+
+	my $date;
+	if($self->{date} == 0) {
+		$date = $self->{round};
+	} else {
+		$date = POSIX::strftime("%Y/%m/%d",
+			gmtime($self->{date} +
+				$self->timezone()->ofst() * 3600));
+	}
+
+	my $title = decode("utf-8", $self->description());
+	unless($title) {
+		$title = "untitled";
+	}
+	$title = Jaeger::Uri::MakeUriFromTitle($title);
+
+	my $uri = "/photo/$date/$title";
+
+	unless($all_uris) {
+		# Most of the time we want to load the list of uris from the
+		# database. Do this for the uris matching the base pattern
+		# (because we don't actually care about everything).
+		my $sql = "select uri from photo where uri like ?";
+		$all_uris = $self->dbh()->selectall_hashref(
+			$sql, "uri", {}, "$uri%");
+	}
+
+	my $count = 1;
+	do {
+		$uri = "/photo/$date/$title";
+		if($count > 1) {
+			$uri .= '-' . $count;
+		}
+		$count++;
+	} while(exists $all_uris->{$uri});
+	$all_uris->{$uri}++;
+
+	return $uri;
 }
 
 # returns a Postgres-compatible date
