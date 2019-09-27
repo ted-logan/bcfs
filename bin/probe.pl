@@ -50,6 +50,7 @@ my @tests = (
 	{
 		# Regular, public changelog
 		uri => "/changelog/1807.html",
+		redirect => "/changelog/2018/07/15/tomales-bay",
 		success => 1,
 		expect => "Tomales Bay",
 	},
@@ -66,12 +67,14 @@ my @tests = (
 		# these old changelogs are restricted-access, so they're not
 		# really getting what they expect.
 		uri => "/changelog.cgi?id=1811",
+		redirect => "/changelog/2018/11/13/wallingford",
 		success => 1,
 		expect => "Wallingford",
 	},
 	{
 		# The same, pre-2002 url scheme.
 		uri => "/changelog.cgi?browse=2019",
+		redirect => "/changelog/2019/",
 		success => 1,
 		expect => "Haleakala",
 	},
@@ -104,6 +107,8 @@ my @tests = (
 	{
 		# Query params at end of url
 		uri => "/changelog/1819.html?utm_source=probe",
+		#redirect => "/changelog/2019/01/01/image-embed-test?utm_source=probe",
+		redirect => "/changelog/2019/01/01/image-embed-test",
 		success => 1,
 		expect => "Image embed test",
 	},
@@ -116,6 +121,7 @@ my @tests = (
 	{
 		# Typo in url ending in "
 		uri => "/changelog/1629.html\"",
+		redirect => "/changelog/2015/09/30/2015-hugo-awards",
 		success => 1,
 		expect => "2015 Hugo Awards",
 	},
@@ -192,6 +198,7 @@ my @tests = (
 	# Page was moved via redirect
 	{
 		uri => "/changelog/2019/01/23/new-years-2019",
+		redirect => "/changelog/2019/01/01/new-years-2019",
 		success => 1,
 		expect => "an easy walk from my house in Wallingford",
 	},
@@ -203,6 +210,7 @@ my @tests = (
 	# Page was moved via redirect
 	{
 		uri => "/changelog/2019/02/27/visiting-the-sun",
+		redirect => "/changelog/2019/02/17/visiting-the-sun",
 		success => 1,
 		expect => "I need to go visit the sun in the winter",
 	},
@@ -301,6 +309,18 @@ foreach my $test (@tests) {
 			$reason = "expected failure, got success";
 		} else {
 			$result = 1;
+		}
+	}
+
+	my $actual_uri = $response->base()->path_query();
+	if($actual_uri ne $test->{uri}) {
+		print "(redirect: ", $actual_uri, ")  ";
+	}
+	if($test->{redirect}) {
+		if($actual_uri ne $test->{redirect}) {
+			$reason = "expected redirect to $test->{redirect}, " .
+				"instead reached $actual_uri";
+			$result = 0;
 		}
 	}
 
