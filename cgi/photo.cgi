@@ -119,6 +119,8 @@ if(my $round = $q->param('round')) {
 } elsif(my $date = $q->param('date')) {
 	# display photos on a specific date
 	$page = new Jaeger::Photo::List::Date($date);
+	$page = new Jaeger::Redirect($page->url(),
+		Jaeger::Redirect::MOVED_PERMANENTLY);
 
 } elsif(my $slideshow = $q->param('slideshow_id')) {
 	# Show a specific slide show
@@ -144,6 +146,11 @@ if(my $round = $q->param('round')) {
 } elsif($ENV{REQUEST_URI} =~ m(^/photo/(\d\d\d\d)/$)) {
 	# New-style uri: Display a thumbnail for a specific year
 	$page = new Jaeger::Photo::Year($1);
+
+} elsif($ENV{REQUEST_URI} =~ m(^/photo/(\d\d\d\d)/(\d\d)/(\d\d)/?$)) {
+	# New-style uri: Display photos on a specific date
+	my $date = "$1-$2-$3";
+	$page = new Jaeger::Photo::List::Date($date);
 
 } elsif($ENV{REQUEST_URI} eq '/photo' or $ENV{REQUEST_URI} =~ '/photo.cgi') {
 	# Redirect permanently to the new photo url, /photo/

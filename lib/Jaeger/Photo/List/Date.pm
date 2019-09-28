@@ -142,5 +142,8 @@ sub _index {
 sub _url {
 	my $self = shift;
 
-	return $self->{url} = "photo.cgi?date=$self->{date}";
+	my $date = $self->{date};
+	$date =~ s/-/\//g;
+
+	return $self->{url} = "/photo/$date/";
 }

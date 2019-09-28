@@ -80,8 +80,7 @@ sub html {
 	$sth->execute() or warn "$sql;\n";
 	while(my ($date, $count) = $sth->fetchrow_array()) {
 		my $date_iso = strftime("%Y-%m-%d", gmtime($date));
-		$dates{$date_iso} = strftime(
-			"/photo.cgi?date=%Y-%m-%d", gmtime($date));
+		$dates{$date_iso} = strftime("/photo/%Y/%m/%d/", gmtime($date));
 	}
 
 	return $self->lf()->photo_year_list(

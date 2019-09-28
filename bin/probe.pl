@@ -303,9 +303,21 @@ my @tests = (
 	},
 	{
 		uri => "/photo.cgi?date=2018-07-15",
+		redirect => "/photo/2018/07/15/",
 		success => 1,
 		expect => "Kayaks launch from Tomales Bay",
 		exclude => "Shanghai bottle opener",
+	},
+	{
+		uri => "/photo/2019/08/21/",
+		success => 1,
+		expect => "Rain on Hanbury Lane",
+		exclude => "Pint of Guinness at a pub in Dublin",
+	},
+	{
+		uri => "/photo/2019/09/02",
+		success => 1,
+		expect => "Columbia",
 	},
 	{
 		uri => "/photo.cgi?set=19",
