@@ -23,7 +23,7 @@ sub Navbar {
 
 	my @content;
 
-	push @content, '<li><a href="/photo.cgi">Photos</a></li>';
+	push @content, '<li><a href="/photo/">Photos</a></li>';
 	push @content, '<li><a href="/flights.cgi">Flights</a></li>';
 	push @content, '<li><a href="/yoda.cgi">Gas Mileage</a></li>';
 

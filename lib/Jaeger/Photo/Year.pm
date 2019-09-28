@@ -99,7 +99,7 @@ sub yearlist {
 	return 
 		qq'<div class="articlefooter"><hr noshade><center><small>' .
 		join(' | ', map { qq'<a href="photo.cgi?year=$_">$_</a>' } $self->years()).
-		' | <a href="/photo.cgi">Recent photos</a>' .
+		' | <a href="/photo/">Recent photos</a>' .
 		"</small></center><hr noshade></div>\n";
 }
 
@@ -150,5 +150,5 @@ sub mininav {
 	my $self = shift;
 
 	return join(' • ', map { qq'<a href="/photo.cgi?year=$_">$_</a>' } $self->years()) .
-		' • <a href="/photo.cgi">Recent photos</a>';
+		' • <a href="/photo/">Recent photos</a>';
 }

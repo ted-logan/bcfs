@@ -241,8 +241,25 @@ my @tests = (
 	# Photos
 	{
 		uri => "/photo.cgi",
+		redirect => "/photo/",
 		success => 1,
 		expect => "Recent photos",
+	},
+	{
+		uri => "/photo",
+		redirect => "/photo/",
+		success => 1,
+		expect => "/photo/",
+	},
+	{
+		uri => "/photo/",
+		success => 1,
+		expect => "Recent photos",
+	},
+	{
+		uri => "/photo/bogus",
+		success => 0,
+		expect => "Not found",
 	},
 	{
 		uri => "/photo.cgi?round=516&number=23",

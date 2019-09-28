@@ -41,7 +41,7 @@ if($0 =~ /comment/) {
 	$feed->{title} = "jaegerfesting photos";
 	$feed->{description} = "Photos posted on jaeger.festing.org.";
 	$feed->{noun} = "photo";
-	$feed->{link} = 'http://jaeger.festing.org/photo.cgi';
+	$feed->{link} = 'http://jaeger.festing.org/photo/';
 
 	# Show photos from the last week
 	@entries = Jaeger::Photo->Select(

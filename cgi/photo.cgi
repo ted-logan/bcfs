@@ -19,6 +19,7 @@ use Jaeger::Lookfeel;
 use Jaeger::Photo::Notfound;
 use Jaeger::Photo::Set;
 use Jaeger::Photo::Recent;
+use Jaeger::Redirect;
 
 my $q = Jaeger::Base::Query();
 
@@ -88,7 +89,7 @@ if(my $round = $q->param('round')) {
 				# The photo exists, but the logged-in user does
 				# not have permission to see the photo.
 				# Redirect to the photo entry page.
-				print $q->redirect("photo.cgi");
+				print $q->redirect("/photo/");
 				exit;
 
 			} else {
@@ -135,10 +136,31 @@ if(my $round = $q->param('round')) {
 	# display a thumbnail for a specific
 	$page = new Jaeger::Photo::Year($year);
 
-} else {
+} elsif($ENV{REQUEST_URI} eq '/photo' or $ENV{REQUEST_URI} =~ '/photo.cgi') {
+	# Redirect permanently to the new photo url, /photo/
+	$page = new Jaeger::Redirect('/photo/',
+		Jaeger::Redirect::MOVED_PERMANENTLY);
+
+} elsif($ENV{REQUEST_URI} eq '/photo/') {
 	# Display the most recent photos
 	$page = new Jaeger::Photo::Recent();
 
+} else {
+	# Invalid uri, not found
+	$page = new Jaeger::Photo::Notfound;
+
+}
+
+if(ref($page) eq 'Jaeger::Redirect') {
+	# Redirect to a different url.
+	if($page->{code} == Jaeger::Redirect::MOVED_PERMANENTLY) {
+		print $q->redirect(
+			-uri => $page->{url},
+			-status => '301 Moved Permanently');
+	} else {
+		print $q->redirect($page->{url});
+	}
+	exit;
 }
 
 print $q->header('text/html; charset=UTF-8', $page->http_status());

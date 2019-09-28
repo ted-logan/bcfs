@@ -48,7 +48,7 @@ sub html {
 sub _url {
 	my $self = shift;
 
-	return $self->{url} = "/photo.cgi";
+	return $self->{url} = "/photo/";
 }
 
 1;
