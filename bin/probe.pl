@@ -250,6 +250,11 @@ my @tests = (
 		expect => "Spire at the Marin County Civic Center",
 	},
 	{
+		uri => "/photo.cgi?round=300&number=18",
+		success => 1,
+		expect => "/digitalpics/300/1600x1200/18.jpg",
+	},
+	{
 		# Elite users only photo
 		uri => "/photo.cgi?round=519&number=31",
 		success => 1,
