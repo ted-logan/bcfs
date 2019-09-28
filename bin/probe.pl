@@ -314,8 +314,21 @@ my @tests = (
 	},
 	{
 		uri => "/photo.cgi?year=2018",
+		redirect => "/photo/2018/",
 		success => 1,
 		expect => "August 2018",
+	},
+	{
+		uri => "/photo/2018",
+		redirect => "/photo/2018/",
+		success => 1,
+		expect => "August 2018",
+	},
+	{
+		uri => "/photo/2017/",
+		redirect => "/photo/2017/",
+		success => 1,
+		expect => "/photo/2016/",
 	},
 );
 

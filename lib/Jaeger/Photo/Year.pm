@@ -20,6 +20,7 @@ use Jaeger::Thumbnail qw(year_thumbnail);
 use Jaeger::User;
 
 use Carp;
+use POSIX qw(strftime);
 use Time::Local;
 
 sub new {
@@ -78,13 +79,9 @@ sub html {
 	my $sth = $self->{dbh}->prepare($sql);
 	$sth->execute() or warn "$sql;\n";
 	while(my ($date, $count) = $sth->fetchrow_array()) {
-		my $date_iso = do {
-			my @date = (gmtime($date))[5, 4, 3];
-			$date[0] += 1900;
-			$date[1]++;
-			sprintf("%04d-%02d-%02d", @date);
-		};
-		$dates{$date_iso} = "photo.cgi?date=$date_iso";
+		my $date_iso = strftime("%Y-%m-%d", gmtime($date));
+		$dates{$date_iso} = strftime(
+			"/photo.cgi?date=%Y-%m-%d", gmtime($date));
 	}
 
 	return $self->lf()->photo_year_list(
@@ -98,7 +95,7 @@ sub yearlist {
 
 	return 
 		qq'<div class="articlefooter"><hr noshade><center><small>' .
-		join(' | ', map { qq'<a href="photo.cgi?year=$_">$_</a>' } $self->years()).
+		join(' | ', map { qq'<a href="/photo/$_/">$_</a>' } $self->years()).
 		' | <a href="/photo/">Recent photos</a>' .
 		"</small></center><hr noshade></div>\n";
 }
@@ -136,7 +133,7 @@ sub _next {
 sub _url {
 	my $self = shift;
 
-	return $self->{url} = "/photo.cgi?year=$self->{year}";
+	return $self->{url} = "/photo/$self->{year}/";
 }
 
 sub _xrefs {
@@ -149,6 +146,6 @@ sub _xrefs {
 sub mininav {
 	my $self = shift;
 
-	return join(' • ', map { qq'<a href="/photo.cgi?year=$_">$_</a>' } $self->years()) .
+	return join(' • ', map { qq'<a href="/photo/$_/">$_</a>' } $self->years()) .
 		' • <a href="/photo/">Recent photos</a>';
 }

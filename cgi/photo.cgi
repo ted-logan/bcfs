@@ -133,8 +133,17 @@ if(my $round = $q->param('round')) {
 	$page = Jaeger::Photo::Set->new_id($set);
 
 } elsif(my $year = $q->param('year')) {
-	# display a thumbnail for a specific
-	$page = new Jaeger::Photo::Year($year);
+	# display a thumbnail for a specific year
+	$page = new Jaeger::Redirect("/photo/$year/",
+		Jaeger::Redirect::MOVED_PERMANENTLY);
+
+} elsif($ENV{REQUEST_URI} =~ m(^/photo/(\d\d\d\d)$)) {
+	$page = new Jaeger::Redirect("/photo/$1/",
+		Jaeger::Redirect::MOVED_PERMANENTLY);
+
+} elsif($ENV{REQUEST_URI} =~ m(^/photo/(\d\d\d\d)/$)) {
+	# New-style uri: Display a thumbnail for a specific year
+	$page = new Jaeger::Photo::Year($1);
 
 } elsif($ENV{REQUEST_URI} eq '/photo' or $ENV{REQUEST_URI} =~ '/photo.cgi') {
 	# Redirect permanently to the new photo url, /photo/
