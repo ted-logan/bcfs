@@ -628,7 +628,7 @@ sub _photo_list_main {
 	}
 
 	my $xrefs = $obj->xrefs();
-	if(@$xrefs > 0) {
+	if($xrefs && @$xrefs > 0) {
 		$params{xrefs} = "Read more: " .
 			join(",\n", map {'<a href="' . $_->url() . '">' .
 				$_->title() . "</a>"} @$xrefs);

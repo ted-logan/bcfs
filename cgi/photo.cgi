@@ -16,6 +16,7 @@ use Jaeger::Photo;
 use Jaeger::User;
 use Jaeger::Slideshow;
 use Jaeger::Lookfeel;
+use Jaeger::Photo::Notfound;
 use Jaeger::Photo::Set;
 use Jaeger::Photo::Recent;
 
@@ -102,11 +103,16 @@ if(my $round = $q->param('round')) {
 
 		} else {
 			# the photo doesn't exist
+			$page = new Jaeger::Photo::Notfound;
 		}
 
 	} else {
 		# display an index of a round, assuming it exists
 		$page = new Jaeger::Photo::List::Round($round);
+		if(@{$page->photos()} == 0) {
+			# No photos found for this round
+			$page = new Jaeger::Photo::Notfound;
+		}
 	}
 
 } elsif(my $date = $q->param('date')) {
@@ -135,7 +141,7 @@ if(my $round = $q->param('round')) {
 
 }
 
-print "content-type: text/html; charset=UTF-8\n\n";
+print $q->header('text/html; charset=UTF-8', $page->http_status());
 if($q->param('slideshow')) {
 	print $lf->slideshow($page);
 } else {

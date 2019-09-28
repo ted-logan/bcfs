@@ -255,6 +255,18 @@ my @tests = (
 		expect => "/digitalpics/300/1600x1200/18.jpg",
 	},
 	{
+		# Photo not found (in an existing round)
+		uri => "/photo.cgi?round=516&number=9999",
+		success => 0,
+		expect => "Not found",
+	},
+	{
+		# Photo not found (in a bogus round)
+		uri => "/photo.cgi?round=9999&number=9999",
+		success => 0,
+		expect => "Not found",
+	},
+	{
 		# Elite users only photo
 		uri => "/photo.cgi?round=519&number=31",
 		success => 1,
@@ -265,6 +277,12 @@ my @tests = (
 		uri => "/photo.cgi?round=516",
 		success => 1,
 		expect => "site model of the Marin County Civic Center",
+	},
+	{
+		# Round not found
+		uri => "/photo.cgi?round=9999",
+		success => 0,
+		expect => "Not found",
 	},
 	{
 		uri => "/photo.cgi?date=2018-07-15",
