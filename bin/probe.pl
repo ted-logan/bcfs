@@ -318,15 +318,20 @@ foreach my $test (@tests) {
 	}
 
 	my $actual_uri = $response->base()->path_query();
-	if($actual_uri ne $test->{uri}) {
-		print "(redirect: ", $actual_uri, ")  ";
-	}
+	my $redirect_ok = "";
 	if($test->{redirect}) {
 		if($actual_uri ne $test->{redirect}) {
 			$reason = "expected redirect to $test->{redirect}, " .
 				"instead reached $actual_uri";
 			$result = 0;
+		} else {
+			$redirect_ok = " ok";
 		}
+	}
+	if($actual_uri ne $test->{uri}) {
+		print color('white', 'italic'),
+			"(redirect$redirect_ok: ", $actual_uri, ")  ",
+			color('reset');
 	}
 
 	if($test->{expect} &&
