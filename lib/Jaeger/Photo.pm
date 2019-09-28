@@ -501,9 +501,14 @@ sub _index {
 
 sub _url {
 	my $self = shift;
-
-	return $self->{url} = $Jaeger::Base::BaseURL .
-		"photo.cgi?round=$self->{round}&number=$self->{number}";
+	if($self->{uri}) {
+		my $baseurl = $Jaeger::Base::BaseURL;
+		$baseurl =~ s#/$##;
+		return $self->{url} = $baseurl . $self->{uri};
+	} else {
+		return $self->{url} = $Jaeger::Base::BaseURL .
+			"photo.cgi?round=$self->{round}&number=$self->{number}";
+	}
 }
 
 # If this photo does not have a longitude and latitude set, attempt

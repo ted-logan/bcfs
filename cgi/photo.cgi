@@ -78,12 +78,8 @@ if(my $round = $q->param('round')) {
 			if($status >= $page->status()) {
 				# Good. The photo exists, and the user can see
 				# it.
-				if($q->param('size')) {
-					$page->{size} = $q->param('size');
-				} elsif($page->native() > 1600) {
-					$page->{size} = '1600x1200';
-				}
-				$page->resize();
+				$page = new Jaeger::Redirect($page->url(),
+					Jaeger::Redirect::MOVED_PERMANENTLY);
 
 			} elsif($user) {
 				# The photo exists, but the logged-in user does
@@ -151,6 +147,35 @@ if(my $round = $q->param('round')) {
 	# New-style uri: Display photos on a specific date
 	my $date = "$1-$2-$3";
 	$page = new Jaeger::Photo::List::Date($date);
+
+} elsif($page = Jaeger::Photo->Select(uri => $ENV{REQUEST_URI})) {
+	# Cool, found a page
+	if($status >= $page->status()) {
+		# Good. The photo exists, and the user can see it.
+		if($q->param('size')) {
+			$page->{size} = $q->param('size');
+		} elsif($page->native() > 1600) {
+			$page->{size} = '1600x1200';
+		}
+		$page->resize();
+
+	} elsif($user) {
+		# The photo exists, but the logged-in user does not have
+		# permission to see the photo.  Redirect to the photo entry
+		# page.
+		print $q->redirect("/photo/");
+		exit;
+
+	} else {
+		# The photo exists, but the user is not logged in. Redirect to
+		# the login page in case the user has an account.
+		my $url = $page->url();
+		$url =~ s/([&?])/sprintf "%%%02x", ord $1/ge;
+		print $q->redirect("login.cgi?redirect=$url");
+		exit;
+	}
+
+# TODO also handle redirects
 
 } elsif($ENV{REQUEST_URI} eq '/photo' or $ENV{REQUEST_URI} =~ '/photo.cgi') {
 	# Redirect permanently to the new photo url, /photo/

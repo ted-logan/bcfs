@@ -263,13 +263,20 @@ my @tests = (
 	},
 	{
 		uri => "/photo.cgi?round=516&number=23",
+		redirect => "/photo/2018/07/06/spire-at-the-marin-county-civic-center",
 		success => 1,
 		expect => "Spire at the Marin County Civic Center",
 	},
 	{
 		uri => "/photo.cgi?round=300&number=18",
+		redirect => "/photo/2013/12/10/jaegers-office-view-with-snow",
 		success => 1,
 		expect => "/digitalpics/300/1600x1200/18.jpg",
+	},
+	{
+		uri => "/photo/2019/06/29/walking-along-english-bay-in-vancouver-2",
+		success => 1,
+		expect => "17:15:19 PDT Saturday 29 June 2019",
 	},
 	{
 		# Photo not found (in an existing round)
