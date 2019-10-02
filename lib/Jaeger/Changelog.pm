@@ -913,6 +913,29 @@ sub _html {
 	return $self->lf()->changelog(%params);
 }
 
+sub fetch_inline_photo_tag {
+	my $self = shift;
+	my $tag = shift;
+
+	my ($round) = $tag =~ /round="(\w+)"/;
+	my ($number) = $tag =~ /number="(\w+)"/;
+	my ($uri) = $tag =~ /uri="(.*?)"/;
+
+	my $photo;
+	if($round && $number) {
+		$photo = Jaeger::Photo->Select(
+			round => $round,
+			number => $number
+		);
+	} elsif($uri) {
+		$photo = Jaeger::Photo->Select(
+			uri => $uri
+		);
+	}
+
+	return $photo;
+}
+
 # Perform any last-minute text manipulations necessary to render the changelog
 # as html.
 sub content {
@@ -930,13 +953,7 @@ sub inline_photo {
 	my $self = shift;
 	my $tag = shift;
 
-	my ($round) = $tag =~ /round="(\w+)"/;
-	my ($number) = $tag =~ /number="(\w+)"/;
-
-	my $photo = Jaeger::Photo->Select(
-		round => $round,
-		number => $number
-	);
+	my $photo = $self->fetch_inline_photo_tag($tag);
 
 	if($photo) {
 		# Make sure an appropiate thumbnail exists
@@ -968,16 +985,7 @@ sub _image {
 	my $self = shift;
 
 	if($self->{content} =~ /(<photo .*?\/>)/) {
-		my $tag = $1;
-
-		my ($round) = $tag =~ /round="(\w+)"/;
-		my ($number) = $tag =~ /number="(\w+)"/;
-
-		return scalar Jaeger::Photo->Select(
-			round => $round,
-			number => $number
-		);
-		
+		return $self->fetch_inline_photo_tag($1);
 	}
 
 	return undef;
@@ -1004,21 +1012,16 @@ sub update_photo_xref {
 			next;
 		}
 
-		my ($round) = $tag =~ /round="(\w+)"/;
-		my ($number) = $tag =~ /number="(\w+)"/;
-
-		print "Looking up $round/$number\n";
-
-		my $photo = Jaeger::Photo->Select(
-			round => $round, number => $number);
+		my $photo = $self->fetch_inline_photo_tag($tag);
 
 		if(!defined($photo)) {
 			warn "Changelog ", $self->id(),
-				" references missing photo $round/$number\n";
+				" references missing photo $tag\n";
 		} else {
 			if($photos{$photo->id()}) {
 				warn "Changelog ", $self->id(),
-					" references photo $round/$number multiple times\n";
+					" references photo ", $photo->uri(),
+					" multiple times\n";
 			} else {
 				$photos{$photo->id()} = $photo;
 				# Make sure the photo is resized for the

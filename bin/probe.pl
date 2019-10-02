@@ -126,6 +126,12 @@ my @tests = (
 		expect => "2015 Hugo Awards",
 	},
 	{
+		# Confirm that inline photos are inlined
+		uri => "/changelog/2019/09/02/hail-columbia",
+		success => 1,
+		expect => "/photo/2019/09/02/apollo-f1-rocket-motor",
+	},
+	{
 		uri => "/changelog/2018/",
 		success => 1,
 		expect => "Hawaiian Volcano Week",
