@@ -18,4 +18,12 @@ my $latest = Newest Jaeger::Changelog;
 
 my $q = new CGI;
 
-print $q->redirect($latest->url());
+my $useragent = $q->user_agent();
+if($useragent =~ /googlebot/i) {
+	# If the user agent is Googlebot, redirect to the current year's index
+	# page
+	print $q->redirect($latest->index()->url());
+} else {
+	# Otherwise redirect everyone else to the latest changelog
+	print $q->redirect($latest->url());
+}
