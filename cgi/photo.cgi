@@ -16,6 +16,7 @@ use Jaeger::Photo;
 use Jaeger::User;
 use Jaeger::Slideshow;
 use Jaeger::Lookfeel;
+use Jaeger::PageRedirect;
 use Jaeger::Photo::Notfound;
 use Jaeger::Photo::Set;
 use Jaeger::Photo::Recent;
@@ -175,7 +176,11 @@ if(my $round = $q->param('round')) {
 		exit;
 	}
 
-# TODO also handle redirects
+} elsif(my $redirect = Jaeger::PageRedirect->Select(
+		uri => $ENV{REQUEST_URI})) {
+	$page = new Jaeger::Redirect(
+		$redirect->{redirect},
+		Jaeger::Redirect::MOVED_PERMANENTLY);
 
 } elsif($ENV{REQUEST_URI} eq '/photo' or $ENV{REQUEST_URI} =~ '/photo.cgi') {
 	# Redirect permanently to the new photo url, /photo/

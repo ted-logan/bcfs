@@ -285,6 +285,12 @@ my @tests = (
 		expect => "17:15:19 PDT Saturday 29 June 2019",
 	},
 	{
+		uri => "/photo/2019/09/14/kayaks-paddle-past-ben-ure-island",
+		redirect => "/photo/2019/09/14/kayaks-paddle-towards-yokeko-point",
+		success => 1,
+		expect => "Kayaks paddle towards Yokeko Point",
+	},
+	{
 		# Photo not found (in an existing round)
 		uri => "/photo.cgi?round=516&number=9999",
 		success => 0,
