@@ -1041,6 +1041,10 @@ sub update_photo_xref {
 		print "Found link referencing date: $1\n";
 		push @days, $1;
 	}
+	while($content =~ m("/photo/(\d\d\d\d)/(\d\d)/(\d\d)/")g) {
+		print "Found link referencing date: $1-$2-$3\n";
+		push @days, "$1-$2-$3";
+	}
 
 	foreach my $day (@days) {
 		# TODO note that this includes a user status query, which
