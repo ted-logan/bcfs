@@ -704,17 +704,9 @@ sub import_file {
 	if($header{date} ne $self->{key_date}) {
 		$self->{key_date} = $header{date};
 		$changed = 1;
-	} elsif(!$self->{key_date}) {
-		$self->{key_date} = $self->find_key_date();
 	}
-	
-	if(!$self->{uri} && $self->{title} && $self->{time_begin}) {
-		my $uri = $self->create_uri();
-		if($self->{uri} ne $uri) {
-			print "Calculated new uri: $uri\n";
-			$self->{uri} = $uri;
-			$changed = 1;
-		}
+	if(!$self->{key_date}) {
+		$self->{key_date} = $self->find_key_date();
 	}
 
 	if(exists $header{uri} && ($header{uri} ne $self->{uri})) {
@@ -732,6 +724,7 @@ sub import_file {
 		my $uri = $self->create_uri();
 		if($self->{uri} ne $uri) {
 			print "Calculated new uri: $uri\n";
+			$self->{uri} = $uri;
 			$changed = 1;
 		}
 	}
@@ -1014,7 +1007,7 @@ sub update_photo_xref {
 
 		my $photo = $self->fetch_inline_photo_tag($tag);
 
-		if(!defined($photo)) {
+		if(!defined($photo) || $photo->hidden()) {
 			warn "Changelog ", $self->id(),
 				" references missing photo $tag\n";
 		} else {
@@ -1035,7 +1028,9 @@ sub update_photo_xref {
 
 	my @days;
 
-	if(my $key_date = $self->find_key_date()) {
+	if($self->key_date()) {
+		push @days, $self->key_date();
+	} elsif(my $key_date = $self->find_key_date()) {
 		print "Found summary referencing date: $key_date\n";
 		push @days, $key_date;
 	}
