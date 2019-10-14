@@ -179,6 +179,8 @@ sub table {
 sub update {
 	my $self = shift;
 
+	my %options = @_;
+
 	if($self->{olduri}) {
 		print "Adding redirect from $self->{olduri} to $self->{uri}\n";
 		my $redirect = new Jaeger::PageRedirect();
@@ -186,6 +188,12 @@ sub update {
 		$redirect->{redirect} = $self->{uri};
 		$redirect->update();
 		$self->{olduri} = undef;
+	}
+
+	if($self->{key_date}) {
+		$self->{sort_date} = $self->{key_date};
+	} else {
+		$self->{sort_date} = $self->{time_begin};
 	}
 
 	# Update first, so we always have an id
@@ -220,7 +228,9 @@ sub update {
 		$self->{_tags} = $self->{tags};
 	}
 
-	$self->update_photo_xref();
+	unless($options{skip_photo}) {
+		$self->update_photo_xref();
+	}
 
 	return $rv;
 }
