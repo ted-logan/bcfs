@@ -42,7 +42,13 @@ if(@ARGV) {
 	if($arg =~ /^http/) {
 		$arg =~ s(^https?://.*?/)(/);
 		my $user = Jaeger::User->Select(login => 'jaeger');
-		$changelog = Jaeger::Changelog::Urimap($arg, $user);
+		do {
+			$changelog = Jaeger::Changelog::Urimap($arg, $user);
+			if(ref($changelog) eq 'Jaeger::Redirect') {
+				$arg = $changelog->{url};
+				print "Got redirect to $arg\n";
+			}
+		} while(ref($changelog) eq 'Jaeger::Redirect');
 		if($changelog) {
 			print "Found changelog with uri $arg\n";
 		} else {
