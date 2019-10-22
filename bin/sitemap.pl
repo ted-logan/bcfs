@@ -13,6 +13,7 @@ use lib "$ENV{BCFS}/lib";
 
 use Getopt::Long;
 use Jaeger::Changelog;
+use Jaeger::Photo;
 
 my $outdir = '';
 GetOptions('outdir=s' => \$outdir);
@@ -22,23 +23,31 @@ if($outdir) {
 		or die "Can't cd to $outdir: $!";
 }
 
-update_changelog_sitemap();
+update_sitemap(
+	"sitemap-changelog.xml",
+	Jaeger::Changelog->Prepare("status = 0 order by id")
+);
 
-# TODO(jaeger): Implement a sitemap for photos, after changing the photo url
-# scheme. 
+update_sitemap(
+	"sitemap-photo.xml",
+	Jaeger::Photo->Prepare(
+		"status = 0 and not hidden order by date, round, number")
+);
 
 exit;
 
-sub update_changelog_sitemap {
-	open SITEMAP, ">", "sitemap-changelog.xml"
-		or die "Can't write to sitemap-changelog.xml: $!";
+sub update_sitemap {
+	my $file = shift;
+	my $iter = shift;
+
+	open SITEMAP, ">", $file
+		or die "Can't write to $file: $!";
 
 	print SITEMAP <<HERE;
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 HERE
 
-	my $iter = Jaeger::Changelog->Prepare("status = 0 order by id");
 	while(my $changelog = $iter->next()) {
 		print SITEMAP "  <url>\n";
 		print SITEMAP "    <loc>", $changelog->url(), "</loc>\n";
