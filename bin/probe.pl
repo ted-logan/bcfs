@@ -291,6 +291,12 @@ my @tests = (
 		expect => "Kayaks paddle towards Yokeko Point",
 	},
 	{
+		# Photo was hidden
+		uri => "/photo.cgi?round=097&number=13",
+		success => 0,
+		expect => "Not found",
+	},
+	{
 		# Photo not found (in an existing round)
 		uri => "/photo.cgi?round=516&number=9999",
 		success => 0,

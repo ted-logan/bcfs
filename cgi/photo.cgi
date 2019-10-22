@@ -75,7 +75,7 @@ if(my $round = $q->param('round')) {
 			number => $number
 		);
 
-		if($page) {
+		if($page && !$page->hidden()) {
 			if($status >= $page->status()) {
 				# Good. The photo exists, and the user can see
 				# it.
