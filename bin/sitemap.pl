@@ -13,6 +13,7 @@ use lib "$ENV{BCFS}/lib";
 
 use Getopt::Long;
 use Jaeger::Changelog;
+use Jaeger::Comment;
 use Jaeger::Photo;
 
 my $outdir = '';
@@ -25,7 +26,8 @@ if($outdir) {
 
 update_sitemap(
 	"sitemap-changelog.xml",
-	Jaeger::Changelog->Prepare("status = 0 order by id")
+	Jaeger::Changelog->Prepare("status = 0 order by id"),
+	Jaeger::Comment->Prepare("status = 0 order by id"),
 );
 
 update_sitemap(
@@ -38,7 +40,7 @@ exit;
 
 sub update_sitemap {
 	my $file = shift;
-	my $iter = shift;
+	my @iter = @_;
 
 	open SITEMAP, ">", $file
 		or die "Can't write to $file: $!";
@@ -48,11 +50,14 @@ sub update_sitemap {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 HERE
 
-	while(my $changelog = $iter->next()) {
-		print SITEMAP "  <url>\n";
-		print SITEMAP "    <loc>", $changelog->url(), "</loc>\n";
-		print SITEMAP "    <changefreq>monthly</changefreq>\n";
-		print SITEMAP "  </url>\n";
+	foreach my $iter (@iter) {
+		while(my $changelog = $iter->next()) {
+			print SITEMAP "  <url>\n";
+			print SITEMAP "    <loc>", $changelog->url(),
+				"</loc>\n";
+			print SITEMAP "    <changefreq>monthly</changefreq>\n";
+			print SITEMAP "  </url>\n";
+		}
 	}
 
 	print SITEMAP <<HERE;
