@@ -13,6 +13,7 @@ use lib "$ENV{BCFS}/lib";
 
 use Getopt::Long;
 use Jaeger::Changelog;
+use Jaeger::Changelog::Series;
 use Jaeger::Comment;
 use Jaeger::Photo;
 
@@ -27,6 +28,7 @@ if($outdir) {
 update_sitemap(
 	"sitemap-changelog.xml",
 	Jaeger::Changelog->Prepare("status = 0 order by id"),
+	Jaeger::Changelog::Series->IterOverAll(),
 	Jaeger::Comment->Prepare("status = 0 order by id"),
 );
 

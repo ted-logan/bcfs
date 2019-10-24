@@ -18,6 +18,32 @@ sub table {
 	return 'changelog_series';
 }
 
+# Return an iterator to select all of the series visible by the current
+# logged-in user.
+#
+# This is a relatively expensive query, so it's not included in the serving
+# path; though we could imagine somehow caching the results of the query to
+# make it easier to manage.
+sub IterOverAll {
+	my $package = shift;
+
+	my $level;
+	if(my $user = Jaeger::User->Login()) {
+		$level = $user->{status};
+	} else {
+		$level = 0;
+	}
+
+	return $package->Prepare(
+		"join changelog_series_entry " .
+		"on changelog_series_entry.series_id = changelog_series.id " .
+		"join changelog " .
+		"on changelog.id = changelog_series_entry.changelog_id " .
+		"where status <= $level " .
+		"group by changelog_series.id " .
+		"order by changelog_series.id");
+}
+
 # Given a changelog object, return a list of the the series objects that
 # include the changelog, which may be empty
 sub new_by_changelog {
@@ -56,7 +82,8 @@ sub changelogs {
 sub _url {
 	my $self = shift;
 
-	return $self->{url} = "/changelog/series/" . $self->{id};
+	return $self->{url} = $Jaeger::Base::BaseURL . "changelog/series/" .
+		$self->{id};
 }
 
 sub _title {
