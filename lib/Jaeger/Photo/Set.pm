@@ -79,7 +79,8 @@ sub _title {
 sub _url {
 	my $self = shift;
 
-	return $self->{url} = "/photo.cgi?set=$self->{id}";
+	return $self->{url} = $Jaeger::Base::BaseURL .
+		"photo.cgi?set=$self->{id}";
 }
 
 # If this set has a beginning and ending date specified, look for new pictures

@@ -20,6 +20,7 @@ use Jaeger::Changelog::Series;
 use Jaeger::Changelog::Tag;
 use Jaeger::Comment;
 use Jaeger::Photo;
+use Jaeger::Photo::Set;
 
 my $outdir = '';
 GetOptions('outdir=s' => \$outdir);
@@ -41,7 +42,8 @@ update_sitemap(
 update_sitemap(
 	"sitemap-photo.xml",
 	Jaeger::Photo->Prepare(
-		"status = 0 and not hidden order by date, round, number")
+		"status = 0 and not hidden order by date, round, number"),
+	Jaeger::Photo::Set->Prepare("1=1 order by id"),
 );
 
 exit;
