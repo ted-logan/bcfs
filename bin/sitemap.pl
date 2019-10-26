@@ -9,10 +9,13 @@
 # Commentary:
 # https://blog.codinghorror.com/the-importance-of-sitemaps/
 
+use strict;
+
 use lib "$ENV{BCFS}/lib";
 
 use Getopt::Long;
 use Jaeger::Changelog;
+use Jaeger::Changelog::Browse;
 use Jaeger::Changelog::Series;
 use Jaeger::Comment;
 use Jaeger::Photo;
@@ -27,6 +30,7 @@ if($outdir) {
 
 update_sitemap(
 	"sitemap-changelog.xml",
+	Jaeger::Changelog::Browse->Prepare("status = 0 order by year"),
 	Jaeger::Changelog->Prepare("status = 0 order by id"),
 	Jaeger::Changelog::Series->IterOverAll(),
 	Jaeger::Comment->Prepare("status = 0 order by id"),

@@ -7,6 +7,13 @@ create table changelog (
 	content text
 );
 
+create view changelog_year as select
+	extract(year from sort_date) as year,
+	count(*) as count,
+	min(status) as status
+	from changelog
+	group by year;
+
 create table journal (
 	id serial primary key,
 	entrydate date not null,

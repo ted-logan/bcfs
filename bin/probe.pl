@@ -132,6 +132,12 @@ my @tests = (
 		expect => "/photo/2019/09/02/apollo-f1-rocket-motor",
 	},
 	{
+		uri => "/changelog/2003/",
+		success => 1,
+		expect => '<a href="https://.*.festing.org/changelog/2004/">2004</a>',
+		exclude => '<a href="https://.*.festing.org/changelog/2002/">2002</a>',
+	},
+	{
 		uri => "/changelog/2018/",
 		success => 1,
 		expect => "Hawaiian Volcano Week",

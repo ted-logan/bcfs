@@ -19,27 +19,40 @@ use Jaeger::User;
 
 @Jaeger::Changelog::Browse::Params = qw(id title time_begin time_end content);
 
+# This table is a view created from changelog that groups by year.
+sub table {
+	return 'changelog_year';
+}
+
 # provides a list of changelogs by year
 sub new {
 	my $package = shift;
+	my $self;
 
-	my $year = shift;
-	unless($year) {
-		$year = (localtime)[5] + 1900;
+	if(ref @_[0] eq 'HASH') {
+		# Object was selected from the database.
+		$self = $package->SUPER::new(@_);
+	} else {
+		# Create the object based on the year passed in. Verify that
+		# the year is actually valid.
+		my $year = shift;
+		unless($year) {
+			$year = (localtime)[5] + 1900;
+		}
+
+		my $next_year = $year + 1;
+		my $where = "time_begin >= '$year-01-01' and " .
+			"time_begin < '$next_year-01-01'";
+
+		unless(Count Jaeger::Changelog($where)) {
+			return undef;
+		}
+
+		$self = $package->SUPER::new();
+		$self->{year} = $year;
 	}
 
-	my $next_year = $year + 1;
-	my $where = "time_begin >= '$year-01-01' and " .
-		"time_begin < '$next_year-01-01'";
-
-	unless(Count Jaeger::Changelog($where)) {
-		return undef;
-	}
-
-	my $self = $package->SUPER::new();
-
-	$self->{title} = "Browse $year";
-	$self->{year} = $year;
+	$self->{title} = "Browse $self->{year}";
 
 	return $self;
 }
@@ -124,21 +137,15 @@ sub all_years {
 	} else {
 		$level = 0;
 	}
-
-	my $sql = "select extract(year from time_begin) from changelog " .
-		"where status <= $level " .
-		"group by date_part order by date_part";
-
-	my $sth = $self->dbh()->prepare($sql);
-	$sth->execute()
-		or warn "$sql;\n";
+	my $where = "status <= $level order by year";
 
 	my @years;
-	while(my @row = $sth->fetchrow_array()) {
-		if($row[0] == $self->{year}) {
-			push @years, "<b>$row[0]</b>";
+	foreach my $year (Jaeger::Changelog::Browse->Select($where)) {
+		if($year->{year} == $self->{year}) {
+			push @years, "<b>$year->{year}</b>";
 		} else {
-			push @years, "<a href=\"${Jaeger::Base::BaseURL}changelog/$row[0]/\">$row[0]</a>";
+			push @years, "<a href=\"" . $year->url() .
+				"\">$year->{year}</a>";
 		}
 	}
 
