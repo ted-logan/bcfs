@@ -17,6 +17,7 @@ use Getopt::Long;
 use Jaeger::Changelog;
 use Jaeger::Changelog::Browse;
 use Jaeger::Changelog::Series;
+use Jaeger::Changelog::Tag;
 use Jaeger::Comment;
 use Jaeger::Photo;
 
@@ -33,6 +34,7 @@ update_sitemap(
 	Jaeger::Changelog::Browse->Prepare("status = 0 order by year"),
 	Jaeger::Changelog->Prepare("status = 0 order by id"),
 	Jaeger::Changelog::Series->IterOverAll(),
+	Jaeger::Changelog::Tag->Prepare("status = 0 order by tag"),
 	Jaeger::Comment->Prepare("status = 0 order by id"),
 );
 

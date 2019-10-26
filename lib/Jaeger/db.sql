@@ -206,6 +206,15 @@ create table changelog_tag_map (
 create index changelog_tag_map_tag_index on changelog_tag_map (tag_id);
 create index changelog_tag_map_changelog_index on changelog_tag_map (changelog_id);
 
+create view changelog_tag_view as select
+	tag.name as tag,
+	min(status) as status,
+	count(*) as count
+	from tag
+	join changelog_tag_map on tag.id = changelog_tag_map.tag_id
+	join changelog on changelog.id = changelog_tag_map.changelog_id
+	group by tag.name;
+
 create table photo_xref_map (
 	photo_id	int4 references photo,
 	changelog_id	int4 references changelog,

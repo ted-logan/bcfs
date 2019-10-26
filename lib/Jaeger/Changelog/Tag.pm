@@ -12,22 +12,32 @@ use Jaeger::User;
 
 @Jaeger::Changelog::Tag::Sizes = qw(smaller small medium large larger x-large xx-large);
 
+sub table {
+	return 'changelog_tag_view';
+}
+
 # provides a list of changelogs by tag, or a list of changelog tags
 sub new {
 	my $package = shift;
+	my $self;
 
-	my $tag = shift;
+	if(ref $_[0] eq 'HASH') {
+		$self = $package->SUPER::new(@_);
+	} else {
+		my $tag = shift;
 
-	my $self = $package->SUPER::new();
+		$self = $package->SUPER::new();
 
-	if($tag) {
-		$self->{tag} = $tag;
+		if($tag) {
+			$self->{tag} = $tag;
 
-		# If no visible changelogs exist for this tag, return undef,
-		# which the Uri mapper will interpret as a 404.
-		my $changelog_by_tag = $self->changelogs_by_tag($self->{tag});
-		unless(@$changelog_by_tag) {
-			return undef;
+			# If no visible changelogs exist for this tag, return
+			# undef, which the Uri mapper will interpret as a 404.
+			my $changelog_by_tag =
+				$self->changelogs_by_tag($self->{tag});
+			unless(@$changelog_by_tag) {
+				return undef;
+			}
 		}
 	}
 
@@ -51,6 +61,7 @@ sub _all_tags {
 
 	my $level = $self->level();
 
+	# TODO consider replacing this with the changelog_tag_view view
 	my $sql = "select tag.name, count(*) from tag " .
 	    "join changelog_tag_map on tag.id = changelog_tag_map.tag_id " .
 	    "join changelog on changelog.id = changelog_tag_map.changelog_id " .
