@@ -75,7 +75,7 @@ sub _statusquery {
 sub _photos {
 	my $self = shift;
 
-	my $sql = "select id from photo_date where date = " .
+	my $sql = "select id from photo_date where unixdate = " .
 		$self->unixdate() .
 		" and " . $self->statusquery();
 
@@ -96,7 +96,7 @@ sub _title {
 sub _prev {
 	my $self = shift;
 
-	my $sql = "select max(date) from photo_date where date < " .
+	my $sql = "select max(unixdate) from photo_date where unixdate < " .
 		$self->unixdate() .
 		" and " . $self->statusquery();
 	my $sth = $self->{dbh}->prepare($sql);
@@ -115,7 +115,7 @@ sub _prev {
 sub _next {
 	my $self = shift;
 
-	my $sql = "select min(date) from photo_date where date > " .
+	my $sql = "select min(unixdate) from photo_date where unixdate > " .
 		$self->unixdate() .
 		" and " . $self->statusquery();
 	my $sth = $self->{dbh}->prepare($sql);

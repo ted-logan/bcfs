@@ -109,7 +109,9 @@ create table photo (
 
 create view photo_date as select
 	photo.id,
-	floor((date + ofst * 3600) / 86400) * 86400 as "date"
+	floor((date + ofst * 3600) / 86400) * 86400 as "date",
+	photo.status,
+	floor((date + ofst * 3600) / 86400) * 86400 as unixdate
 	from photo, timezone
 	where not photo.hidden and timezone_id = timezone.id and photo.date > 0;
 
