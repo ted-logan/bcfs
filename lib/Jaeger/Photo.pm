@@ -134,6 +134,16 @@ sub create_uri {
 
 	my $uri = "/photo/$date/$title";
 
+	# If this photo already has a uri, and the date and title are
+	# unchanged, then keep the old uri.
+	if($self->{uri}) {
+		my $olduri = $self->{uri};
+		$olduri =~ s/-\d+$//;
+		if($olduri eq $uri) {
+			return $self->{uri};
+		}
+	}
+
 	unless($all_uris) {
 		# Most of the time we want to load the list of uris from the
 		# database. Do this for the uris matching the base pattern
