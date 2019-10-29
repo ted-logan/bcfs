@@ -16,6 +16,7 @@ use Jaeger::Base;
 
 @Jaeger::Photo::Year::ISA = qw(Jaeger::Base);
 
+use Jaeger::Photo::List::Date;
 use Jaeger::Thumbnail qw(year_thumbnail);
 use Jaeger::User;
 
@@ -70,17 +71,12 @@ sub _statusquery {
 sub html {
 	my $self = shift;
 
+	my $where = "date_part('year', date) = $self->{year} and " .
+		$self->statusquery();
+
 	my %dates;
-
-	my $year_begin = timegm(0, 0, 0, 1, 0, $self->{year});
-	my $year_end = timegm(0, 0, 0, 1, 0, $self->{year} + 1);
-
-	my $sql = "select date, count(*) from photo_date where date >= $year_begin and date < $year_end and " . $self->statusquery() . " group by date";
-	my $sth = $self->{dbh}->prepare($sql);
-	$sth->execute() or warn "$sql;\n";
-	while(my ($date, $count) = $sth->fetchrow_array()) {
-		my $date_iso = strftime("%Y-%m-%d", gmtime($date));
-		$dates{$date_iso} = strftime("/photo/%Y/%m/%d/", gmtime($date));
+	foreach my $date (Jaeger::Photo::List::Date->Select($where)) {
+		$dates{$date->date()} = $date->url();
 	}
 
 	return $self->lf()->photo_year_list(

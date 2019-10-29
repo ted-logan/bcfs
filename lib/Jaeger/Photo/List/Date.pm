@@ -20,31 +20,39 @@ use Jaeger::User;
 
 @Jaeger::Photo::List::Date::ISA = qw(Jaeger::Photo::List);
 
+sub table {
+	return 'photo_date_view';
+}
+
 sub new {
 	my $package = shift;
+	my $self;
 
-	my $self = $package->SUPER::new();
-
-	my $date = shift;
-
-	if($date =~ /^\d\d\d\d-\d\d?-\d\d?$/) {
-		# ISO-format date
-		$self->{date} = $date;
-
-	} elsif($date =~ /^\d+$/) {
-		# time_t
-		$self->{unixdate} = $date;
-
-
-		# convert time_t into ISO date
-		my @date = (gmtime($date))[5, 4, 3];
-		$date[0] += 1900;
-		$date[1]++;
-		$self->{date} = sprintf '%04s-%02s-%02s', @date;
-
+	if(ref $_[0] eq 'HASH') {
+		$self = $package->SUPER::new(@_);
 	} else {
-		# invalid date
-		carp "Jaeger::Photo::List::Date->new(): Invalid date $date";
+		$self = $package->SUPER::new();
+
+		my $date = shift;
+
+		if($date =~ /^\d\d\d\d-\d\d?-\d\d?$/) {
+			# ISO-format date
+			$self->{date} = $date;
+
+		} elsif($date =~ /^\d+$/) {
+			# time_t
+			$self->{unixdate} = $date;
+
+			# convert time_t into ISO date
+			my @date = (gmtime($date))[5, 4, 3];
+			$date[0] += 1900;
+			$date[1]++;
+			$self->{date} = sprintf '%04s-%02s-%02s', @date;
+
+		} else {
+			# invalid date
+			carp "Jaeger::Photo::List::Date->new(): Invalid date $date";
+		}
 	}
 
 	return $self;
@@ -145,5 +153,5 @@ sub _url {
 	my $date = $self->{date};
 	$date =~ s/-/\//g;
 
-	return $self->{url} = "/photo/$date/";
+	return $self->{url} = $Jaeger::Base::BaseURL . "photo/$date/";
 }

@@ -109,11 +109,28 @@ create table photo (
 
 create view photo_date as select
 	photo.id,
-	floor((date + ofst * 3600) / 86400) * 86400 as "date",
-	photo.status,
-	floor((date + ofst * 3600) / 86400) * 86400 as unixdate
+	floor((date + ofst * 3600) / 86400) * 86400 as unixdate,
+	date 'epoch' + (date + ofst * 3600) * interval '1 second' as date,
+	photo.status
 	from photo, timezone
 	where not photo.hidden and timezone_id = timezone.id and photo.date > 0;
+grant select on photo_date to "www-data";
+
+create view photo_date_view as select
+	date(date_trunc('day', date)) as date,
+	min(status) as status,
+	count(*)
+	from photo_date
+	group by date(date_trunc('day', date));
+grant select on photo_date_view to "www-data";
+
+create view photo_year as select
+	date_part('year', date) as year,
+	min(status) as status,
+	count(*)
+	from photo_date
+	group by year;
+grant select on photo_year to "www-data";
 
 create table slideshow (
 	id		serial primary key,

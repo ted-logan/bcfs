@@ -363,15 +363,18 @@ my @tests = (
 	},
 	{
 		uri => "/photo/2018",
-		redirect => "/photo/2018/",
 		success => 1,
 		expect => "August 2018",
 	},
 	{
 		uri => "/photo/2017/",
-		redirect => "/photo/2017/",
 		success => 1,
 		expect => "/photo/2016/",
+	},
+	{
+		uri => "/photo/2016/",
+		success => 1,
+		expect => '<a href="(https://\w*.festing.org)?/photo/2016/10/24/">',
 	},
 );
 
