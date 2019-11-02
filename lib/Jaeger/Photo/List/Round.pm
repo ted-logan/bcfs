@@ -17,12 +17,21 @@ use Time::Local;
 
 @Jaeger::Photo::List::Round::ISA = qw(Jaeger::Photo::List);
 
+sub table {
+	return 'photo_round';
+}
+
 sub new {
 	my $package = shift;
+	my $self;
 
-	my $self = $package->SUPER::new();
+	if(ref $_[0] eq 'HASH') {
+		$self = $package->SUPER::new(@_);
+	} else {
+		$self = $package->SUPER::new();
 
-	$self->{round} = shift;
+		$self->{round} = shift;
+	}
 
 	return $self;
 }
@@ -62,7 +71,9 @@ sub _title {
 sub _prev {
 	my $self = shift;
 
-	my $sql = "select max(round) from photo where round < '$self->{round}'";
+	my $sql = "select max(round) from photo where round < " .
+		$self->dbh()->quote($self->{round}) . " and " .
+		$self->statusquery();
 	my $sth = $self->{dbh}->prepare($sql);
 	$sth->execute() or warn "$sql;\n";
 
@@ -79,7 +90,9 @@ sub _prev {
 sub _next {
 	my $self = shift;
 
-	my $sql = "select min(round) from photo where round > '$self->{round}'";
+	my $sql = "select min(round) from photo where round > " .
+		$self->dbh()->quote($self->{round}) . " and " .
+		$self->statusquery();
 	my $sth = $self->{dbh}->prepare($sql);
 	$sth->execute() or warn "$sql;\n";
 
@@ -96,5 +109,6 @@ sub _next {
 sub _url {
 	my $self = shift;
 
-	return $self->{url} = "photo.cgi?round=$self->{round}";
+	return $self->{url} = $Jaeger::Base::BaseURL .
+		"photo.cgi?round=$self->{round}";
 }

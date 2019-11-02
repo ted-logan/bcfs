@@ -132,6 +132,14 @@ create view photo_year as select
 	group by year;
 grant select on photo_year to "www-data";
 
+create view photo_round as select
+	round,
+	min(status) as status
+	from photo
+	where not hidden
+	group by round;
+grant select on photo_round to "www-data";
+
 create table slideshow (
 	id		serial primary key,
 	title		text not null,
