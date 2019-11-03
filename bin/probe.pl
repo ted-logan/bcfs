@@ -132,6 +132,12 @@ my @tests = (
 		expect => "/photo/2019/09/02/apollo-f1-rocket-motor",
 	},
 	{
+		uri => "/changelog/1999/",
+		success => 0,
+		expect => 'Not found',
+		exclude => 'Defiant, Yukon',
+	},
+	{
 		uri => "/changelog/2003/",
 		success => 1,
 		expect => 'Pikmin',
