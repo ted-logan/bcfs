@@ -352,6 +352,12 @@ my @tests = (
 		exclude => "Shanghai bottle opener",
 	},
 	{
+		uri => "/photo/2000/07/02/",
+		success => 0,
+		expect => "Not found",
+		exclude => "still life",
+	},
+	{
 		uri => "/photo/2019/08/21/",
 		success => 1,
 		expect => "Rain on Hanbury Lane",

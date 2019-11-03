@@ -15,6 +15,7 @@ use strict;
 use Carp;
 use Time::Local;
 
+use Jaeger::Photo::Notfound;
 use Jaeger::Photo;
 use Jaeger::User;
 
@@ -52,6 +53,12 @@ sub new {
 		} else {
 			# invalid date
 			carp "Jaeger::Photo::List::Date->new(): Invalid date $date";
+		}
+
+		my $photos = $self->photos();
+		unless(@$photos) {
+			# No visible photos for this date.
+			return new Jaeger::Photo::Notfound;
 		}
 	}
 
