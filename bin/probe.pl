@@ -134,6 +134,12 @@ my @tests = (
 	{
 		uri => "/changelog/2003/",
 		success => 1,
+		expect => 'Pikmin',
+		exclude => '/changelog/2002/',
+	},
+	{
+		uri => "/changelog/2005/",
+		success => 1,
 		expect => '<a href="https://.*.festing.org/changelog/2004/">2004</a>',
 		exclude => '<a href="https://.*.festing.org/changelog/2002/">2002</a>',
 	},

@@ -40,16 +40,17 @@ sub new {
 			$year = (localtime)[5] + 1900;
 		}
 
+		$self = $package->SUPER::new();
+		$self->{year} = $year;
+
 		my $next_year = $year + 1;
 		my $where = "time_begin >= '$year-01-01' and " .
-			"time_begin < '$next_year-01-01'";
+			"time_begin < '$next_year-01-01' and " .
+			$self->statusquery();
 
 		unless(Count Jaeger::Changelog($where)) {
 			return undef;
 		}
-
-		$self = $package->SUPER::new();
-		$self->{year} = $year;
 	}
 
 	$self->{title} = "Browse $self->{year}";
@@ -57,11 +58,8 @@ sub new {
 	return $self;
 }
 
-sub changelogs_by_year {
+sub statusquery {
 	my $self = shift;
-
-	my $year = shift;
-	my $next_year = $year + 1;
 
 	my $level;
 	if(my $user = Jaeger::User->Login()) {
@@ -70,10 +68,19 @@ sub changelogs_by_year {
 		$level = 0;
 	}
 
+	return $self->{statusquery} = "status <= $level";
+}
+
+sub changelogs_by_year {
+	my $self = shift;
+
+	my $year = shift;
+	my $next_year = $year + 1;
+
 	return Jaeger::Changelog->Select(
-		"status <= $level and " .
 		"time_begin>='$year-01-01' and time_begin<'$next_year-01-01' ".
-		'order by time_begin asc'
+		"and " . $self->statusquery() .
+		' order by time_begin asc'
 	);
 }
 
