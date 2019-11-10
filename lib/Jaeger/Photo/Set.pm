@@ -96,9 +96,9 @@ sub auto_update_set {
 	# the photo's native time zone.
 	my $sql = "insert into photo_set_map " .
 		"select $self->{id}, id from photo_date " .
-		"where date >= extract(epoch from timestamp '$self->{date_begin}') " .
-		"and date <= extract(epoch from timestamp '$self->{date_end}') " .
-		"and id not in (select photo_id from photo_set_map where photo_set_id = $self->{id})";
+		"where date >= " . $self->dbh()->quote($self->{date_begin}) .
+		" and date <= " . $self->dbh()->quote($self->{date_end}) .
+		" and id not in (select photo_id from photo_set_map where photo_set_id = $self->{id})";
 
 	warn "About to update photo set $self->{id}: $self->{date_begin} -- $self->{date_end}\n";
 
