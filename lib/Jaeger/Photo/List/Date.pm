@@ -90,8 +90,8 @@ sub _statusquery {
 sub _photos {
 	my $self = shift;
 
-	my $sql = "select id from photo_date where unixdate = " .
-		$self->unixdate() .
+	my $sql = "select id from photo_date where date_trunc('day', date) = " .
+		$self->dbh()->quote($self->date()) .
 		" and " . $self->statusquery();
 
 	return $self->{photos} =

@@ -309,6 +309,12 @@ my @tests = (
 		expect => "Kayaks paddle towards Yokeko Point",
 	},
 	{
+		uri => "/photo/2019/10/31/julian-and-pikachu-dressed-up-for-halloween",
+		success => 1,
+		expect => '<a href="(https://\w*.festing.org)?/photo/2019/10/31/">Photos on 2019-10-31</a>',
+		exclude => "Not found",
+	},
+	{
 		# Photo was hidden
 		uri => "/photo.cgi?round=097&number=13",
 		success => 0,
