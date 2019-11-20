@@ -91,6 +91,7 @@ HTML
 
 	my $where = "id in " .
 		"(select id from ${name}_photo_month where month = '$month') ".
+		"and status = 0 " .
 		"order by date desc";
 	my @photos = Jaeger::Photo->Select($where);
 
