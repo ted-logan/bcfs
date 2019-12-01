@@ -494,19 +494,21 @@ sub _statusquery {
 sub _prev {
 	my $self = shift;
 
-	my $statusquery = $self->statusquery();
-	$self->{prev} = $self->Select("date < $self->{date} and $statusquery order by date desc limit 1");
+	my $where = "rowkey < " . $self->dbh()->quote($self->rowkey()) .
+		" and " . $self->statusquery() .
+		" order by rowkey desc limit 1";
 
-	return $self->{prev};
+	return $self->{prev} = $self->Select($where);
 }
 
 sub _next {
 	my $self = shift;
 
-	my $statusquery = $self->statusquery();
-	$self->{next} = $self->Select("date > $self->{date} and $statusquery order by date limit 1");
+	my $where = "rowkey > " . $self->dbh()->quote($self->rowkey()) .
+		" and " . $self->statusquery() .
+		" order by rowkey asc limit 1";
 
-	return $self->{next};
+	return $self->{next} = $self->Select($where);
 }
 
 sub _index {
