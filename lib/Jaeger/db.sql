@@ -104,7 +104,12 @@ create table photo (
 	timezone_id	int4 references timezone,
 	location_id	int4 references location,
 	hidden		boolean not null default false,
-	description	text
+	description	text,
+	latitude	float,
+	longitude	float,
+	mtime		timestamp,
+	status		int4 not null default 0,
+	uri		text
 );
 
 create view photo_date as select
