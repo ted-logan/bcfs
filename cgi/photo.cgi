@@ -17,6 +17,7 @@ use Jaeger::User;
 use Jaeger::Slideshow;
 use Jaeger::Lookfeel;
 use Jaeger::PageRedirect;
+use Jaeger::Photo::List::Month;
 use Jaeger::Photo::Notfound;
 use Jaeger::Photo::Set;
 use Jaeger::Photo::Recent;
@@ -143,6 +144,11 @@ if(my $round = $q->param('round')) {
 } elsif($ENV{REQUEST_URI} =~ m(^/photo/(\d\d\d\d)/$)) {
 	# New-style uri: Display a thumbnail for a specific year
 	$page = new Jaeger::Photo::Year($1);
+
+} elsif($ENV{REQUEST_URI} =~ m(^/photo/(\d\d\d\d)/(\d\d)/?$)) {
+	# Display photos from a specific month
+	my $date = "$1-$2";
+	$page = new Jaeger::Photo::List::Month($date);
 
 } elsif($ENV{REQUEST_URI} =~ m(^/photo/(\d\d\d\d)/(\d\d)/(\d\d)/?$)) {
 	# New-style uri: Display photos on a specific date

@@ -124,6 +124,14 @@ create view photo_date_view as select
 	group by date(date_trunc('day', date));
 grant select on photo_date_view to "www-data";
 
+create view photo_month as select
+	date(date_trunc('month', date)) as month,
+	min(status) as status,
+	count(*)
+	from photo_date
+	group by date(date_trunc('month', date));
+grant select on photo_month to "www-data";
+
 create view photo_year as select
 	date_part('year', date) as year,
 	min(status) as status,
