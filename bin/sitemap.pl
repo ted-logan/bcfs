@@ -22,6 +22,7 @@ use Jaeger::Comment;
 use Jaeger::Photo;
 use Jaeger::Photo::Set;
 use Jaeger::Photo::List::Date;
+use Jaeger::Photo::List::Month;
 use Jaeger::Photo::List::Round;
 
 my $outdir = '';
@@ -44,6 +45,7 @@ update_sitemap(
 update_sitemap(
 	"sitemap-photo.xml",
 	Jaeger::Photo::List::Date->Prepare("status = 0 order by date"),
+	Jaeger::Photo::List::Month->Prepare("status = 0 order by month"),
 	Jaeger::Photo::List::Round->Prepare("status = 0 order by round"),
 	Jaeger::Photo->Prepare(
 		"status = 0 and not hidden order by date, round, number"),
