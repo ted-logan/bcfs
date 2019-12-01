@@ -17,6 +17,7 @@ use Time::Local;
 
 use Jaeger::Photo::Notfound;
 use Jaeger::Photo;
+use Jaeger::Photo::List::Month;
 use Jaeger::User;
 
 @Jaeger::Photo::List::Date::ISA = qw(Jaeger::Photo::List);
@@ -149,9 +150,7 @@ sub _next {
 sub _index {
 	my $self = shift;
 
-	my $year = (split /-/, $self->{date})[0];
-
-	return $self->{index} = Jaeger::Photo::Year->new($year);
+	return $self->{index} = Jaeger::Photo::List::Month->new($self->{date});
 }
 
 sub _url {
