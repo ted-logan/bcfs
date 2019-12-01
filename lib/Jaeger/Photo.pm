@@ -137,9 +137,8 @@ sub create_uri {
 	# If this photo already has a uri, and the date and title are
 	# unchanged, then keep the old uri.
 	if($self->{uri}) {
-		my $olduri = $self->{uri};
-		$olduri =~ s/-\d+$//;
-		if($olduri eq $uri) {
+		my $prefix = substr($self->{uri}, 0, length($uri));
+		if($prefix eq $uri) {
 			return $self->{uri};
 		}
 	}
