@@ -109,7 +109,8 @@ create table photo (
 	longitude	float,
 	mtime		timestamp,
 	status		int4 not null default 0,
-	uri		text
+	uri		text,
+	rowkey		text not null unique
 );
 
 create view photo_date as select

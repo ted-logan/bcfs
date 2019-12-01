@@ -105,6 +105,8 @@ sub update {
 		$self->{status} = 0;
 	}
 
+	$self->{rowkey} = $self->create_rowkey();
+
 	$self->SUPER::update();
 }
 
@@ -163,6 +165,23 @@ sub create_uri {
 	$all_uris->{$uri}++;
 
 	return $uri;
+}
+
+# The rowkey is a string that uniquely defines the proper sort ordering for the
+# photos. It is intended to be stored in an indexed column in the database to
+# make it easy to look up the sort ordering, without constructing complicated
+# sort queries to handle cases where there are multiple photos with the same
+# date, or a photo has no date at all. Note that it is not literally the row
+# key of the database, since the current implementation uses Postgresql not
+# Bigtable.
+sub create_rowkey {
+	my $self = shift;
+
+	my $date = POSIX::strftime("%Y-%m-%d-%H%M%S", gmtime($self->{date}));
+
+	my $rowkey = "$date/$self->{round}/$self->{number}";
+
+	return $rowkey;
 }
 
 # returns a Postgres-compatible date
