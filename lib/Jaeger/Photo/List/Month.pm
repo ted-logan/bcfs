@@ -74,7 +74,7 @@ sub _photos {
 		" and " . $self->statusquery();
 
 	return $self->{photos} =
-		[Jaeger::Photo->Select("id in ($sql) order by date")];
+		[Jaeger::Photo->Select("id in ($sql) order by rowkey")];
 }
 
 #
