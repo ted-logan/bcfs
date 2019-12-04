@@ -8,6 +8,8 @@ use strict;
 die "\$BCFS must be set!\n" unless $ENV{BCFS};
 
 use lib "$ENV{BCFS}/lib";
+use File::Copy;
+use File::Path qw(make_path);
 use Jaeger::Photo;
 use Jaeger::Photo::Set;
 use Jaeger::User;
@@ -20,7 +22,7 @@ foreach my $set (Jaeger::Photo::Set->Select()) {
 	printf "%d: %s (%s)\n", $set->id(), $set->name(), $dir;
 
 	unless(-d $dir) {
-		mkdir $dir;
+		make_path($dir);
 	}
 
 	my %old = do {
@@ -39,18 +41,15 @@ foreach my $set (Jaeger::Photo::Set->Select()) {
 		$i++;
 		next if $photo->{hidden};
 
-		my $name = lc $photo->description();
-		$name =~ s/'//g;
-		$name =~ s/^\W+//;
-		$name =~ s/\W+$//;
-		$name =~ s/\W+/_/g;
+		my $name = Jaeger::Uri::MakeUriFromTitle(
+			$photo->description());
 
 		my $file = sprintf "%04d-%s_%s-%s.jpg",
 			$i, $photo->{round}, $photo->{number}, $name;
 		print "$file ($photo->{description})\n";
 		unless(-f "$dir/$file") {
-			link($photo->file_crop(), "$dir/$file")
-				or warn "Can't create link to ",
+			copy($photo->file_crop(), "$dir/$file")
+				or warn "Can't copy ",
 					$photo->{round}, "_",
 					$photo->{number}, ": $!\n";
 			$new++;
