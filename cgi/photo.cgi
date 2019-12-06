@@ -111,6 +111,9 @@ if(my $round = $q->param('round')) {
 		if(@{$page->photos()} == 0) {
 			# No photos found for this round
 			$page = new Jaeger::Photo::Notfound;
+		} elsif($ENV{REQUEST_URI} !~ m(^/photo\.cgi)) {
+			$page = new Jaeger::Redirect($page->url(),
+				Jaeger::Redirect::MOVED_PERMANENTLY);
 		}
 	}
 
