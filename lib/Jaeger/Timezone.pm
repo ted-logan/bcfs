@@ -13,6 +13,8 @@ package	Jaeger::Timezone;
 
 use strict;
 
+use POSIX;
+
 use Jaeger::Base;
 
 @Jaeger::Timezone::ISA = qw(Jaeger::Base);
@@ -20,9 +22,6 @@ use Jaeger::Base;
 sub table {
 	return 'timezone';
 }
-
-@Jaeger::Timezone::Months = qw(January February March April May June July August September October November December);
-@Jaeger::Timezone::Weekdays = qw(Sunday Monday Tuesday Wednesday Thursday Friday Saturday);
 
 # formats the given date (epoch seconds) according to the time zone
 sub format {
@@ -41,20 +40,10 @@ sub format {
 
 	# if the time is precisely midnight, don't display it
 	if(($time % 86400) == 0) {
-		return sprintf "%s %02d %s %04d",
-			$Jaeger::Timezone::Weekdays[$date[6]],  # weekday
-			$date[3],                               # day of month
-			$Jaeger::Timezone::Months[$date[4]],    # month
-			$date[5] + 1900;                        # year
+		# eg "Tuesday 15 October 2019"
+		return POSIX::strftime("%A %d %B %Y", @date);
 	}
 
-	# Perhaps I should just use strftime() instead of this mess.
-
-	return sprintf "%02d:%02d:%02d %s %s %02d %s %04d",
-		$date[2], $date[1], $date[0],		# time
-		$self->{name},				# time zone
-		$Jaeger::Timezone::Weekdays[$date[6]],	# weekday
-		$date[3],				# day of month
-		$Jaeger::Timezone::Months[$date[4]],	# month
-		$date[5] + 1900;			# year
+	# eg "19:45:44 PST Monday 09 December 2019"
+	return POSIX::strftime("%T $self->{name} %A %d %B %Y", @date);
 }
