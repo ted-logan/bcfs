@@ -41,12 +41,11 @@ sub format {
 
 	# if the time is precisely midnight, don't display it
 	if(($time % 86400) == 0) {
-		return sprintf "%s %02d %s %04d %s",
+		return sprintf "%s %02d %s %04d",
 			$Jaeger::Timezone::Weekdays[$date[6]],  # weekday
 			$date[3],                               # day of month
 			$Jaeger::Timezone::Months[$date[4]],    # month
-			$date[5] + 1900,                        # year
-			$self->{name};                          # time zone
+			$date[5] + 1900;                        # year
 	}
 
 	# Perhaps I should just use strftime() instead of this mess.
