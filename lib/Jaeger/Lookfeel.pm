@@ -485,6 +485,13 @@ sub _photo_main {
 			$obj->round() . "/$size/" . $obj->number() . '.jpg';
 	}
 
+	if(Jaeger::User->Login()) {
+		$params{loginout} = qq'<a href="/logout.cgi">Log out</a>';
+	} else {
+		$params{loginout} = qq'<a href="/login.cgi?redirect=' .
+			$obj->url() . '">Log in</a>';
+	}
+
 	# set human-readable navigation links
 	$params{navlinks} = $self->navlinks(
 		prev => $obj->prev(),
