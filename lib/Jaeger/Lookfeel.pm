@@ -1165,6 +1165,10 @@ sub _photo_list {
 	$params{description} =~ s/</&lt;/g;
 	$params{description} =~ s/>/&gt;/g;
 
+	unless($params{description}) {
+		$params{description} = "&nbsp;";
+	}
+
 	if(defined($params{longitude}) && defined($params{latitude})) {
 		$params{location} = $self->photo_coordinates(
 			longitude => $params{longitude},
