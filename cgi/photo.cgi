@@ -18,6 +18,7 @@ use Jaeger::Slideshow;
 use Jaeger::Lookfeel;
 use Jaeger::PageRedirect;
 use Jaeger::Photo::List::Month;
+use Jaeger::Photo::Login;
 use Jaeger::Photo::Notfound;
 use Jaeger::Photo::Set;
 use Jaeger::Photo::Recent;
@@ -92,12 +93,9 @@ if(my $round = $q->param('round')) {
 
 			} else {
 				# The photo exists, but the user is not logged
-				# in. Redirect to the login page in case the
-				# user has an account.
-				my $url = $page->url();
-				$url =~ s/([&?])/sprintf "%%%02x", ord $1/ge;
-				print $q->redirect("login.cgi?redirect=$url");
-				exit;
+				# in. Show a login page, which will redirect
+				# back here if successful.
+				$page = new Jaeger::Photo::Login($page);
 			}
 
 		} else {
@@ -177,12 +175,9 @@ if(my $round = $q->param('round')) {
 		exit;
 
 	} else {
-		# The photo exists, but the user is not logged in. Redirect to
-		# the login page in case the user has an account.
-		my $url = $page->url();
-		$url =~ s/([&?])/sprintf "%%%02x", ord $1/ge;
-		print $q->redirect("login.cgi?redirect=$url");
-		exit;
+		# The photo exists, but the user is not logged in. Show a login
+		# page, which will redirect back here if successful.
+		$page = new Jaeger::Photo::Login($page);
 	}
 
 } elsif(my $redirect = Jaeger::PageRedirect->Select(

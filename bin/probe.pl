@@ -335,9 +335,16 @@ my @tests = (
 	{
 		# Elite users only photo
 		uri => "/photo.cgi?round=519&number=31",
-		success => 1,
+		success => 0,
 		expect => "Password",
 		exclude => "Shanghai bottle opener",
+	},
+	{
+		# Logged-in users only photo
+		uri => "/photo/2019/11/08/team-2-exiting-the-crystal-dome",
+		success => 0,
+		expect => "Password",
+		exclude => "Crystal Dome",
 	},
 	{
 		uri => "/photo.cgi?round=516",
