@@ -1176,6 +1176,14 @@ sub _photo_list {
 		$params{description} = "&nbsp;";
 	}
 
+	if($params{status} > 0) {
+		$params{description} .=
+			" (" .
+			$Jaeger::Changelog::Status{$params{status}} .
+			")";
+		$params{hiddencolor} = "background-color: #113;";
+	}
+
 	if(defined($params{longitude}) && defined($params{latitude})) {
 		$params{location} = $self->photo_coordinates(
 			longitude => $params{longitude},

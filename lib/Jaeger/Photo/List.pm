@@ -48,6 +48,7 @@ sub html {
 			url => $photo->url(),
 			thumbnail => "/digitalpics/$photo->{round}/$photo->{size}/$photo->{number}.jpg",
 			description => $photo->description(),
+			status => $photo->status(),
 			date => $photo->date_format(),
 			latitude => $photo->latitude(),
 			longitude => $photo->longitude(),
