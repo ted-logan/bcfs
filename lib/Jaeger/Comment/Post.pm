@@ -14,6 +14,7 @@ use strict;
 
 use Jaeger::Base;
 use Jaeger::Lookfeel;
+use Jaeger::Redirect;
 
 use Carp;
 
@@ -38,7 +39,7 @@ sub new {
 	$self->html();
 
 	if($self->{redirect}) {
-		return $self->{redirect};
+		return new Jaeger::Redirect($self->{redirect});
 	}
 
 	return $self;
