@@ -61,7 +61,7 @@ $page = new Jaeger::Base;
 $page->{title} = 'Log In';
 $page->{html} = $lf->login(
 	message => $message,
-	redirect => $q->param('redirect'),
+	redirect => scalar $q->param('redirect'),
 );
 
 print "content-type: text/html; charset=UTF-8\n\n";

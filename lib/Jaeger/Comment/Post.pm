@@ -32,7 +32,7 @@ sub new {
 
 	if($q->param('response_to_id')) {
 		$self->{comment} = Jaeger::Comment->new_id(
-			$q->param('response_to_id')
+			scalar $q->param('response_to_id')
 		);
 	}
 
@@ -70,7 +70,7 @@ sub _html {
 		$comment->{status} = $self->query()->param('status');
 		$comment->{body} = Jaeger::Comment::Post->Allowed(
 			Jaeger::Comment::Post->Unescape(
-				$self->query()->param('body')
+				scalar $self->query()->param('body')
 			)
 		);
 
@@ -85,16 +85,18 @@ sub _html {
 	} elsif($go eq 'Preview') {
 		# preview the comment
 		my $body = Jaeger::Comment::Post->Allowed(
-			$self->query()->param('body')
+			scalar $self->query()->param('body')
 		);
 
+		my $status = $self->query()->param('status');
+
 		return $self->{html} = $reply_to->html() . $self->lf()->comment_preview(
-			uri => $ENV{REQUEST_URI} . "#preview",
+			uri => $ENV{REQUEST_URI},
 			changelog_id => $self->{changelog}->id(),
 			response_to_id => $self->{comment} ? $self->{comment}->id() : "",
 			title => $title,
 			body => $body,
-			status => $self->query()->param('status'),
+			status => $status,
 		) . $self->lf()->comment_edit(
 			uri =>  $ENV{REQUEST_URI} . "#preview",
 			changelog_id => $self->{changelog}->id(),
@@ -102,7 +104,7 @@ sub _html {
 			header => $self->title(),
 			title => $title,
 			body => $body,
-			visibility => $self->visibility($self->query()->param('status')),
+			visibility => $self->visibility($status),
 		);
 		
 	} else {
