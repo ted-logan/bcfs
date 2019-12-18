@@ -17,6 +17,7 @@ use Jaeger::Comment::Post;
 use Jaeger::Changelog::Browse;
 use Jaeger::Changelog::Series;
 use Jaeger::Changelog::Tag;
+use Jaeger::Login;
 use Jaeger::Notfound;
 use Jaeger::PageRedirect;
 use Jaeger::Photo;
@@ -63,8 +64,8 @@ sub Urimap {
 				$replyto->uri() . "/reply",
 				Jaeger::Redirect::MOVED_PERMANENTLY);
 		} else {
-			$changelog = new Jaeger::Redirect(
-				"/login.cgi?redirect=" . $replyto->uri() . "/reply");
+			$changelog = new Jaeger::Login(
+				$replyto->uri() . "/reply");
 		}
 
 	} elsif($uri =~ m#/changelog/(\d+)\.html#) {
@@ -88,9 +89,9 @@ sub Urimap {
 					$replyto->changelog(), $replyto
 				);
 			} else {
-				# Redirect to the login page
-				$changelog = new Jaeger::Redirect(
-					"/login.cgi?redirect=/changelog/comment/$1.html/reply");
+				# Show a login page instead
+				$changelog = new Jaeger::Login(
+					"/changelog/comment/$1.html/reply");
 			}
 		}
 
@@ -136,9 +137,9 @@ sub Urimap {
 			if($user) {
 				$changelog = new Jaeger::Comment::Post($replyto);
 			} else {
-				# Redirect to the login page
-				$changelog = new Jaeger::Redirect(
-					"/login.cgi?redirect=" . $replyto->uri() . "/reply");
+				# Show a login page instead
+				$changelog = new Jaeger::Login(
+					$replyto->uri() . "/reply");
 			}
 		}
 
@@ -164,9 +165,8 @@ sub Urimap {
 	my $level = $user ? $user->{status} : 0;
 
 	if(ref($changelog) && $changelog->{status} > $level) {
-		# No access -- redirect to login page
-		$changelog = new Jaeger::Redirect(
-			"/login.cgi?redirect=" . $changelog->url());
+		# No access -- show a login page instead
+		$changelog = new Jaeger::Login($changelog->url());
 	}
 
 	return $changelog;

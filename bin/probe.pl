@@ -81,26 +81,26 @@ my @tests = (
 	{
 		# Post a reply to a changelog
 		uri => "/changelog/1807.html/reply",
-		success => 1,
+		success => 0,
 		expect => "Password",
 	},
 	{
 		# Post a reply to a changelog, human-readable url
 		uri => "/changelog/2019/07/25/victoria-clipper/reply",
-		success => 1,
+		success => 0,
 		expect => "Password",
 	},
 	{
 		# Changelog only visible to logged-in users
 		uri => '/changelog/1768.html',
-		success => 1,
+		success => 0,
 		expect => "Password",
 		exclude => "Geordi LaForge",
 	},
 	{
 		# Changelog only visible to logged-in users, human-readable url
 		uri => '/changelog/2019/03/24/rain',
-		success => 1,
+		success => 0,
 		expect => "Password",
 		exclude => "citation needed",
 	},
@@ -252,12 +252,12 @@ my @tests = (
 	},
 	{
 		uri => "/changelog/comment/185.html/reply",
-		success => 1,
+		success => 0,
 		expect => "Password",
 	},
 	{
 		uri => "/changelog/comment/846.html",
-		success => 1,
+		success => 0,
 		expect => "Password",
 		exclude => "Congrats",
 	},
