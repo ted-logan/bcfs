@@ -57,11 +57,18 @@ if(($login && $password) || $user) {
 my $page;
 
 # Show the login dialog
+my $redirect = $q->param('redirect');
+unless($redirect) {
+	if(substr($ENV{HTTP_REFERER}, 0, length($Jaeger::Base::BaseURL)) eq
+		$Jaeger::Base::BaseURL) {
+		$redirect = $ENV{HTTP_REFERER};
+	}
+}
 $page = new Jaeger::Base;
 $page->{title} = 'Log In';
 $page->{html} = $lf->login(
 	message => $message,
-	redirect => scalar $q->param('redirect'),
+	redirect => $redirect,
 );
 
 print "content-type: text/html; charset=UTF-8\n\n";
