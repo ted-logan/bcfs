@@ -46,8 +46,8 @@ foreach my $set (Jaeger::Photo::Set->Select()) {
 
 		my $file = sprintf "%04d-%s_%s-%s.jpg",
 			$i, $photo->{round}, $photo->{number}, $name;
-		print "$file ($photo->{description})\n";
 		unless(-f "$dir/$file") {
+			print "$file ($photo->{description})\n";
 			copy($photo->file_crop(), "$dir/$file")
 				or warn "Can't copy ",
 					$photo->{round}, "_",
