@@ -74,7 +74,7 @@ sub _prev {
 	my $sql = "select max(round) from photo where round < " .
 		$self->dbh()->quote($self->{round}) . " and " .
 		$self->statusquery();
-	my $sth = $self->{dbh}->prepare($sql);
+	my $sth = $self->dbh()->prepare($sql);
 	$sth->execute() or warn "$sql;\n";
 
 	my ($prev) = $sth->fetchrow_array();
@@ -93,7 +93,7 @@ sub _next {
 	my $sql = "select min(round) from photo where round > " .
 		$self->dbh()->quote($self->{round}) . " and " .
 		$self->statusquery();
-	my $sth = $self->{dbh}->prepare($sql);
+	my $sth = $self->dbh()->prepare($sql);
 	$sth->execute() or warn "$sql;\n";
 
 	my ($next) = $sth->fetchrow_array();

@@ -43,7 +43,7 @@ sub years {
 	my @years;
 
 	my $sql = "select year from photo_year";
-	my $sth = $self->{dbh}->prepare($sql);
+	my $sth = $self->dbh()->prepare($sql);
 	$sth->execute() or warn "$sql;\n";
 	while(my ($year) = $sth->fetchrow_array()) {
 		push @years, $year;

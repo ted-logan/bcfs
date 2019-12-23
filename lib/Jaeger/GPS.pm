@@ -46,7 +46,7 @@ sub update {
 
 	# don't print an error when last_insert_id can't find the sequence on a
 	# table.
-	local $self->{dbh}->{PrintError};
+	local $self->dbh()->{PrintError};
 	$self->SUPER::update();
 }
 

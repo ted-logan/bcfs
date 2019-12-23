@@ -64,10 +64,10 @@ sub insert {
 	}
 
 	my $sql = 'insert into mileage values (' .
-		join(', ', map {$self->{dbh}->quote($params{$_})}
+		join(', ', map {$self->dbh()->quote($params{$_})}
 			@Jaeger::Mileage::Params) . ')';
 
-	$self->{dbh}->do($sql);
+	$self->dbh()->do($sql);
 
 	return 1;
 }
@@ -91,7 +91,7 @@ sub _html {
 
 		my $sql = "select * from mileage where vehicle_id = " .
 			$self->vehicle()->id() . " order by mileage";
-		my $sth = $self->{dbh}->prepare($sql);
+		my $sth = $self->dbh()->prepare($sql);
 		$sth->execute();
 
 		my $last_row;

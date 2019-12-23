@@ -233,6 +233,12 @@ sub table {
 	return undef;
 }
 
+sub dbh {
+	my $self = shift;
+
+	return Jaeger::Base::Pgdbh();
+}
+
 # returns an array containing the columns in a table
 sub columns {
 	my $self = shift;
@@ -240,7 +246,7 @@ sub columns {
 	my $sql = "select attname from pg_attribute where attrelid = " .
 		"(select oid from pg_class where relname = '" . $self->table() .
 		"') and attnum > 0";
-	my $sth = $self->{dbh}->prepare($sql);
+	my $sth = $self->dbh()->prepare($sql);
 	$sth->execute()
 		or warn "$sql;\n";
 
@@ -320,15 +326,17 @@ sub update {
 
 	my @columns = grep !/^id$/, $self->columns();
 
+	my $dbh = $self->dbh();
+
 	if($id) {
 		# update
 		my $sql = 'update ' . $self->table() . ' set ' .
 			join(', ',
-				map {"$_ = " . $self->{dbh}->quote($self->{$_})}
+				map {"$_ = " . $dbh->quote($self->{$_})}
 				@columns) .
 			" where id = $id";
 
-		$rv = $self->{dbh}->do($sql);
+		$rv = $dbh->do($sql);
 		unless($rv) {
 			warn "$sql;\n";
 		}
@@ -338,12 +346,12 @@ sub update {
 		my $sql = 'insert into ' . $self->table() . ' (' .
 			join(', ', @columns) . ') values (' .
 			join(', ',
-				map {$self->{dbh}->quote($self->{$_})}
+				map {$dbh->quote($self->{$_})}
 				@columns) . ')';
 
-		$rv = $self->{dbh}->do($sql);
+		$rv = $dbh->do($sql);
 		if($rv) {
-			$self->{id} = $self->{dbh}->last_insert_id(
+			$self->{id} = $dbh->last_insert_id(
 				undef, undef, $self->table(), undef
 			);
 		} else {
@@ -362,7 +370,7 @@ sub delete {
 	my $sql = 'delete from ' . $self->table() .
 		' where id = ' . $self->id();
 
-	my $rv = $self->{dbh}->do($sql);
+	my $rv = $self->dbh()->do($sql);
 	unless($rv) {
 		warn "$sql;\n";
 	}
@@ -377,7 +385,7 @@ sub parsetimestamp {
 	my $timestamp = shift;
 
 	my $sql = "select extract(epoch from timestamp with time zone '$timestamp')";
-	my $sth = $self->{dbh}->prepare($sql);
+	my $sth = $self->dbh()->prepare($sql);
 	$sth->execute
 		or warn "$sql;\n";
 
