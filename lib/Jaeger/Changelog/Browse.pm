@@ -33,24 +33,28 @@ sub new {
 		# Object was selected from the database.
 		$self = $package->SUPER::new(@_);
 	} else {
-		# Create the object based on the year passed in. Verify that
-		# the year is actually valid.
 		my $year = shift;
-		unless($year) {
-			$year = (localtime)[5] + 1900;
+		if($year) {
+			# Create the object based on the year passed in. Verify
+			# that the year is actually valid.
+			$self = $package->SUPER::new();
+			$self->{year} = $year;
+
+			my $next_year = $year + 1;
+			my $where = "time_begin >= '$year-01-01' and " .
+				"time_begin < '$next_year-01-01' and " .
+				$self->statusquery();
+
+			unless(Count Jaeger::Changelog($where)) {
+				return undef;
+			}
+		} else {
+			# Select the most recent year
+			$self = $package->SUPER::new();
+			return $package->Select($self->statusquery() .
+				" order by year desc");
 		}
 
-		$self = $package->SUPER::new();
-		$self->{year} = $year;
-
-		my $next_year = $year + 1;
-		my $where = "time_begin >= '$year-01-01' and " .
-			"time_begin < '$next_year-01-01' and " .
-			$self->statusquery();
-
-		unless(Count Jaeger::Changelog($where)) {
-			return undef;
-		}
 	}
 
 	$self->{title} = "Browse $self->{year}";
