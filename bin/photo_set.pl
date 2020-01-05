@@ -8,11 +8,14 @@ use strict;
 die "\$BCFS must be set!\n" unless $ENV{BCFS};
 
 use lib "$ENV{BCFS}/lib";
+use Encode qw(decode);
 use File::Copy;
 use File::Path qw(make_path);
 use Jaeger::Photo;
 use Jaeger::Photo::Set;
 use Jaeger::User;
+
+binmode STDOUT, ':utf8';
 
 $Jaeger::User::Current = new Jaeger::User();
 $Jaeger::User::Current->{status} = 10;
@@ -42,12 +45,14 @@ foreach my $set (Jaeger::Photo::Set->Select()) {
 		next if $photo->{hidden};
 
 		my $name = Jaeger::Uri::MakeUriFromTitle(
-			$photo->description());
+			decode("utf-8", $photo->description()));
 
 		my $file = sprintf "%04d-%s_%s-%s.jpg",
 			$i, $photo->{round}, $photo->{number}, $name;
 		unless(-f "$dir/$file") {
-			print "$file ($photo->{description})\n";
+			print "$file (",
+		       		decode("utf-8", $photo->description()),
+				")\n";
 			copy($photo->file_crop(), "$dir/$file")
 				or warn "Can't copy ",
 					$photo->{round}, "_",
