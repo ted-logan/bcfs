@@ -330,6 +330,9 @@ sub _main {
 			title => $index->title(),
 		);
 	}
+	if(my $url = $obj[0]->url()) {
+		push @navlink, qq'<link rel="canonical" href="$url" />';
+	}
 	push @navlink,
 		'<meta name="twitter:card" content="summary" />';
 	push @navlink,
@@ -520,6 +523,9 @@ sub _photo_main {
 			title => $index->title(),
 		);
 	}
+	if(my $url = $obj->url()) {
+		push @navlink, qq'<link rel="canonical" href="$url" />';
+	}
 	$params{navlink} = join('', @navlink);
 
 	# Set mobile nav links
@@ -675,6 +681,9 @@ sub _photo_list_main {
 			url => $index->url(),
 			title => $index->title(),
 		);
+	}
+	if(my $url = $obj->url()) {
+		push @navlink, qq'<link rel="canonical" href="$url" />';
 	}
 	$params{navlink} = join('', @navlink);
 
