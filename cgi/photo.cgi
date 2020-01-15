@@ -69,6 +69,9 @@ if(my $photo_id = $q->param('photo_id')) {
 	}
 }
 
+my $uri = $ENV{REQUEST_URI};
+$uri =~ s/\?.*$//;
+
 if(my $round = $q->param('round')) {
 	if(my $number = $q->param('number')) {
 		# display a specific photo, assuming it exists
@@ -109,7 +112,7 @@ if(my $round = $q->param('round')) {
 		if(@{$page->photos()} == 0) {
 			# No photos found for this round
 			$page = new Jaeger::Photo::Notfound;
-		} elsif($ENV{REQUEST_URI} !~ m(^/photo\.cgi)) {
+		} elsif($uri !~ m(^/photo\.cgi)) {
 			$page = new Jaeger::Redirect($page->url(),
 				Jaeger::Redirect::MOVED_PERMANENTLY);
 		}
@@ -138,25 +141,25 @@ if(my $round = $q->param('round')) {
 	$page = new Jaeger::Redirect("/photo/$year/",
 		Jaeger::Redirect::MOVED_PERMANENTLY);
 
-} elsif($ENV{REQUEST_URI} =~ m(^/photo/(\d\d\d\d)$)) {
+} elsif($uri =~ m(^/photo/(\d\d\d\d)$)) {
 	$page = new Jaeger::Redirect("/photo/$1/",
 		Jaeger::Redirect::MOVED_PERMANENTLY);
 
-} elsif($ENV{REQUEST_URI} =~ m(^/photo/(\d\d\d\d)/$)) {
+} elsif($uri =~ m(^/photo/(\d\d\d\d)/$)) {
 	# New-style uri: Display a thumbnail for a specific year
 	$page = new Jaeger::Photo::Year($1);
 
-} elsif($ENV{REQUEST_URI} =~ m(^/photo/(\d\d\d\d)/(\d\d)/?$)) {
+} elsif($uri =~ m(^/photo/(\d\d\d\d)/(\d\d)/?$)) {
 	# Display photos from a specific month
 	my $date = "$1-$2";
 	$page = new Jaeger::Photo::List::Month($date);
 
-} elsif($ENV{REQUEST_URI} =~ m(^/photo/(\d\d\d\d)/(\d\d)/(\d\d)/?$)) {
+} elsif($uri =~ m(^/photo/(\d\d\d\d)/(\d\d)/(\d\d)/?$)) {
 	# New-style uri: Display photos on a specific date
 	my $date = "$1-$2-$3";
 	$page = new Jaeger::Photo::List::Date($date);
 
-} elsif($page = Jaeger::Photo->Select(uri => $ENV{REQUEST_URI})) {
+} elsif($page = Jaeger::Photo->Select(uri => $uri)) {
 	# Cool, found a page
 	if($status >= $page->status()) {
 		# Good. The photo exists, and the user can see it.
@@ -180,18 +183,17 @@ if(my $round = $q->param('round')) {
 		$page = new Jaeger::Photo::Login($page);
 	}
 
-} elsif(my $redirect = Jaeger::PageRedirect->Select(
-		uri => $ENV{REQUEST_URI})) {
+} elsif(my $redirect = Jaeger::PageRedirect->Select(uri => $uri)) {
 	$page = new Jaeger::Redirect(
 		$redirect->{redirect},
 		Jaeger::Redirect::MOVED_PERMANENTLY);
 
-} elsif($ENV{REQUEST_URI} eq '/photo' or $ENV{REQUEST_URI} =~ '/photo.cgi') {
+} elsif($uri eq '/photo' or $uri =~ '/photo.cgi') {
 	# Redirect permanently to the new photo url, /photo/
 	$page = new Jaeger::Redirect('/photo/',
 		Jaeger::Redirect::MOVED_PERMANENTLY);
 
-} elsif($ENV{REQUEST_URI} eq '/photo/') {
+} elsif($uri eq '/photo/') {
 	# Display the most recent photos
 	$page = new Jaeger::Photo::Recent();
 
