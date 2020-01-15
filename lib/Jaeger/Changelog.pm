@@ -42,6 +42,8 @@ use POSIX;
 sub Urimap {
 	my ($uri, $user) = @_;
 
+	$uri =~ s/\?.*//;
+
 	my $changelog;
 
 	if($uri =~ m#^//#) {
@@ -144,7 +146,6 @@ sub Urimap {
 		}
 
 	} else {
-		$uri =~ s/\?.*//;
 		$changelog = Jaeger::Changelog->Select(uri => $uri);
 		unless($changelog) {
 			my $redirect = Jaeger::PageRedirect->Select(
