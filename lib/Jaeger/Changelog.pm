@@ -1064,14 +1064,17 @@ sub update_photo_xref {
 		# the database, and is filtered later when it's displayed.
 		my $photos_by_date = Jaeger::Photo::List::Date->new($day);
 		my ($photo_count_by_date, $new_photo_count_by_date);
-		foreach my $photo (@{$photos_by_date->photos()}) {
-			# Here it's ok if the photos here overlap the photos
-			# we've already added to the list of relevant photos.
-			$photo_count_by_date++;
-			unless($photos{$photo->id()}) {
-				$new_photo_count_by_date++;
+		if(my $photos = $photos_by_date->photos()) {
+			foreach my $photo (@$photos) {
+				# Here it's ok if the photos here overlap the
+				# photos we've already added to the list of
+				# relevant photos.
+				$photo_count_by_date++;
+				unless($photos{$photo->id()}) {
+					$new_photo_count_by_date++;
+				}
+				$photos{$photo->id()} = $photo;
 			}
-			$photos{$photo->id()} = $photo;
 		}
 		printf "Found %d photos total (%d new photos) for date %s\n",
 			$photo_count_by_date, $new_photo_count_by_date, $day;
