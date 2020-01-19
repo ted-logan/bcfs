@@ -54,6 +54,20 @@ sub Pgdbh {
 	return $Jaeger::Base::Pgdbh;
 }
 
+# Attempt to ping the database handle to see if it's still valid. If it's not,
+# attempt to reconnect. This is useful in the event of a long-running
+# interactive session where a connection was made before the machine running it
+# was suspended and may have lost its network connection.
+sub Pingdbh {
+	if($Jaeger::Base::Pgdbh) {
+		unless($Jaeger::Base::Pgdbh->ping()) {
+			warn "Database handle invalid, attempting to reconnect\n";
+			$Jaeger::Base::Pgdbh = undef;
+			Pgdbh();
+		}
+	}
+}
+
 #
 # global data to keep track of child modules
 #

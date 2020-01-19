@@ -603,6 +603,15 @@ sub _edit_pipe {
 
 	system "$command $tempfile";
 
+	# While editing a changelog, this process may live longer than the
+	# database connection, especially if the network connection changes.
+	# Attempt to reconnect to the database.
+	#
+	# Note that this may die, so we do this *before* removing the temp
+	# file, so it will live on disk, where it can be recovered, if this
+	# process fails.
+	Jaeger::Base::Pingdbh();
+
 	my $changed = $self->import_file($tempfile);
 
 	if($unlink_tempfile) {
