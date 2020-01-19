@@ -329,6 +329,20 @@ sub old_id {
 	return $package->Select(id_old => $id_old);
 }
 
+sub tempfile {
+	my $self = shift;
+
+	my $tempdir = "$ENV{HOME}/.bcfs";
+
+	unless(-d $tempdir) {
+		mkdir($tempdir)
+			or die "Can't create changelog temp dir $tempdir: $!";
+	}
+
+	return "$tempdir/changelog-" .
+		POSIX::strftime("%Y-%m-%d-%H%M%S", localtime(time)) . ".html";
+}
+
 # Use this only at the console
 # Breaks out vim to edit the current changelog and presents a short menu
 sub edit {
@@ -342,17 +356,14 @@ sub edit {
 		my $option = $self->_edit_menu();
 
 		if($option eq 'y') {
-			my $tempfile = "$ENV{HOME}/changelog-" .
-				POSIX::strftime("%Y-%m-%d-%H:%M:%S",
-				       	localtime(time)) .
-				".html";
+			my $tempfile = $self->tempfile();
 			$self->export_file($tempfile);
 			# submit the changelog into the global Content
 			# Solutions Infrastructure
 			if($self->update()) {
 				unlink $tempfile;
 				print "Committed changelog: id=", $self->id(),
-			       		"\n";
+					" ", $self->url(), "\n";
 				return 1;
 			}
 
@@ -571,9 +582,6 @@ sub _edit_series {
 	} while(1);
 }
 
-# ensures a unique file name for each changelog we edit
-$Jaeger::Changelog::Count = 0;
-
 # breaks out vim to edit the changelog
 # returns 1 if the content has changed at all
 sub _edit_pipe {
@@ -590,8 +598,7 @@ sub _edit_pipe {
 	my $unlink_tempfile = 0;
 
 	unless($tempfile) {
-		$tempfile = "/tmp/article-$$-" . ($Jaeger::Changelog::Count++)
-			. '.html';
+		$tempfile = $self->tempfile();
 		$unlink_tempfile = 1;
 	}
 
