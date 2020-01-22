@@ -33,6 +33,7 @@
 use strict;
 
 use Cwd;
+use File::stat;
 use Image::Magick;
 
 my $pwd = getcwd;
@@ -120,9 +121,16 @@ sub update_todo {
 	mkdir "$round_path/new" unless -d "$round_path/new";
 
 	# Read the list of all the files in the raw directory
-	opendir RAW, "$round_path/raw";
-	my @files = grep /\.jpg$/i, readdir RAW;
-	closedir RAW;
+	my @files;
+	if(opendir RAW, "$round_path/raw") {
+		@files = grep /\.jpg$/i, readdir RAW;
+		closedir RAW;
+	} elsif(opendir FULL, "$round_path/full") {
+		@files = grep /\.jpg$/i, readdir FULL;
+		closedir FULL;
+	} else {
+		warn "Neither raw nor full directories exist?";
+	}
 
 	# Read the list of files that should be ignored
 	my %ignore;
@@ -137,7 +145,10 @@ sub update_todo {
 	my $todo_file_count = 0;
 
 	foreach my $file (@files) {
-		if(-f "$round_path/full/$file" && !-f "$round_path/new/$file") {
+		my $full = stat("$round_path/full/$file");
+		my $new = stat("$round_path/new/$file");
+
+		if($full && (!$new or $full->mtime > $new->mtime)) {
 			# Full-sized image that will be cropped down for posting
 			my ($width, $height) = qw(1600 1200);
 
