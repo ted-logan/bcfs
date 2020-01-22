@@ -20,6 +20,7 @@ use Jaeger::Lookfeel;
 use Carp;
 
 use Encode qw(decode);
+use File::stat;
 
 use Jaeger::Location;
 use Jaeger::Timezone;
@@ -349,9 +350,16 @@ sub resize {
 	}
 
 	if($size) {
+		my $new = $self->file_crop();
+		unless($new) {
+			warn "Cropped file for $self->{round}/$self->{number} doesn't exist";
+			return 0;
+		}
 		my $file = "$Jaeger::Photo::CacheDir/$self->{round}/$size/$self->{number}.jpg";
+		my $new_stat = stat($new);
+		my $file_stat = stat($file);
 
-		unless(-f $file) {
+		if(!$file_stat || $file_stat->mtime < $new_stat->mtime) {
 			system "$ENV{BCFS}/bin/resize_photo.pl $self->{round} $self->{number} $size";
 		}
 	}
