@@ -377,6 +377,8 @@ sub resize {
 			or warn "Unable to update file symlink ($newfile -> " .
 				$exist_newfile . "): $!";
 	}
+
+	return 1;
 }
 
 # Make sure the photo exists for the desired size, on the web server. This

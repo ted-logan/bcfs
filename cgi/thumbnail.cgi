@@ -25,15 +25,18 @@ if($round && $number && $size) {
 		round => $round,
 		number => $number
 	);
-	unless($photo) {
+	if(!$photo || !$photo->file_crop()) {
 		print $q->header(-status => 404);
 		print "Photo $round/$number not found\n";
 	} else {
 		$photo->{size} = $size;
-		$photo->resize();
-
-		print $q->header("text/plain");
-		print "Resized photo $round/$number to $size\n";
+		if($photo->resize()) {
+			print $q->header("text/plain");
+			print "Resized photo $round/$number to $size\n";
+		} else {
+			print $q->header(-status => 500);
+			print "Error resizing photo $round/$number\n";
+		}
 	}
 
 } else {
