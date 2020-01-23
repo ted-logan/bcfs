@@ -315,6 +315,12 @@ my @tests = (
 		exclude => "Not found",
 	},
 	{
+		uri => "/photo/2020/01/02/snow-falling-on-the-colorado-superchair?utm_source=rss-feed&utm_medium=rss&utm_campaign=photo-feed",
+		success => 1,
+		expect => "Snow falling on the Colorado SuperChair",
+		exclude => "Not found",
+	},
+	{
 		# Photo was hidden
 		uri => "/photo.cgi?round=097&number=13",
 		success => 0,
@@ -369,6 +375,11 @@ my @tests = (
 		success => 1,
 		expect => "Kayaks launch from Tomales Bay",
 		exclude => "Shanghai bottle opener",
+	},
+	{
+		uri => "/photo.cgi?date=2001-07-14",
+		success => 0,
+		expect => "Not found",
 	},
 	{
 		uri => "/photo/2016/03/",

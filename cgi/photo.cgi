@@ -121,8 +121,10 @@ if(my $round = $q->param('round')) {
 } elsif(my $date = $q->param('date')) {
 	# display photos on a specific date
 	$page = new Jaeger::Photo::List::Date($date);
-	$page = new Jaeger::Redirect($page->url(),
-		Jaeger::Redirect::MOVED_PERMANENTLY);
+	unless(ref($page) =~ /Notfound/) {
+		$page = new Jaeger::Redirect($page->url(),
+			Jaeger::Redirect::MOVED_PERMANENTLY);
+	}
 
 } elsif(my $slideshow = $q->param('slideshow_id')) {
 	# Show a specific slide show
