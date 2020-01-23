@@ -91,7 +91,8 @@ if(my $round = $q->param('round')) {
 				# The photo exists, but the logged-in user does
 				# not have permission to see the photo.
 				# Redirect to the photo entry page.
-				print $q->redirect("/photo/");
+				print $q->redirect(
+					$Jaeger::Base::BaseURL . "photo/");
 				exit;
 
 			} else {
@@ -140,11 +141,11 @@ if(my $round = $q->param('round')) {
 
 } elsif(my $year = $q->param('year')) {
 	# display a thumbnail for a specific year
-	$page = new Jaeger::Redirect("/photo/$year/",
+	$page = new Jaeger::Redirect($Jaeger::Base::BaseURL . "photo/$year/",
 		Jaeger::Redirect::MOVED_PERMANENTLY);
 
 } elsif($uri =~ m(^/photo/(\d\d\d\d)$)) {
-	$page = new Jaeger::Redirect("/photo/$1/",
+	$page = new Jaeger::Redirect($Jaeger::Base::BaseURL . "photo/$1/",
 		Jaeger::Redirect::MOVED_PERMANENTLY);
 
 } elsif($uri =~ m(^/photo/(\d\d\d\d)/$)) {
@@ -176,7 +177,7 @@ if(my $round = $q->param('round')) {
 		# The photo exists, but the logged-in user does not have
 		# permission to see the photo.  Redirect to the photo entry
 		# page.
-		print $q->redirect("/photo/");
+		print $q->redirect($Jaeger::Base::BaseURL . "photo/");
 		exit;
 
 	} else {
@@ -192,7 +193,7 @@ if(my $round = $q->param('round')) {
 
 } elsif($uri eq '/photo' or $uri =~ '/photo.cgi') {
 	# Redirect permanently to the new photo url, /photo/
-	$page = new Jaeger::Redirect('/photo/',
+	$page = new Jaeger::Redirect($Jaeger::Base::BaseURL . 'photo/',
 		Jaeger::Redirect::MOVED_PERMANENTLY);
 
 } elsif($uri eq '/photo/') {
