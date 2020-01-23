@@ -288,6 +288,13 @@ sub annotate_photo {
 	# get the description of the photo
 	print $photo->{round}, '/', $photo->{number}, ': ',
 		$photo->date_format(), "\n";
+
+	# Try to geotag the photo
+	my $point = $photo->geotag();
+	if($point) {
+		print "Coordinates: $point\n";
+	}
+
 	if($photo->{description}) {
 		print $photo->{description}, "\n";
 	}
@@ -301,12 +308,6 @@ sub annotate_photo {
 	}
 
 	if($descript) {
-		# Try to geotag the photo
-		my $point = $photo->geotag();
-		if($point) {
-			print "Coordinates: $point\n";
-		}
-
 		$photo->{description} = $descript;
 		# Set the mtime to the current time (in GMT)
 		$photo->{mtime} = strftime("%Y-%m-%d %H:%M:%S+00", localtime);
