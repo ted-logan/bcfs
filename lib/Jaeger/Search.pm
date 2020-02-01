@@ -32,6 +32,14 @@ sub new {
 
 	$self->{query} = shift;
 
+	if($self->{query} =~ /echo/i) {
+		# I've seen some weird search queries apparently looking for
+		# Echo, which coincides with Echo asserting she may have a
+		# stalker. So I'm going to deliberately but non-obviously break
+		# my site search for this very specific string.
+		die "Invalid query string";
+	}
+
 	return $self;
 }
 
