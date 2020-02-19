@@ -87,7 +87,9 @@ foreach my $file (@ARGV) {
 # Try to geotag photos for the new dates provided
 foreach my $date (sort keys %new_dates) {
 	my $list = new Jaeger::Photo::List::Date($date);
-	foreach my $photo (@{$list->photos()}) {
+	my $photos = $list->photos();
+	next unless $photos;
+	foreach my $photo (@$photos) {
 		next if defined($photo->longitude()) &&
 			defined($photo->latitude());
 		my $point = $photo->geotag();
