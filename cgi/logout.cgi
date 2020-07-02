@@ -21,6 +21,11 @@ my $lf = Jaeger::Base->Lookfeel();
 # clear the user's cookies, if they should happen to exist
 print "content-type: text/html; charset=UTF-8\n";
 print "Set-cookie: ", $q->cookie(
+	-name => 'session',
+	-value => '',
+	-expires => '-1h'
+), "\n";
+print "Set-cookie: ", $q->cookie(
 	-name => 'jaeger_login',
 	-value => '',
 	-expires => '-1h'

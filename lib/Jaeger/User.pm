@@ -18,6 +18,7 @@ use Jaeger::Base;
 @Jaeger::User::ISA = qw(Jaeger::Base);
 
 use Jaeger::User::List;
+use Jaeger::Session;
 
 use Carp;
 
@@ -144,7 +145,7 @@ sub update_last_visit {
 # each request is processed by the request processor itself.)
 $Jaeger::User::Current = 0;
 
-# Returns the current user, logging him in if necessary
+# Returns the current user, logging them in if necessary
 sub Login {
 	my $package = shift;
 
@@ -159,6 +160,26 @@ sub Login {
 sub _Login {
 	my $package = shift;
 
+	my $q = $package->Query();
+
+	my $session_key = $q->cookie('session');
+	if($session_key) {
+		my $session = Jaeger::Session->Select(
+			"key = " .  Jaeger::Base::Pgdbh()->quote($session_key)
+			.  " and expires > now()");
+		if($session) {
+			if(my $user = $package->new_id($session->user_id())) {
+				$user->{session} = $session;
+
+				# update the user's login date
+				$user->update_last_visit();
+
+				return $user;
+			}
+		}
+	}
+
+	# Fall back to logging users in by the login and password cookies
 	my $login;
 	my $password;
 
@@ -169,8 +190,6 @@ sub _Login {
 
 	} else {
 		# grab the login and password from cookies
-		my $q = $package->Query();
-
 		$login = lc $q->cookie('jaeger_login');
 		$password = $q->cookie('jaeger_password');
 	}
@@ -181,6 +200,7 @@ sub _Login {
 		# check the user's password
 		if($user->check_password($password)) {
 			# all ok
+			$user->cookies();
 
 			# update the user's login date
 			$user->update_last_visit();
@@ -202,16 +222,25 @@ sub cookies {
 
 	my @cookies = (
 		{
-			-name => 'jaeger_login',
-			-value => $self->{login},
+			-name => 'session',
+			'value' => $self->session()->key(),
 			-expires => '+31d',
 			-path => '/',
+			-secure => 1,
+		},
+		{
+			-name => 'jaeger_login',
+			-value => "",
+			-expires => '-1h',
+			-path => '/',
+			-secure => 1,
 		},
 		{
 			-name => 'jaeger_password',
-			-value => $self->{plain_password},
-			-expires => '+31d',
+			-value => "",
+			-expires => '-1h',
 			-path => '/',
+			-secure => 1,
 		}
 	);
 
@@ -235,6 +264,15 @@ sub cookies {
 	} else {
 		die "I can't recogonize query object $q";
 	}
+}
+
+sub _session {
+	my $self = shift;
+
+	my $session = Jaeger::Session->Create($self);
+	$session->update();
+
+	return $self->{session} = $session;
 }
 
 # register the fact that this user accessed the resource in question
