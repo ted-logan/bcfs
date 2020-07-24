@@ -42,6 +42,11 @@ use POSIX;
 sub Urimap {
 	my ($uri, $user) = @_;
 
+	my $cookie;
+	if($uri =~ /\?cookie=([0-9a-f]{32})/) {
+		$cookie = $1;
+	}
+
 	$uri =~ s/\?.*//;
 
 	my $changelog;
@@ -160,6 +165,22 @@ sub Urimap {
 
 	unless($changelog) {
 		$changelog = new Jaeger::Notfound;
+	}
+
+	if($cookie) {
+		$user = Jaeger::User->Select(cookie => $cookie);
+		if($user && ref($changelog) && $changelog->{status} <= $user->{status}) {
+			# The uri contains a cookie parameter identifying a
+			# logged-in user. Generate a new session for this user,
+			# and redirect to the uri without the cookie parameter.
+			#
+			# Use a client-side redirect so that the browser has a
+			# chance to respond appropriately to the cookies we're
+			# setting in the header.
+			$user->cookies();
+			$changelog = new Jaeger::ClientRedirect(
+				$changelog->url());
+		}
 	}
 
 	# Check to see if we have access to this changelog or comment

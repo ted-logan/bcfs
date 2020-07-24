@@ -246,6 +246,13 @@ my @tests = (
 		expect => "I need to go visit the sun in the winter",
 	},
 
+	# Redirect with a cookie login, so the user gets session key
+	{
+		uri => "/changelog/2020/07/22/statistics-and-numbers-about-my-time-at-google?cookie=75ac7a573f5a27b3233c92d388ae68bd",
+		success => 1,
+		"because Google loves statistics and numbers",
+	},
+
 	# Comments
 	{
 		uri => "/changelog/comment/185.html",

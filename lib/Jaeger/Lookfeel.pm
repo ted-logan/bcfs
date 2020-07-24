@@ -189,7 +189,7 @@ sub _browse_changelog {
 	my %params = (
 		url => $changelog->url(),
 		title => $changelog->title(),
-		time_begin => $changelog->time_begin(),
+		time_begin => $changelog->sort_date() || $changelog->time_begin(),
 		visibility => $Jaeger::Changelog::Status{$changelog->status()},
 	);
 
@@ -361,6 +361,9 @@ sub _main {
 		$image->resize($size);
 		push @navlink,
 			qq'<meta name="twitter:image" content="${Jaeger::Base::BaseURL}digitalpics/' . $image->round() . "/$size/" . $image->number() . '.jpg" />';
+	}
+	if(my $meta = $obj[0]->meta()) {
+		push @navlink, $meta;
 	}
 	$params{navlink} = join("\n", @navlink);
 

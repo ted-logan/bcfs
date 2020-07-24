@@ -72,5 +72,8 @@ if(ref($changelog) eq 'Jaeger::Redirect') {
 	exit;
 }
 
-print $q->header('text/html; charset=UTF-8', $changelog->http_status());
+print $q->header(
+	-type => 'text/html; charset=UTF-8',
+	-status => $changelog->http_status(),
+	-cookie => Jaeger::Base::Lookfeel()->{cookies});
 print Jaeger::Base::Lookfeel()->main($changelog);

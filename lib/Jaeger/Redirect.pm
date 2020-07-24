@@ -20,4 +20,31 @@ sub new {
 	return $self;
 }
 
+package Jaeger::ClientRedirect;
+
+@Jaeger::ClientRedirect::ISA = qw(Jaeger::Base);
+
+# Wraps a client-side meta redirect
+
+sub new {
+	my $package = shift;
+
+	my $self = bless {}, $package;
+	$self->{url} = shift;
+
+	return $self;
+}
+
+sub http_status {
+	my $self = shift;
+
+	return 200;
+}
+
+sub meta {
+	my $self = shift;
+
+	return qq`<meta http-equiv="refresh" content="0;URL='$self->{url}'" />`;
+}
+
 1;
