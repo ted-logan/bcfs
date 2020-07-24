@@ -48,6 +48,13 @@ create table jaeger_user (
 	about		text
 );
 
+create table session (
+	id		serial primary key,
+	key		text not null unique,
+	user_id		int4 references jaeger_user,
+	expires		timestamp with time zone not null
+);
+
 create table comment (
 	id		serial primary key,
 	changelog_id	int4 references changelog,
