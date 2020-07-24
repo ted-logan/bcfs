@@ -41,7 +41,6 @@ sub new {
 			# invalid date
 			carp "Jaeger::Photo::List::Month->new(): Invalid month $date";
 		}
-		warn "Creating month $self->{month}";
 
 		my $photos = $self->photos();
 		unless(@$photos) {
