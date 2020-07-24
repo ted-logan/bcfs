@@ -31,6 +31,8 @@ if(open(PROBECFG, "$dirname/.probecfg")) {
 	$baseurl = "https://jaeger.festing.org";
 }
 
+my $pattern = shift;
+
 my @tests = (
 	{
 		uri => "/",
@@ -442,6 +444,10 @@ my $success = 0;
 my $failure = 0;
 
 foreach my $test (@tests) {
+	if($pattern && $test->{uri} !~ /$pattern/) {
+		next;
+	}
+
 	my $url = $baseurl . $test->{uri};
 
 	print "$url  ";
