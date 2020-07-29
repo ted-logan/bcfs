@@ -326,6 +326,19 @@ sub create_uri {
 	return '/changelog/' . $date . '/' . $title;
 }
 
+sub sort_date {
+	my $self = shift;
+
+	my $sort_date = $self->{key_date};
+	if($sort_date) {
+		$sort_date =~ s/ \d\d:\d\d:\d\d$//;
+	} else {
+		$sort_date = $self->{time_begin};
+	}
+
+	return $sort_date;
+}
+
 # returns the newest changelog
 sub Newest {
 	my $package = shift;
@@ -1077,7 +1090,9 @@ sub update_photo_xref {
 	my @days;
 
 	if($self->key_date()) {
-		push @days, $self->key_date();
+		my $date = $self->key_date();
+		$date =~ s/ \d\d:\d\d:\d\d//;
+		push @days, $date;
 	} elsif(my $key_date = $self->find_key_date()) {
 		print "Found summary referencing date: $key_date\n";
 		push @days, $key_date;
