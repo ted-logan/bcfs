@@ -14,6 +14,7 @@ my @import_dirs = (
 	'/media/jaeger/NIKON D5200/DCIM/100D5200',
 	'/home/jaeger/.gvfs/mtp/Internal storage/DCIM/100MEDIA',
 	<'/home/jaeger/.gvfs/gphoto2 mount on usb*/DCIM/100MEDIA'>,
+	<'/run/user/*/gvfs/*/Internal shared storage/DCIM/Camera'>,
 );
 
 # Individual files that are imported are stored in this array
@@ -104,15 +105,47 @@ if(grep @ARGV, "--gdrive") {
 	}
 }
 
+my %last_photo;
+
 foreach my $dir (@import_dirs) {
 	next unless -d $dir;
 	next unless opendir DIR, $dir;
-	my @files = sort grep /^[^.]/, readdir DIR;
+	my @files = sort grep {/^[^.]/ && /\.jpe?g$/i} readdir DIR;
 	closedir DIR;
 
 	unless(scalar(@files)) {
 		warn "Ignoring empty import directory $dir\n";
 		next;
+	}
+
+	my $normalize = 1;
+	my $unlink = 1;
+
+	if(-f "$dir/.last_photo") {
+		open(my $fh, "<", "$dir/.last_photo")
+			or die "Can't open $dir/.last_photo: $!\n";
+
+		my $last_photo = <$fh>;
+		chomp $last_photo;
+		close $fh;
+
+		print "Last photo is \"$last_photo\"\n";
+		print "There are a total of ", scalar(@files), " candidate files in the input directory\n";
+
+		@files = grep {$_ gt $last_photo} @files;
+
+		unless(scalar(@files)) {
+			warn "No photos newer than last photo \"$last_photo\", ignoring import directory $dir\n";
+			next;
+		}
+
+		print "Selecting only the ", scalar(@files), " files newer than last photo \"$last_photo\"\n";
+		print map { "\t$_\n"} @files;
+
+		$normalize = 0;
+		$unlink = 0;
+
+		$last_photo{$dir} = @files[-1];
 	}
 
 	my $round = new_round();
@@ -125,17 +158,26 @@ foreach my $dir (@import_dirs) {
 
 	my $count = 0;
 	foreach my $file (@files) {
-		my $newfile = sprintf "%0${places}d.jpg", ++$count;
+		my $newfile;
+		if($normalize) {
+			$newfile = sprintf "%0${places}d.jpg", ++$count;
+			printf "%s -> %s (%d of %d)\n",
+				$file, $newfile, $count, scalar(@files);
 
-		printf "%s -> %s (of %d)\n",
-			$file, $newfile, scalar(@files);
+		} else {
+			$newfile = $file;
+			printf "%s (of %d)\n",
+				$file, scalar(@files);
+		}
 
 		system(sprintf("cp -a \"%s/%s\" \"%s/%s/raw/%s\"",
 			$dir, $file, $photodir, $round, $newfile)) == 0
 			or die "Unable to copy file $file: $!\n";
 		chmod 0644, "$photodir/$round/raw/$newfile";
 
-		push @imports, "$dir/$file";
+		if($unlink) {
+			push @imports, "$dir/$file";
+		}
 	}
 }
 
@@ -159,6 +201,17 @@ if(@new_rounds) {
 	unlink @imports;
 } else {
 	print "No photos to import\n";
+}
+
+foreach my $dir (keys %last_photo) {
+	unless(open(LAST, ">", "$dir/.last_photo")) {
+		warn "Can't write last photo file $dir/.last_photo: $!\n";
+		next;
+	}
+
+	print LAST $last_photo{$dir}, "\n";
+
+	close LAST;
 }
 
 # Identifies the next numbered round
