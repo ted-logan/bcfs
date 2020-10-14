@@ -15,6 +15,7 @@ my @import_dirs = (
 	'/home/jaeger/.gvfs/mtp/Internal storage/DCIM/100MEDIA',
 	<'/home/jaeger/.gvfs/gphoto2 mount on usb*/DCIM/100MEDIA'>,
 	<'/run/user/*/gvfs/*/Internal shared storage/DCIM/Camera'>,
+	<'/run/user/*/gvfs/*/GoPro MTP Client Disk Volume/DCIM/100GOPRO'>,
 );
 
 # Individual files that are imported are stored in this array
@@ -110,7 +111,8 @@ my %last_photo;
 foreach my $dir (@import_dirs) {
 	next unless -d $dir;
 	next unless opendir DIR, $dir;
-	my @files = sort grep {/^[^.]/ && /\.jpe?g$/i} readdir DIR;
+	print "Reading directory $dir\n";
+	my @files = sort grep {/^[^.]/ && /\.(jpe?g|mp4)$/i} readdir DIR;
 	closedir DIR;
 
 	unless(scalar(@files)) {
@@ -132,7 +134,7 @@ foreach my $dir (@import_dirs) {
 		print "Last photo is \"$last_photo\"\n";
 		print "There are a total of ", scalar(@files), " candidate files in the input directory\n";
 
-		@files = grep {$_ gt $last_photo} @files;
+		@files = grep {$_ !~ /\.mp4$/i && $_ gt $last_photo} @files;
 
 		unless(scalar(@files)) {
 			warn "No photos newer than last photo \"$last_photo\", ignoring import directory $dir\n";
@@ -146,6 +148,8 @@ foreach my $dir (@import_dirs) {
 		$unlink = 0;
 
 		$last_photo{$dir} = @files[-1];
+	} else {
+		printf "Found %d files in %s\n", scalar(@files), $dir;
 	}
 
 	my $round = new_round();
@@ -159,8 +163,15 @@ foreach my $dir (@import_dirs) {
 	my $count = 0;
 	foreach my $file (@files) {
 		my $newfile;
-		if($normalize) {
-			$newfile = sprintf "%0${places}d.jpg", ++$count;
+		$count++;
+		if($dir =~ /100GOPRO/) {
+			$newfile = lc $file;
+			$newfile =~ s/^..../GOPRO/;
+			printf "%s -> %s (%d of %d)\n",
+				$file, $newfile, $count, scalar(@files);
+
+		} elsif($normalize) {
+			$newfile = sprintf "%0${places}d.jpg", $count;
 			printf "%s -> %s (%d of %d)\n",
 				$file, $newfile, $count, scalar(@files);
 
@@ -170,7 +181,7 @@ foreach my $dir (@import_dirs) {
 				$file, scalar(@files);
 		}
 
-		system(sprintf("cp -a \"%s/%s\" \"%s/%s/raw/%s\"",
+		system(sprintf("cp -a -i \"%s/%s\" \"%s/%s/raw/%s\"",
 			$dir, $file, $photodir, $round, $newfile)) == 0
 			or die "Unable to copy file $file: $!\n";
 		chmod 0644, "$photodir/$round/raw/$newfile";
