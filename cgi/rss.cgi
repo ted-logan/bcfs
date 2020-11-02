@@ -59,10 +59,10 @@ if($0 =~ /comment/) {
 	$feed->{title} = "${ucname}'s Pictures";
 	if($name eq 'calvin') {
 		$feed->{description} =
-			"The continuing adventures of an intrepid gradeschooler";
+			"The continuing adventures of an intrepid middle-schooler";
 	} elsif($name eq 'julian') {
 		$feed->{description} =
-			"The continuing adventures of an intrepid preschooler";
+			"The continuing adventures of an intrepid kindergartener";
 	}
 	$feed->{noun} = "photo";
 	$feed->{link} = "http://${name}logan.com/";
