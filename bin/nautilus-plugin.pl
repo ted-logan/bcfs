@@ -61,12 +61,14 @@ if($0 =~ /ignore-photo/) {
 		# photo on the command line.
 		foreach my $file (@ARGV) {
 			if(my ($round, $number) =
-					$file =~ /^([^_]+)_([^_]+)\.jpg$/) {
-				open IGNORE, ">>../$round/.ignore";
-				print IGNORE "$number.jpg\n";
-				close IGNORE;
-				unlink $file;
-				unlink "../$round/todo/$number.jpg";
+					$file =~ /^([^_]+)_(.+)\.jpg$/) {
+				if(-f "../$round/todo/$number.jpg") {
+					open IGNORE, ">>../$round/.ignore";
+					print IGNORE "$number.jpg\n";
+					close IGNORE;
+					unlink $file;
+					unlink "../$round/todo/$number.jpg";
+				}
 			}
 		}
 	}
