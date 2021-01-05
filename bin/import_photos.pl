@@ -177,6 +177,7 @@ foreach my $dir (@import_dirs) {
 
 		} else {
 			$newfile = $file;
+			$newfile =~ s/\.NIGHT//;
 			printf "%s (of %d)\n",
 				$file, scalar(@files);
 		}
