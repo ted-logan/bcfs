@@ -81,7 +81,7 @@ sub _xrefs {
 	my $where = "id in (select changelog_id from photo_xref_map " .
 		"where photo_id in (" . join(', ', @photo_ids) . ")) " .
 		"and status <= $status " .
-		"order by time_begin";
+		"order by sort_date";
 
 	return $self->{xrefs} = [Jaeger::Changelog->Select($where)];
 }
