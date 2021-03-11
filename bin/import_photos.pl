@@ -16,6 +16,7 @@ my @import_dirs = (
 	<'/home/jaeger/.gvfs/gphoto2 mount on usb*/DCIM/100MEDIA'>,
 	<'/run/user/*/gvfs/*/Internal shared storage/DCIM/Camera'>,
 	<'/run/user/*/gvfs/*/GoPro MTP Client Disk Volume/DCIM/100GOPRO'>,
+	<'/run/user/*/gvfs/*/DCIM/100APPLE'>,
 );
 
 # Individual files that are imported are stored in this array
@@ -123,9 +124,22 @@ foreach my $dir (@import_dirs) {
 	my $normalize = 1;
 	my $unlink = 1;
 
+	# For Android, I can put the .last_photo marker file in the same
+	# directory on the device. This doesn't seem to work on iOS, so keep a
+	# separate marker file
+	#
+	# This basically relies on my only ever importing photos from one iOS
+	# device, so I guess that's a bridge I'll burn when I get to it.
+	my $last_photo_file;
 	if(-f "$dir/.last_photo") {
-		open(my $fh, "<", "$dir/.last_photo")
-			or die "Can't open $dir/.last_photo: $!\n";
+		$last_photo_file = "$dir/.last_photo";
+	} elsif($dir =~ /100APPLE/) {
+		$last_photo_file = "$photodir/.last_iphone_photo";
+	}
+
+	if($last_photo_file) {
+		open(my $fh, "<", $last_photo_file)
+			or die "Can't open $last_photo_file: $!\n";
 
 		my $last_photo = <$fh>;
 		chomp $last_photo;
@@ -147,7 +161,7 @@ foreach my $dir (@import_dirs) {
 		$normalize = 0;
 		$unlink = 0;
 
-		$last_photo{$dir} = @files[-1];
+		$last_photo{$last_photo_file} = @files[-1];
 	} else {
 		printf "Found %d files in %s\n", scalar(@files), $dir;
 	}
@@ -178,6 +192,7 @@ foreach my $dir (@import_dirs) {
 		} else {
 			$newfile = $file;
 			$newfile =~ s/\.NIGHT//;
+			$newfile =~ s/\.JPG$/.jpg/;
 			printf "%s (of %d)\n",
 				$file, scalar(@files);
 		}
@@ -215,13 +230,13 @@ if(@new_rounds) {
 	print "No photos to import\n";
 }
 
-foreach my $dir (keys %last_photo) {
-	unless(open(LAST, ">", "$dir/.last_photo")) {
-		warn "Can't write last photo file $dir/.last_photo: $!\n";
+foreach my $last_photo_file (keys %last_photo) {
+	unless(open(LAST, ">", $last_photo_file)) {
+		warn "Can't write last photo file $last_photo_file: $!\n";
 		next;
 	}
 
-	print LAST $last_photo{$dir}, "\n";
+	print LAST $last_photo{$last_photo_file}, "\n";
 
 	close LAST;
 }
