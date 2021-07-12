@@ -36,8 +36,15 @@ sub new {
 		# I've seen some weird search queries apparently looking for
 		# Echo, which coincides with Echo asserting she may have a
 		# stalker. So I'm going to deliberately but non-obviously break
-		# my site search for this very specific string.
-		die "Invalid query string";
+		# my site search, for non-logged-in users, for this very
+		# specific string.
+		my $status = 0;
+		if(my $user = Jaeger::User->Login()) {
+			$status = $user->{status};
+		}
+		if($status < 20) {
+			die "Invalid query string";
+		}
 	}
 
 	return $self;
