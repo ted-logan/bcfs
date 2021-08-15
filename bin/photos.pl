@@ -22,6 +22,7 @@ use Jaeger::Photo;
 use Data::Dumper;
 use POSIX qw(strftime);
 use Image::ExifTool;
+use Image::Magick;
 
 # Set an empty timezone to force the EXIF module to not to time-zone
 # conversions, since we'll do them ourselves.
@@ -306,6 +307,13 @@ sub annotate_photo {
 	unless($photo->{location_id}) {
 		$photo->{location_id} = 1;
 	}
+
+	# Update the width and height of the photo stored in the database
+	my $img = new Image::Magick;
+	$img->Read($photo->file_crop());
+	my ($width, $height) = $img->Get('width', 'height');
+	$photo->{width} = $width;
+	$photo->{height} = $height;
 
 	if($descript) {
 		$photo->{description} = $descript;

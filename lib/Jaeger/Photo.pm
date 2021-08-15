@@ -247,6 +247,12 @@ sub _file {
 sub _file_crop {
 	my $self = shift;
 
+	my $full = "$Jaeger::Photo::Dir/$self->{round}/full/$self->{number}.jpg";
+
+	if(-f $full) {
+		return $self->{file_crop} = $full;
+	}
+
 	my $crop = "$Jaeger::Photo::Dir/$self->{round}/new/$self->{number}.jpg";
 
 	if(-f $crop) {

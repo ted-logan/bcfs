@@ -117,7 +117,9 @@ create table photo (
 	mtime		timestamp,
 	status		int4 not null default 0,
 	uri		text,
-	rowkey		text not null unique
+	rowkey		text not null unique,
+	width		int4,
+	height		int4
 );
 
 create view photo_date as select
