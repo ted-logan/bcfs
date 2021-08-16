@@ -53,11 +53,15 @@ foreach my $set (Jaeger::Photo::Set->Select()) {
 			print "$file (",
 		       		decode("utf-8", $photo->description()),
 				")\n";
-			copy($photo->file_crop(), "$dir/$file")
-				or warn "Can't copy ",
-					$photo->{round}, "_",
-					$photo->{number}, ": $!\n";
-			$new++;
+			if($photo->file_crop()) {
+				copy($photo->file_crop(), "$dir/$file")
+					or warn "Can't copy ",
+						$photo->{round}, "_",
+						$photo->{number}, ": $!\n";
+				$new++;
+			} else {
+				warn "Photo not found: $photo->{round}_$photo->{number}\n";
+			}
 		}
 		$total++;
 		delete $old{$file};

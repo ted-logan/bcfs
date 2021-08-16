@@ -150,6 +150,10 @@ foreach my $dir (@import_dirs) {
 
 		@files = grep {$_ !~ /\.mp4$/i && $_ gt $last_photo} @files;
 
+		if($dir =~ /100APPLE/) {
+			@files = grep !/^IMG_E/, @files;
+		}
+
 		unless(scalar(@files)) {
 			warn "No photos newer than last photo \"$last_photo\", ignoring import directory $dir\n";
 			next;
