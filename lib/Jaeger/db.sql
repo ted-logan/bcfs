@@ -119,7 +119,8 @@ create table photo (
 	uri		text,
 	rowkey		text not null unique,
 	width		int4,
-	height		int4
+	height		int4,
+	sizes		text,
 );
 
 create view photo_date as select

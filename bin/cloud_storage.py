@@ -110,3 +110,8 @@ for r in sorted(root.prefixes):
         #   - If not, it returns a reference to the full-size image.
         #   - If so, it checks whether the image already exists (in the "sizes"
         #     list). If it does not exist, it calls the resize service.
+
+        sizes_in_storage = ','.join(sizes.keys())
+        sizes_in_db = photo_in_db[16]
+        if sizes_in_db != sizes_in_storage:
+            cur.execute('update photo set sizes = %s where id = %s', (sizes_in_storage, photo_in_db[0],))
