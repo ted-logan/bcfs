@@ -455,42 +455,6 @@ sub size {
 	return $self->{size} = $self->native();
 }
 
-sub _sizelinks {
-	my $self = shift;
-
-	my @html;
-
-	my $url = $self->url();
-
-	foreach my $size (@Jaeger::Photo::Sizes) {
-		if($size eq $self->size()) {
-			push @html, $size;
-		} elsif($size <= $self->native()) {
-			push @html, qq'<a href="$url&size=$size" rel="nofollow">$size</a>';
-		}
-	}
-
-	return join ' | ', @html;
-}
-
-# returns the html for this object
-sub html {
-	my $self = shift;
-
-	return $self->lf()->photo(
-		id => $self->{id},
-		title => $self->{description},
-#		exif => $self->exif(),
-		date => $self->date_format(),
-		round => $self->{round},
-		size => $self->size(),
-		sizelinks => $self->sizelinks(),
-		number => $self->{number},
-		latitude => $self->{latitude},
-		longitude => $self->{longitude},
-	);
-}
-
 sub _statusquery {
 	my $self = shift;
 
