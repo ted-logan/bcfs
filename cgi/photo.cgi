@@ -14,7 +14,6 @@ use lib "$ENV{BCFS}/lib";
 
 use Jaeger::Photo;
 use Jaeger::User;
-use Jaeger::Slideshow;
 use Jaeger::Lookfeel;
 use Jaeger::PageRedirect;
 use Jaeger::Photo::List::Month;
@@ -50,23 +49,6 @@ if(($status == 30) &&
 
 	$photo->update_sets($q->param('sets'));
 	$photo->update();
-}
-
-if(my $photo_id = $q->param('photo_id')) {
-	my $slideshow_id = $q->param('slideshow_id');
-
-	my $photo = Jaeger::Photo->new_id($photo_id);
-	my $slideshow = Jaeger::Slideshow->new_id($slideshow_id);
-
-	if($photo && $slideshow) {
-		$slideshow->add_photo($photo, $q->param('index'),
-			$q->param('description'));
-
-		print $q->redirect($photo->url());
-		exit;
-	} else {
-		die "Could not find photo by id $photo_id or slideshow by id $slideshow_id\n";
-	}
 }
 
 my $uri = $ENV{REQUEST_URI};
@@ -125,15 +107,6 @@ if(my $round = $q->param('round')) {
 	unless(ref($page) =~ /Notfound/) {
 		$page = new Jaeger::Redirect($page->url(),
 			Jaeger::Redirect::MOVED_PERMANENTLY);
-	}
-
-} elsif(my $slideshow = $q->param('slideshow_id')) {
-	# Show a specific slide show
-	my $slideshow = Jaeger::Slideshow->new_id($slideshow);
-	if(defined($slideshow) && (my $index = $q->param('index'))) {
-		$page = $slideshow->photo_hash()->{$index};
-	} else {
-		$page = $slideshow;
 	}
 
 } elsif(my $set = $q->param('set')) {
@@ -219,17 +192,12 @@ if(ref($page) eq 'Jaeger::Redirect') {
 }
 
 print $q->header('text/html; charset=UTF-8', $page->http_status());
-if($q->param('slideshow')) {
-	print $lf->slideshow($page);
-} else {
-	if(ref($page) eq 'Jaeger::Photo' or
-			ref($page) eq 'Jaeger::Slideshow::Photo') {
-		if($lf->ismobilebrowser()) {
-			print $lf->photo_main_mobile($page);
-		} else {
-			print $lf->photo_main($page);
-		}
+if(ref($page) eq 'Jaeger::Photo') {
+	if($lf->ismobilebrowser()) {
+		print $lf->photo_main_mobile($page);
 	} else {
-		print $lf->photo_list_main($page);
+		print $lf->photo_main($page);
 	}
+} else {
+	print $lf->photo_list_main($page);
 }

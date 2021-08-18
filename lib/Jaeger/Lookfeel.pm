@@ -24,7 +24,6 @@ use Jaeger::Content;
 use Jaeger::Event;
 use Jaeger::Photo::Set;
 use Jaeger::Photo::Year;
-use Jaeger::Slideshow;
 use Jaeger::User;
 
 use Fortune;
@@ -772,23 +771,6 @@ sub analytics {
 	return $self->_lookfeel('analytics');
 }
 
-sub _slideshow {
-	my $self = shift;
-	my $obj = shift;
-
-	my %params;
-
-	$params{title} = $obj->description();
-	$params{round} = $obj->round();
-	$params{number} = $obj->number();
-	$params{size} = $obj->size();
-
-	$params{next} = $obj->next()->url();
-	$params{delay} = $self->query()->param('slideshow');
-
-	return %params;
-}
-
 sub navlinks {
 	my $self = shift;
 	my %params = @_;
@@ -1103,29 +1085,6 @@ sub _flight_total {
 	return %params;
 }
 
-sub _photo {
-	my $self = shift;
-
-	my %params = @_;
-
-	my $user = Jaeger::User->Login();
-
-	if($user && $user->status() >= 30) {
-		$params{add_to_slideshow} = $self->add_to_slideshow(
-			photo_id => $params{id}
-		);
-	}
-
-	if(defined($params{longitude}) && defined($params{latitude})) {
-		$params{location} = $self->photo_coordinates(
-			longitude => $params{longitude},
-			latitude => $params{latitude},
-		);
-	}
-
-	return %params;
-}
-
 sub _photo_rss {
 	my $self = shift;
 
@@ -1201,19 +1160,6 @@ sub _photo_list {
 			latitude => $params{latitude},
 		);
 	}
-
-	return %params;
-}
-
-sub _add_to_slideshow {
-	my $self = shift;
-
-	my %params = @_;
-
-	my @slideshows = sort {$a->id() <=> $b->id()}
-		Jaeger::Slideshow->Select();
-
-	$params{slideshow} = join('', map {'<option value="' . $_->id() . '">' . $_->{title} . "</option>\n"} @slideshows);
 
 	return %params;
 }

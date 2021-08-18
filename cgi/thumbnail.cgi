@@ -8,11 +8,6 @@ use strict;
 use lib "$ENV{BCFS}/lib";
 
 use Jaeger::Photo;
-use Jaeger::User;
-use Jaeger::Slideshow;
-use Jaeger::Lookfeel;
-use Jaeger::Photo::Set;
-use Jaeger::Photo::Recent;
 
 my $q = Jaeger::Base::Query();
 

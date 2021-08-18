@@ -164,21 +164,6 @@ create view photo_round as select
 	group by round;
 grant select on photo_round to "www-data";
 
-create table slideshow (
-	id		serial primary key,
-	title		text not null,
-	description	text
-);
-
-create table slideshow_photo_map (
-	id		serial primary key,
-	slideshow_id	int4 references slideshow,
-	slideshow_index	int4 not null,
-	unique(slideshow_id, slideshow_index),
-	photo_id	int4 references photo,
-	description	text
-);
-
 create table event (
 	id		serial primary key,
 	user_id		int4 references jaeger_user,
