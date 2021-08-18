@@ -443,6 +443,16 @@ my @tests = (
 		success => 1,
 		expect => '<a href="(https://\w*.festing.org)?/photo/2016/10/24/">',
 	},
+	{
+		uri => "/photo/2018/04/13/jaeger-in-pancras-square",
+		success => 1,
+		expect => "lg360/photosphere/20180412_145120.jpg",
+	},
+	{
+		uri => "/photo/2019/02/19/jaeger-in-the-slot-canyon-above-palm-tree-wash",
+		success => 1,
+		expect => "vrview"
+	},
 );
 
 my $ua = new LWP::UserAgent;
