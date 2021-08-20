@@ -13,6 +13,7 @@
 use strict;
 
 use File::Basename;
+use HTML::LinkExtor;
 use LWP::UserAgent;
 use Term::ANSIColor;
 
@@ -55,6 +56,7 @@ my @tests = (
 		redirect => "/changelog/2018/07/15/tomales-bay",
 		success => 1,
 		expect => "Tomales Bay",
+		fetch_images => 1,
 	},
 	{
 		# Regular changelog with human-readable url
@@ -132,6 +134,7 @@ my @tests = (
 		uri => "/changelog/2019/09/02/hail-columbia",
 		success => 1,
 		expect => "/photo/2019/09/02/apollo-f1-rocket-motor",
+		fetch_images => 1,
 	},
 	{
 		uri => "/changelog/1999/",
@@ -156,6 +159,7 @@ my @tests = (
 		success => 1,
 		expect => "Hawaiian Volcano Week",
 		exclude => "Get Kuna",
+		fetch_images => 1,
 	},
 	{
 		uri => "/changelog/tag/rocky-mountain-national-park",
@@ -258,6 +262,7 @@ my @tests = (
 		uri => "/changelog/comment/185.html",
 		success => 1,
 		expect => "Sibblings",
+		fetch_images => 1,
 	},
 	{
 		uri => "/changelog/comment/185.html/reply",
@@ -322,6 +327,7 @@ my @tests = (
 		success => 1,
 		expect => '<a href="(https://\w*.festing.org)?/photo/2019/10/31/">Photos on 2019-10-31</a>',
 		exclude => "Not found",
+		fetch_images => 1,
 	},
 	{
 		uri => "/photo/2020/01/02/snow-falling-on-the-colorado-superchair?utm_source=rss-feed&utm_medium=rss&utm_campaign=photo-feed",
@@ -394,6 +400,7 @@ my @tests = (
 		uri => "/photo/2016/03/",
 		success => 1,
 		expect => "Purple armchair from Craigslist",
+		fetch_images => 1,
 	},
 	{
 		uri => "/photo/2011/03/",
@@ -411,6 +418,7 @@ my @tests = (
 		success => 1,
 		expect => "Rain on Hanbury Lane",
 		exclude => "Pint of Guinness at a pub in Dublin",
+		fetch_images => 1,
 	},
 	{
 		uri => "/photo/2019/09/02",
@@ -447,6 +455,7 @@ my @tests = (
 		uri => "/photo/2018/04/13/jaeger-in-pancras-square",
 		success => 1,
 		expect => "lg360/photosphere/20180412_145120.jpg",
+		fetch_images => 1,
 	},
 	{
 		uri => "/photo/2019/02/19/jaeger-in-the-slot-canyon-above-palm-tree-wash",
@@ -466,6 +475,8 @@ foreach my $test (@tests) {
 	}
 
 	my $url = $baseurl . $test->{uri};
+
+	next unless $test->{fetch_images};
 
 	print "$url  ";
 
@@ -520,6 +531,41 @@ foreach my $test (@tests) {
 		$result = 0;
 		$reason = "excluded pattern /" .
 			$test->{exclude} . "/ found";
+	}
+
+	if($test->{fetch_images}) {
+		# Fetch all of the embedded images in the document to make sure
+		# we don't have any bogus image links
+		my $p = HTML::LinkExtor->new(undef, $response->base());
+		$p->parse($response->content());
+		$p->eof();
+		foreach my $link ($p->links()) {
+			my ($tag, %attr) = @$link;
+			next unless $tag eq 'img';
+			next unless $attr{src};
+			my $image = $attr{src};
+
+			print "\n    ",
+				color('white', 'italic'),
+				"($image ",
+				color('reset');
+
+			my $request = HTTP::Request->new(GET => $image);
+			my $response = $ua->request($request);
+
+			if($response->is_success()) {
+				print color('green'), "ok", color('reset');
+			} else {
+				print color('red'), "error", color('reset'),
+					" (", $response->status_line(), ")";
+				$result = 0;
+				$reason = $response->status_line();
+			}
+			print
+				color('white', 'italic'),
+				")  ",
+				color('reset');
+		}
 	}
 
 	if($result) {
