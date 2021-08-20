@@ -98,6 +98,7 @@ HTML
 	foreach my $photo (@photos) {
 		$photo->{size} = '640x480';
 		$photo->resize();
+		my $image_url = $photo->image_url();
 
 		my $date = $photo->date_format();
 
@@ -109,7 +110,7 @@ HTML
 <a name="$photo->{round}/$photo->{number}"></a>
 <h3><a href="/?month=$month#$photo->{round}/$photo->{number}">$photo->{description}</a></h3>
 <p><i>$date</i></p>
-<p><img src="https://jaeger.festing.org/digitalpics/$photo->{round}/$photo->{size}/$photo->{number}.jpg" /></p>
+<p><img src="$image_url" /></p>
 HTML
 	}
 

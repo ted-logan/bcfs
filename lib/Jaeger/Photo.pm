@@ -521,6 +521,14 @@ sub _url {
 	}
 }
 
+sub image_url {
+	my $self = shift;
+	my %params = @_;
+	my $size = $params{size} || $self->{size};
+	return "${Jaeger::Base::BaseURL}digitalpics/$self->{round}/"
+		. "$size/$self->{number}.jpg";
+}
+
 # If this photo does not have a longitude and latitude set, attempt
 # to add them by determining the nearest track points and performing
 # a linear regression between them.
@@ -606,9 +614,7 @@ sub content {
 	return $self->lf()->photo_rss(
 		title => $self->description(),
 		date => $self->date_format(),
-		round => $self->{round},
-		size => $self->size(),
-		number => $self->{number},
+		image_url => $self->image_url(),
 		latitude => $self->{latitude},
 		longitude => $self->{longitude},
 

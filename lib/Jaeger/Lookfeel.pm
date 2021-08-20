@@ -148,16 +148,6 @@ sub _changelog {
 	return %params;
 }
 
-sub _changelog_inline_photo {
-	my $self = shift;
-
-	my %params = @_;
-
-	$params{baseurl} = $Jaeger::Base::BaseURL;
-
-	return %params;
-}
-
 sub _changelog_series {
 	my $self = shift;
 
@@ -225,10 +215,7 @@ sub _browse_changelog_image {
 	$photo->resize();
 
 	my %params = (
-		baseurl => $Jaeger::Base::BaseURL,
-		round => $photo->round(),
-		size => $photo->size(),
-		number => $photo->number(),
+		image_url => $photo->image_url(),
 		caption => $photo->description(),
 	);
 
@@ -358,8 +345,9 @@ sub _main {
 	if(my $image = $obj[0]->image()) {
 		my $size = "640x480";
 		$image->resize($size);
+		my $image_url = $image->image_url(size => $size);
 		push @navlink,
-			qq'<meta name="twitter:image" content="${Jaeger::Base::BaseURL}digitalpics/' . $image->round() . "/$size/" . $image->number() . '.jpg" />';
+			qq'<meta name="twitter:image" content="$image_url" />';
 	}
 	if(my $meta = $obj[0]->meta()) {
 		push @navlink, $meta;
@@ -486,8 +474,7 @@ sub _photo_main {
 	if(ref $obj eq 'Jaeger::Photo') {
 		my $size = "640x480";
 		$obj->resize($size);
-		$params{photo} = ${Jaeger::Base::BaseURL} . 'digitalpics/' .
-			$obj->round() . "/$size/" . $obj->number() . '.jpg';
+		$params{photo} = $obj->image_url(size => $size);
 	}
 
 	if(Jaeger::User->Login()) {
@@ -554,16 +541,11 @@ sub _photo_main {
 	$params{date} = $obj->date_format() || "&nbsp;";
 	if($obj->has_photosphere()) {
 		$params{img} = $self->photo_img_sphere(
-			baseurl => $Jaeger::Base::BaseURL,
-			round => $obj->round(),
-			number => $obj->number(),
-			size => 'photosphere',
+			image_url => $obj->image_url(size => 'photosphere'),
 		);
 	} else {
 		$params{img} = $self->photo_img(
-			round => $obj->round(),
-			number => $obj->number(),
-			size => $obj->size(),
+			image_url => $obj->image_url(),
 		);
 	}
 
@@ -615,9 +597,7 @@ sub _photo_main_mobile {
 	my %params = $self->_photo_main($obj);
 
 	$params{img} = $self->photo_img_mobile(
-		round => $obj->round(),
-		number => $obj->number(),
-		size => $obj->size(),
+		image_url => $obj->image_url(),
 	);
 
 	return %params;
@@ -1089,8 +1069,6 @@ sub _photo_rss {
 	my $self = shift;
 
 	my %params = @_;
-
-	$params{baseurl} = $Jaeger::Base::BaseURL;
 
 	if(defined($params{longitude}) && defined($params{latitude})) {
 		$params{location} = $self->photo_coordinates(

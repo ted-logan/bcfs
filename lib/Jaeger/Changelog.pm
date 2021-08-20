@@ -1021,9 +1021,7 @@ sub inline_photo {
 
 		return $self->lf()->changelog_inline_photo(
 			url => $photo->url(),
-			round => $photo->round(),
-			size => $photo->size(),
-			number => $photo->number(),
+			image_url => $photo->image_url(),
 			caption => $photo->description(),
 			photo_icon_sphere => $photo_icon_sphere,
 		);

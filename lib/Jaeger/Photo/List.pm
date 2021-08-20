@@ -46,7 +46,7 @@ sub html {
 
 		push @html, $self->lf()->photo_list(
 			url => $photo->url(),
-			thumbnail => "/digitalpics/$photo->{round}/$photo->{size}/$photo->{number}.jpg",
+			thumbnail => $photo->image_url(),
 			description => $photo->description(),
 			status => $photo->status(),
 			date => $photo->date_format(),

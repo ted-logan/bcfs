@@ -51,7 +51,7 @@ $featured->{size} = "256x192";
 $featured->resize();
 my $html = $lf->featured_photo_template(
 	url => $featured->url(),
-	thumbnail => "/digitalpics/$featured->{round}/$featured->{size}/$featured->{number}.jpg",
+	thumbnail => $featured->image_url(),
 	description => $featured->description(),
 );
 

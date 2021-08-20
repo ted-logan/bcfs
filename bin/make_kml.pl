@@ -140,11 +140,12 @@ XML
 my @photos = Jaeger::Photo->Select("latitude is not null and longitude is not null and not hidden order by date");
 foreach my $photo (@photos) {
 	my $date = $photo->date_format();
-	my $url = $Jaeger::Base::BaseURL . $photo->url();
-	my $thumbnail = "${Jaeger::Base::BaseURL}digitalpics/$photo->{round}/thumbnail/$photo->{number}.jpg";
+	my $url = $photo->url();
+	$photo->{size} = '640x480';
+	$photo->resize();
+	my $thumbnail = $photo->image_url();
 	print <<XML;
     <Placemark>
-      <name>$photo->{round}/$photo->{number}</name>
       <styleUrl>#photo</styleUrl>
       <description>
         <![CDATA[
