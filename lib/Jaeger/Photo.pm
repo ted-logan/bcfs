@@ -304,6 +304,7 @@ sub hidden {
 
 # figure out the size of the photo
 sub size {
+	# TODO deprecate this
 	my $self = shift;
 
 	if($self->{size}) {
@@ -324,6 +325,7 @@ sub size {
 
 # Return the photo size closest to the actual size, in 640x480
 sub _native {
+	# TODO deprecate this?
 	my $self = shift;
 
 	my $img = new Image::Magick;
@@ -346,7 +348,10 @@ sub _native {
 #	return $self->{native} = "${width}x${height}";
 }
 
-# Make sure the photo exists for the desired size, on the local system.
+# Make sure the photo exists for the desired size, in the cloud.
+#
+# This makes Cloud Storage API calls, so it will work from anywhere, but in
+# practice it's easier to run it on my server in THE CLOUD.
 sub resize {
 	my $self = shift;
 
@@ -355,34 +360,18 @@ sub resize {
 		$size = $self->size();
 	}
 
-	if($size) {
-		my $new = $self->file_crop();
-		unless($new) {
-			warn "Cropped file for $self->{round}/$self->{number} doesn't exist";
-			return 0;
-		}
-		my $file = "$Jaeger::Photo::CacheDir/$self->{round}/$size/$self->{number}.jpg";
-		my $new_stat = stat($new);
-		my $file_stat = stat($file);
+	return 1 if $self->{sizes} =~ /$size/;
 
-		if(!$file_stat || $file_stat->mtime < $new_stat->mtime) {
-			system "$ENV{BCFS}/bin/resize_photo.pl $self->{round} $self->{number} $size";
-		}
+	unless(system("$ENV{BCFS}/bin/cloud_resize.py " .
+		"--round=\"$self->{round}\" " .
+		"--number=\"$self->{number}\" " .
+		"--size=\"$size\" > /dev/null") == 0) {
+
+		warn "Photo $self->{round}/$self->{number}: Unable to resize to $size";
+		return 0;
 	}
 
-	my $cache_newdir = "$Jaeger::Photo::CacheDir/$self->{round}/new";
-	unless(-d $cache_newdir) {
-		mkdir($cache_newdir)
-			or warn "Unable to create dir $cache_newdir: $!";
-	}
-	my $newfile = "$cache_newdir/$self->{number}.jpg";
-	my $exist_newfile = 
-		"$Jaeger::Photo::Dir/$self->{round}/$size/$self->{number}.jpg";
-	unless(-f $newfile or -l $newfile) {
-		symlink($exist_newfile, $newfile)
-			or warn "Unable to update file symlink ($newfile -> " .
-				$exist_newfile . "): $!";
-	}
+	$self->{sizes} .= ',' . $size;
 
 	return 1;
 }
@@ -398,7 +387,7 @@ sub remote_resize {
 		$size = $self->size();
 	}
 
-	my $url = "https://jaeger.festing.org/thumbnail.cgi?" .
+	my $url = $Jaeger::Base::BaseURL . "thumbnail.cgi?" .
 		"round=$self->{round}&number=$self->{number}&size=$size";
 
 	{
@@ -446,6 +435,7 @@ sub _exif {
 
 # If we did not specify a size, select the size closest to the native size
 sub size {
+	# TODO deprecate this
 	my $self = shift;
 
 	if($self->{size} && $self->{size} ne 'new') {
@@ -525,8 +515,26 @@ sub image_url {
 	my $self = shift;
 	my %params = @_;
 	my $size = $params{size} || $self->{size};
-	return "${Jaeger::Base::BaseURL}digitalpics/$self->{round}/"
-		. "$size/$self->{number}.jpg";
+
+	unless($size) {
+		foreach my $s (qw(full new)) {
+			if($self->{sizes} =~ /$s/) {
+				$size = $s;
+				last;
+			}
+		}
+
+		unless($size) {
+			die "Photo $self->{round}/$self->{number}: Could not determine size";
+		}
+	}
+
+	unless($self->{sizes} =~ /$size/) {
+		$self->resize($size);
+	}
+
+	return "https://storage.googleapis.com/photo.festing.org/"
+		. "$self->{round}/$size/$self->{number}.jpg";
 }
 
 # If this photo does not have a longitude and latitude set, attempt
@@ -610,7 +618,6 @@ sub content {
 	my $self = shift;
 
 	$self->{size} = '800x600';
-	$self->resize();
 	return $self->lf()->photo_rss(
 		title => $self->description(),
 		date => $self->date_format(),
@@ -687,8 +694,9 @@ sub _xrefs {
 sub _has_photosphere {
 	my $self = shift;
 
-	my $photosphere = "$Jaeger::Photo::Dir/$self->{round}/photosphere/" .
-		$self->{number} . ".jpg";
-
-	return $self->{photosphere} = -f $photosphere;
+	if($self->{sizes} =~ /photosphere/) {
+		return $self->{photosphere} = 1;
+	} else {
+		return $self->{photosphere} = 0;
+	}
 }

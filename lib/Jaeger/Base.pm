@@ -20,24 +20,23 @@ use Carp;
 
 use CGI;
 
-# Connect to the Postgres database running on Honor. Note that I've set up the
+# Connect to the Postgres database running on Awn. Note that I've set up the
 # database to expose a non-standard port (port 1284), since I've made the port
 # accessible over the open internet so I can connect to it remotely without the
 # cumbersome ssh tunnel.
 #
-# On Honor (ie, when the hostname starts with honor), connect to localhost.
-# On other hosts, connect to honor2.festing.org.
+# On awn (ie, when the hostname starts with awn), connect to localhost.
+# On other hosts, connect to awn.festing.org.
 
-my $connection = "host=honor2.festing.org;port=1284;user=jaeger;";
-$Jaeger::Base::BaseURL = 'http://localhost/';
-if(`hostname` =~ /^honor/) {
-	# If we're on Honor, connect locally.
-	$connection = "host=localhost;port=1284;user=jaeger;";
-	if($ENV{SERVER_NAME}) {
-		$Jaeger::Base::BaseURL = "https://$ENV{SERVER_NAME}/";
-	} else {
-		$Jaeger::Base::BaseURL = 'https://jaeger.festing.org/';
-	}
+my $connection = "host=awn.festing.org;port=1284;user=jaeger;";
+$Jaeger::Base::BaseURL = 'https://jaeger.festing.org/';
+my $hostname = `hostname`;
+if($hostname =~ /^awn/) {
+	# If we're on Awn, connect locally.
+	$connection = "port=1284;";
+}
+if($ENV{SERVER_NAME}) {
+	$Jaeger::Base::BaseURL = "https://$ENV{SERVER_NAME}/";
 }
 
 $Jaeger::Base::Pgdbh = undef;

@@ -20,7 +20,7 @@ if($round && $number && $size) {
 		round => $round,
 		number => $number
 	);
-	if(!$photo || !$photo->file_crop()) {
+	if(!$photo) {
 		print $q->header(-status => 404);
 		print "Photo $round/$number not found\n";
 	} else {

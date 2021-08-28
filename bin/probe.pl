@@ -309,7 +309,7 @@ my @tests = (
 		uri => "/photo.cgi?round=300&number=18",
 		redirect => "/photo/2013/12/10/jaegers-office-view-with-snow",
 		success => 1,
-		expect => "/digitalpics/300/1600x1200/18.jpg",
+		expect => "/300/1600x1200/18.jpg",
 	},
 	{
 		uri => "/photo/2019/06/29/walking-along-english-bay-in-vancouver-2",
@@ -475,8 +475,6 @@ foreach my $test (@tests) {
 	}
 
 	my $url = $baseurl . $test->{uri};
-
-	next unless $test->{fetch_images};
 
 	print "$url  ";
 

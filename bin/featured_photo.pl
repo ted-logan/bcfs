@@ -48,7 +48,6 @@ print $featured->url(), "\n";
 # Write the featured photo template
 my $lf = new Jaeger::Lookfeel;
 $featured->{size} = "256x192";
-$featured->resize();
 my $html = $lf->featured_photo_template(
 	url => $featured->url(),
 	thumbnail => $featured->image_url(),

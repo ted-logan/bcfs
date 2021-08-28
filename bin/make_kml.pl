@@ -142,7 +142,6 @@ foreach my $photo (@photos) {
 	my $date = $photo->date_format();
 	my $url = $photo->url();
 	$photo->{size} = '640x480';
-	$photo->resize();
 	my $thumbnail = $photo->image_url();
 	print <<XML;
     <Placemark>

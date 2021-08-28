@@ -70,7 +70,6 @@ sub _html {
 		next unless $photo;
 
 		$photo->{size} = "256x192";
-		$photo->resize();
 
 		push @html, $self->lf()->photo_list(
 			url => $photo->url(),

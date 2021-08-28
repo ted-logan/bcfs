@@ -212,7 +212,6 @@ sub _browse_changelog_image {
 	my $photo = shift;
 
 	$photo->{size} = $Jaeger::Photo::ThumbnailSize;
-	$photo->resize();
 
 	my %params = (
 		image_url => $photo->image_url(),
@@ -344,7 +343,6 @@ sub _main {
 	}
 	if(my $image = $obj[0]->image()) {
 		my $size = "640x480";
-		$image->resize($size);
 		my $image_url = $image->image_url(size => $size);
 		push @navlink,
 			qq'<meta name="twitter:image" content="$image_url" />';
@@ -473,7 +471,6 @@ sub _photo_main {
 	}
 	if(ref $obj eq 'Jaeger::Photo') {
 		my $size = "640x480";
-		$obj->resize($size);
 		$params{photo} = $obj->image_url(size => $size);
 	}
 

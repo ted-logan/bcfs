@@ -114,4 +114,8 @@ for r in sorted(root.prefixes):
         sizes_in_storage = ','.join(sizes.keys())
         sizes_in_db = photo_in_db[16]
         if sizes_in_db != sizes_in_storage:
+            print("        Updating sizes to '%s' (for id=%d)" % (sizes_in_storage, photo_in_db[0]))
+            cur = conn.cursor()
             cur.execute('update photo set sizes = %s where id = %s', (sizes_in_storage, photo_in_db[0],))
+
+    conn.commit()

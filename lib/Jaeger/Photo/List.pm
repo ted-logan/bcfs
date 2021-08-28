@@ -37,7 +37,6 @@ sub html {
 
 	foreach my $photo (@$photos) {
 		$photo->{size} = $Jaeger::Photo::ThumbnailSize;
-		$photo->resize();
 
 		my $photo_icon_sphere;
 		if($photo->has_photosphere()) {

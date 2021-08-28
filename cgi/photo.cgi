@@ -141,10 +141,9 @@ if(my $round = $q->param('round')) {
 		# Good. The photo exists, and the user can see it.
 		if($q->param('size')) {
 			$page->{size} = $q->param('size');
-		} elsif($page->native() > 1600) {
+		} elsif(($page->width() > 1600) || ($page->height() > 1200)) {
 			$page->{size} = '1600x1200';
 		}
-		$page->resize();
 
 	} elsif($user) {
 		# The photo exists, but the logged-in user does not have

@@ -1012,7 +1012,6 @@ sub inline_photo {
 	if($photo) {
 		# Make sure an appropiate thumbnail exists
 		$photo->{size} = $Jaeger::Photo::ChangelogEmbedSize;
-		$photo->resize();
 
 		my $photo_icon_sphere;
 		if($photo->has_photosphere()) {
