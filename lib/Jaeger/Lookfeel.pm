@@ -618,6 +618,8 @@ sub _photo_list_main {
 		$params{subtitle} = '&nbsp;';
 	}
 
+	$params{redirect} = $obj->url();
+
 	if(Jaeger::User->Login()) {
 		$params{loginout} = qq'<a href="/logout.cgi">Log out</a>';
 	} else {
@@ -672,6 +674,18 @@ sub _photo_list_main {
 
 	$params{analytics} = $self->analytics();
 
+	if(ref $obj->photos()) {
+		$params{photocount} = scalar(@{$obj->photos()});
+
+		my $logged_in_user = Jaeger::User->Login();
+		if($logged_in_user && $logged_in_user->status() >= 30) {
+			$params{photomultiedit} = $self->photo_list_multiedit();
+			$params{subtitle} .= ' (<a href="javascript:select_photos(true);">Select all</a>)';
+		}
+	} else {
+		$params{photocount} = 0;
+	}
+
 	return %params;
 }
 
@@ -714,15 +728,35 @@ sub _photo_edit {
 #<input type="checkbox" name="collections" value="11" checked>Dawn of the Julian Era</input><br/>
 	my @this_photo_sets = @{$params{photo}->sets()};
 	$params{collections} = join('',
-		map { qq'<input type="checkbox" name="sets" value="' .
+		map { qq'<label><input type="checkbox" name="sets" value="' .
 			$_->id() . qq'" checked>' . $_->name() . 
-			qq'</input><br/>\n'}
+			qq'</input></label><br/>\n'}
 		@this_photo_sets);
 	my @all_sets = Jaeger::Photo::Set->Select();
 	$params{collections} .= join('',
-		map { qq'<input type="checkbox" name="sets" value="' .
-			$_->id() . qq'">' . $_->name() . qq'</input><br/>\n'}
+		map { qq'<label><input type="checkbox" name="sets" value="' .
+			$_->id() . qq'">' . $_->name() .
+			qq'</input></label><br/>\n'}
 		@all_sets);
+
+	return %params;
+}
+
+sub _photo_list_multiedit {
+	my $self = shift;
+	my %params = @_;
+
+	my @all_sets = Jaeger::Photo::Set->Select();
+	#<option value="1">Hong Kong 2012</option>
+	#<option value="2">India 2012</option>
+	#...
+	#<option value="26">Family</option>
+	$params{collections} = join('',
+		map { '<option value="' . $_->id() . '">' . $_->name() .
+			"</option>\n" } @all_sets);
+
+	$params{visibility} =
+		join('', map { qq'<option value="$_">$Jaeger::Changelog::Status{$_}</option>\n' } sort { $a <=> $b } keys %Jaeger::Changelog::Status);
 
 	return %params;
 }
@@ -1133,6 +1167,14 @@ sub _photo_list {
 		$params{location} = $self->photo_coordinates(
 			longitude => $params{longitude},
 			latitude => $params{latitude},
+		);
+	}
+
+	my $logged_in_user = Jaeger::User->Login();
+	if($logged_in_user && $logged_in_user->status() >= 30) {
+		$params{checkbox} = $self->photo_list_checkbox(
+			photo => $params{id},
+			'index' => $self->{photocount}++,
 		);
 	}
 

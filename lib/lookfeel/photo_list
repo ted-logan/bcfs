@@ -1,5 +1,5 @@
 <div style="float: left; padding-right: 1em; padding-bottom: 1em; width: 256px;">
-<div style="position: relative; width: 256px; height: 192px;">---photo_icon_sphere---<a href="---url---"><img src="---thumbnail---" border="0" title="---description---"></a></div>
+<div style="position: relative; width: 256px; height: 192px;">---checkbox------photo_icon_sphere---<a href="---url---"><img src="---thumbnail---" border="0" title="---description---"></a></div>
 <div style="white-space: nowrap; overflow: hidden; ---hiddencolor---">---description---</div>
 <div style="white-space: nowrap; overflow: hidden; ---hiddencolor---"><h3>---date---</h3></div>
 </div>

@@ -51,6 +51,36 @@ if(($status == 30) &&
 	$photo->update();
 }
 
+if(($status == 30) && ($q->param('submit') eq 'Update')) {
+	#my @new_tags = split $q->param('tags');
+	my $set_id = $q->param('sets');
+	my $set = Jaeger::Photo::Set->new_id($set_id);
+	my $status = $q->param('status');
+	foreach my $photoid ($q->param('id')) {
+		my $photo = Jaeger::Photo->new_id($photoid);
+		if($photo) {
+			if($set) {
+				warn "Adding photo $photo->{round}/$photo->{number} to set $set_id\n";
+				$set->add($photo);
+			}
+			if(defined $status) {
+				$photo->{status} = $status;
+				$photo->update();
+			}
+
+			#warn "Adding tags @new_tags to $photo->{round}/$photo->{number}\n";
+		}
+	}
+
+	if(my $redirect = $q->param('redirect')) {
+		unless($redirect =~ /^http/) {
+			$redirect = $Jaeger::Base::BaseURL . '/' . $redirect;
+		}
+		print $q->redirect($redirect);
+		exit;
+	}
+}
+
 my $uri = $ENV{REQUEST_URI};
 $uri =~ s/\?.*$//;
 

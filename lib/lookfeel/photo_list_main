@@ -12,6 +12,9 @@
 
 <body>
 
+<form action="/photo.cgi" method="post">
+<input type="hidden" name="redirect" value="---redirect---">
+
 <div class="phototitlebar article">
 <div>
 <h1>---phototitle---</h1>
@@ -21,11 +24,12 @@
 <a href="/search.cgi">Search</a> &bull;
 <a href="/photo/">Recent Photos</a>
 </div>
-<h3>---subtitle---</h3>
+<h3 id="subtitle">---subtitle---</h3>
 ---xrefs---
 </div>
 </div>
 
+---photomultiedit---
 <div class="photo_main">
 
 <div class="article">
@@ -45,5 +49,13 @@
 </div>
 
 </div>
+
+<script type="text/javascript">
+var photo_count = ---photocount---;
+var photo_count_selected = 0;
+</script>
+<script type="text/javascript" src="/js/photo.js"></script>
+
+</form>
 
 </body></html>

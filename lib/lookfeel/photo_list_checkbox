@@ -1,0 +1,5 @@
+<div class="photocheckbox">
+<label>
+<input type="checkbox" name="id" value="---photo---" id="photo---index---" onClick="update_selected();">
+</label>
+</div>

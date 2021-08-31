@@ -1,0 +1,13 @@
+<div class="article" id="multiedit" style="display:none">
+Add to photo set:
+<select name="sets">
+<option value=""></option>
+---collections---
+</select>
+Set visibility:
+<select name="status">
+<option value=""></option>
+---visibility---
+</select>
+<input type="submit" name="submit" value="Update">
+</div>

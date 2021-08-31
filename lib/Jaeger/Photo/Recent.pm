@@ -48,7 +48,7 @@ sub html {
 sub _url {
 	my $self = shift;
 
-	return $self->{url} = "/photo/";
+	return $self->{url} = $Jaeger::Base::BaseURL . "photo/";
 }
 
 1;

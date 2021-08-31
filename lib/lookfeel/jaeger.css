@@ -145,3 +145,15 @@ div.inline-photo {
 	margin-top: 1em;
 	margin-bottom: 1em;
 }
+div.photocheckbox {
+	position: absolute;
+	width: 100%;
+}
+div.photocheckbox:hover {
+	background-color: rgba(0,0,0,0.4);
+}
+div.photocheckbox label {
+	display: block;
+	width: 100%;
+	text-align: left;
+}

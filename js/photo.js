@@ -101,6 +101,54 @@ function show_edit() {
 	}
 }
 
+function update_selected() {
+	// Count the total number of photos selected
+	photo_count_selected = 0;
+	for(var i = 0; i < photo_count; i++) {
+		if(document.getElementById("photo"+i).checked) {
+			photo_count_selected++;
+		}
+	}
+	var subtitle = document.getElementById("subtitle");
+	if(subtitle) {
+		var text = photo_count + " photo";
+		if(photo_count != 0) {
+			text += "s";
+		}
+		if(photo_count_selected > 0) {
+			text += ", " + photo_count_selected + " selected";
+		}
+		text += " (";
+		if(photo_count_selected < photo_count) {
+			text += "<a href='javascript:select_photos(true);'>Select all</a>";
+		}
+		if(photo_count_selected < photo_count
+				&& photo_count_selected > 0) {
+			text += ", ";
+		}
+		if(photo_count_selected > 0) {
+			text += "<a href='javascript:select_photos(false);'>Select none</a>";
+		}
+		text += ")";
+		subtitle.innerHTML = text;
+	}
+	var multiedit = document.getElementById("multiedit");
+	if(multiedit) {
+		if(photo_count_selected > 0) {
+			multiedit.style.display = "block";
+		} else {
+			multiedit.style.display = "none";
+		}
+	}
+}
+
+function select_photos(value) {
+	for(var i = 0; i < photo_count; i++) {
+		document.getElementById("photo"+i).checked = value;
+	}
+	update_selected();
+}
+
 // Handle left-arrow and right-arrow keys to go to the previous or next photo
 document.onkeydown = checkKeycode;
 

@@ -44,6 +44,7 @@ sub html {
 		}
 
 		push @html, $self->lf()->photo_list(
+			id => $photo->id(),
 			url => $photo->url(),
 			thumbnail => $photo->image_url(),
 			description => $photo->description(),
