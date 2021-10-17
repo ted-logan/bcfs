@@ -41,8 +41,8 @@ sub new {
 			$self->{year} = $year;
 
 			my $next_year = $year + 1;
-			my $where = "time_begin >= '$year-01-01' and " .
-				"time_begin < '$next_year-01-01' and " .
+			my $where = "sort_date >= '$year-01-01' and " .
+				"sort_date < '$next_year-01-01' and " .
 				$self->statusquery();
 
 			unless(Count Jaeger::Changelog($where)) {
@@ -82,9 +82,9 @@ sub changelogs_by_year {
 	my $next_year = $year + 1;
 
 	return Jaeger::Changelog->Select(
-		"time_begin>='$year-01-01' and time_begin<'$next_year-01-01' ".
+		"sort_date>='$year-01-01' and sort_date<'$next_year-01-01' ".
 		"and " . $self->statusquery() .
-		' order by time_begin asc'
+		' order by sort_date asc'
 	);
 }
 
@@ -122,7 +122,7 @@ sub _html {
 	my @list;
 	my $last_month;
 	foreach my $changelog (@changelogs) {
-		my ($year, $month) = split /-/, $changelog->time_begin();
+		my ($year, $month) = split /-/, $changelog->sort_date();
 		if($month ne $last_month) {
 			push @list, $lf->browse_newmonth(
 				month => "$Jaeger::Base::Months[$month] $year"

@@ -80,6 +80,13 @@ my @tests = (
 		uri => "/changelog.cgi?browse=2019",
 		redirect => "/changelog/2019/",
 		success => 1,
+		expect => "Borrego",
+		exclude => "Haleakala",
+	},
+	{
+		# "Haleakala" is now showing up in 2018
+		uri => "/changelog/2018/",
+		success => 1,
 		expect => "Haleakala",
 	},
 	{

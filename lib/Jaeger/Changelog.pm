@@ -849,7 +849,7 @@ sub columns {
 sub _prev {
 	my $self = shift;
 
-	unless($self->{time_begin}) {
+	unless($self->{sort_date}) {
 		return undef;
 	}
 
@@ -860,7 +860,7 @@ sub _prev {
 		$level = 0;
 	}
 
-	$self->{prev} = $self->Select("time_begin = (select max(time_begin) from changelog where time_begin < '$self->{time_begin}' and status <= $level)");
+	$self->{prev} = $self->Select("sort_date = (select max(sort_date) from changelog where sort_date < '$self->{sort_date}' and status <= $level)");
 
 	return $self->{prev};
 }
@@ -869,7 +869,7 @@ sub _prev {
 sub _next {
 	my $self = shift;
 
-	unless($self->{time_begin}) {
+	unless($self->{sort_date}) {
 		return undef;
 	}
 
@@ -880,7 +880,7 @@ sub _next {
 		$level = 0;
 	}
 
-	$self->{next} = $self->Select("time_begin = (select min(time_begin) from changelog where time_begin > '$self->{time_begin}' and status <= $level)");
+	$self->{next} = $self->Select("sort_date = (select min(sort_date) from changelog where sort_date > '$self->{sort_date}' and status <= $level)");
 
 	return $self->{next};
 }
@@ -889,7 +889,7 @@ sub _next {
 sub _index {
 	my $self = shift;
 
-	my ($year) = $self->{time_begin} =~ /^(\d\d\d\d)-/;
+	my ($year) = $self->{sort_date} =~ /^(\d\d\d\d)-/;
 
 	$self->{index} = new Jaeger::Base;
 
