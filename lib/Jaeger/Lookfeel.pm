@@ -581,6 +581,12 @@ sub _photo_main {
 				$_->title() . "</a>"} @$xrefs);
 	}
 
+	if($logged_in_user && $logged_in_user->status() >= 20) {
+		$params{fullsize} = "<div><a href=\""
+		       	. $obj->image_url(size => "")
+		       	.  "\">Full size</a></div>";
+	}
+
 	return %params;
 }
 

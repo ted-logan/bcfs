@@ -514,7 +514,7 @@ sub _url {
 sub image_url {
 	my $self = shift;
 	my %params = @_;
-	my $size = $params{size} || $self->{size};
+	my $size = exists $params{size} ? $params{size} : $self->{size};
 
 	unless($size) {
 		foreach my $s (qw(full new)) {
