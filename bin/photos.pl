@@ -142,13 +142,6 @@ foreach my $round (@ARGV) {
 if(@ARGV) {
 	# Update photo sets, based on the beginning and ending date of the set
 	Jaeger::Photo::Set->AutoUpdateSets();
-
-	# Automatically update the thumbnails on the server
-	#
-	# TODO this is broken now. This should be replaced by an http query
-	# targeting the public site.
-#	print "Updating thumbnails\n";
-#	system "ssh honor2.festing.org src/bcfs/bin/thumbnail.pl @ARGV";
 }
 
 exit;
