@@ -343,10 +343,10 @@ sub import_round {
 	my %photos;
 
 	# read the cropped photos
-	if(-d "$Jaeger::Photo::Dir/$round/new") {
+	if(-d "$Jaeger::Photo::Dir/$round/full") {
 		print "Round $round: Scanning cropped photos ";
 
-		opendir DIR, "$Jaeger::Photo::Dir/$round/new";
+		opendir DIR, "$Jaeger::Photo::Dir/$round/full";
 
 		foreach my $file (grep /\.jpg/, readdir DIR) {
 			print '.';
