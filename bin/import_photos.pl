@@ -225,8 +225,8 @@ if(@new_rounds) {
 			or die "Can't finish photo import\n";
 	} else {
 		# If the local backup directory is not present, try to sync all
-		# photos to long-term storage on Hiro
-		system("cd $photodir && ./todo.pl && ./sync_to_ziyal.sh") == 0
+		# photos to long-term storage on Breq
+		system("cd $photodir && ./todo.pl && ./sync_to_breq.sh") == 0
 			or die "Can't finish photo import\n";
 	}
 	unlink @imports;

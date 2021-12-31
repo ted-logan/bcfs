@@ -102,7 +102,7 @@ if($0 =~ /update-round/) {
 # Updates the contents of the todo directory (which must exist)
 #
 # The first argument is the path (relative or absolute) to the round (which
-# will have subdirectories "todo", "raw", and "new").
+# will have subdirectories "todo" and "raw").
 sub update_todo {
 	my $round_path = shift;
 
@@ -120,7 +120,6 @@ sub update_todo {
 	}
 
 	mkdir "$round_path/full" unless -d "$round_path/full";
-	mkdir "$round_path/new" unless -d "$round_path/new";
 
 	# Read the list of all the files in the raw directory
 	my @files;
@@ -148,41 +147,9 @@ sub update_todo {
 
 	foreach my $file (@files) {
 		my $full = stat("$round_path/full/$file");
-		my $new = stat("$round_path/new/$file");
-
-		if($full && (!$new or $full->mtime > $new->mtime)) {
-			# Full-sized image that will be cropped down for posting
-			my ($width, $height) = qw(1600 1200);
-
-			my $img = new Image::Magick;
-			$img->Read("$round_path/full/$file");
-			my ($owidth, $oheight) = $img->Get('width', 'height');
-
-			my ($nwidth, $nheight);
-
-			my $aspect = $owidth / $oheight;
-			if($aspect > ($width / $height)) {
-				$nwidth = $width;
-				$nheight = int($width / $aspect);
-			} else {
-				$nwidth = int($height * $aspect);
-				$nheight = $height;
-			}
-
-			if(($nwidth > $owidth) || ($nheight > $oheight)) {
-				# Image is full-size anyway
-				link "$round_path/full/$file",
-					"$round_path/new/$file";
-			} else {
-				$img->Resize(width => $nwidth,
-					height => $nheight);
-				$img->Set(quality => 85);
-				$img->Write("$round_path/new/$file");
-			}
-		}
 
 		if($round eq 'lg360') {
-			if(-f "$round_path/new/$file" &&
+			if(-f "$round_path/full/$file" &&
 			       	!-f "$round_path/photosphere/$file") {
 				if(!-d "$round_path/photosphere") {
 					mkdir "$round_path/photosphere";
@@ -192,7 +159,7 @@ sub update_todo {
 			}
 		}
 
-		if(-f "$round_path/new/$file") {
+		if(-f "$round_path/full/$file") {
 			# File has been cropped; remove it from the todo dir
 			unlink "$round_path/todo/$file"
 				if -f "$round_path/todo/$file";
