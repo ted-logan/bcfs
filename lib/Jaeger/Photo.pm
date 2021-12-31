@@ -387,6 +387,8 @@ sub remote_resize {
 		$size = $self->size();
 	}
 
+	return 1 if $self->{sizes} =~ /$size/;
+
 	my $url = $Jaeger::Base::BaseURL . "thumbnail.cgi?" .
 		"round=$self->{round}&number=$self->{number}&size=$size";
 
