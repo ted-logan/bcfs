@@ -159,7 +159,7 @@ sub update_todo {
 			}
 		}
 
-		if(-f "$round_path/full/$file") {
+		if(-f "$round_path/full/$file" || -f "$round_path/new/$file") {
 			# File has been cropped; remove it from the todo dir
 			unlink "$round_path/todo/$file"
 				if -f "$round_path/todo/$file";
