@@ -16,7 +16,7 @@ my @import_dirs = (
 	<'/home/jaeger/.gvfs/gphoto2 mount on usb*/DCIM/100MEDIA'>,
 	<'/run/user/*/gvfs/*/Internal shared storage/DCIM/Camera'>,
 	<'/run/user/*/gvfs/*/GoPro MTP Client Disk Volume/DCIM/100GOPRO'>,
-	<'/run/user/*/gvfs/*/DCIM/100APPLE'>,
+	<'/run/user/*/gvfs/*/DCIM/*'>,
 );
 
 # Individual files that are imported are stored in this array
@@ -109,7 +109,7 @@ if(grep @ARGV, "--gdrive") {
 
 my %last_photo;
 
-foreach my $dir (@import_dirs) {
+foreach my $dir (sort @import_dirs) {
 	next unless -d $dir;
 	next unless opendir DIR, $dir;
 	print "Reading directory $dir\n";
@@ -123,6 +123,7 @@ foreach my $dir (@import_dirs) {
 
 	my $normalize = 1;
 	my $unlink = 1;
+	my $iphone = 0;
 
 	# For Android, I can put the .last_photo marker file in the same
 	# directory on the device. This doesn't seem to work on iOS, so keep a
@@ -133,8 +134,9 @@ foreach my $dir (@import_dirs) {
 	my $last_photo_file;
 	if(-f "$dir/.last_photo") {
 		$last_photo_file = "$dir/.last_photo";
-	} elsif($dir =~ /100APPLE/) {
+	} elsif($dir =~ /\d\d\d\d\d\d__/) {
 		$last_photo_file = "$photodir/.last_iphone_photo";
+		$iphone = 1;
 	}
 
 	if($last_photo_file) {
@@ -150,8 +152,8 @@ foreach my $dir (@import_dirs) {
 
 		@files = grep {$_ !~ /\.mp4$/i && $_ gt $last_photo} @files;
 
-		if($dir =~ /100APPLE/) {
-			@files = grep !/^IMG_E/, @files;
+		if($iphone) {
+			@files = grep /^IMG_\d\d\d\d.JPG$/, @files;
 		}
 
 		unless(scalar(@files)) {
@@ -197,8 +199,8 @@ foreach my $dir (@import_dirs) {
 			$newfile = $file;
 			$newfile =~ s/\.NIGHT//;
 			$newfile =~ s/\.JPG$/.jpg/;
-			printf "%s (of %d)\n",
-				$file, scalar(@files);
+			printf "%s -> %s (%d of %d)\n",
+				$file, $newfile, $count, scalar(@files);
 		}
 
 		system(sprintf("cp -a -i \"%s/%s\" \"%s/%s/raw/%s\"",
