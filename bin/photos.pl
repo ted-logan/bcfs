@@ -117,7 +117,7 @@ foreach my $round (@ARGV) {
 		# Parameters for other rounds
 		my $ask = { name => 'ask' };
 
-		printf "Round %d:\n", $round;
+		printf "Round %s:\n", $round;
 
 		$camera_timezone = get_timezone('Default camera', $ask);
 		if($camera_timezone->{name} eq 'ask') {
@@ -320,6 +320,7 @@ sub annotate_photo {
 	wait;
 
 	$photo->remote_resize($Jaeger::Photo::ThumbnailSize);
+	$photo->remote_resize($Jaeger::Photo::FullSize);
 }
 
 #
