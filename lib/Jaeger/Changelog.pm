@@ -384,7 +384,7 @@ sub edit {
 
 	my $tempfile = shift;
 
-	$self->_edit_pipe(qq(vi "+set textwidth=72"));
+	$self->_edit_pipe(qq(vi "+set textwidth=72 syntax=html"));
 
 	while(1) {
 		my $option = $self->_edit_menu();
