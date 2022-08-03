@@ -108,6 +108,7 @@ if(grep @ARGV, "--gdrive") {
 }
 
 my %last_photo;
+my %last_photo_mtime;
 
 foreach my $dir (sort @import_dirs) {
 	next unless -d $dir;
@@ -147,17 +148,27 @@ foreach my $dir (sort @import_dirs) {
 		chomp $last_photo;
 		close $fh;
 
-		print "Last photo is \"$last_photo\"\n";
+		my $last_photo_mtime = (stat($last_photo_file))[9];
+
+		print "Last photo is \"$last_photo\" at ",
+			scalar(localtime($last_photo_mtime)), "\n";
 		print "There are a total of ", scalar(@files), " candidate files in the input directory\n";
 
-		@files = grep {$_ !~ /\.mp4$/i && $_ gt $last_photo} @files;
+		@files = grep {$_ !~ /\.mp4$/i} @files;
 
 		if($iphone) {
+			# On iPhone, select photos to import that have an mtime
+			# greater than the last imported timestamp
+			@files = grep {(stat($dir . '/' . $_))[9] > $last_photo_mtime} @files;
 			@files = grep /^IMG_\d\d\d\d.JPG$/, @files;
+		} else {
+			# On Android, select photos to import that are
+			# lexographically greater than the last photo imported
+			@files = grep {$_ gt $last_photo} @files;
 		}
 
 		unless(scalar(@files)) {
-			warn "No photos newer than last photo \"$last_photo\", ignoring import directory $dir\n";
+			warn "No photos newer than last photo \"$last_photo\", ignoring import directory $dir\n\n";
 			next;
 		}
 
@@ -168,6 +179,8 @@ foreach my $dir (sort @import_dirs) {
 		$unlink = 0;
 
 		$last_photo{$last_photo_file} = @files[-1];
+		$last_photo_mtime{$last_photo_file} =
+			(stat($dir . '/' . @files[-1]))[9];
 	} else {
 		printf "Found %d files in %s\n", scalar(@files), $dir;
 	}
@@ -245,6 +258,11 @@ foreach my $last_photo_file (keys %last_photo) {
 	print LAST $last_photo{$last_photo_file}, "\n";
 
 	close LAST;
+
+	utime($last_photo_mtime{$last_photo_file},
+		$last_photo_mtime{$last_photo_file},
+		$last_photo_file)
+		or warn "Can't set last photo mtime for $last_photo_file: $!";
 }
 
 # Identifies the next numbered round
