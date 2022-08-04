@@ -69,8 +69,13 @@ foreach my $photo (@photos) {
 	my $date = $photo->date_format();
 
 	# Reformat names from Calvin's perspective
-	$photo->{description} =~ s/Kiesa/Mommy/;
-	$photo->{description} =~ s/Jaeger/Daddy/;
+	if($photo->date() gt '2019') {
+		$photo->{description} =~ s/Kiesa/Mom/;
+		$photo->{description} =~ s/Jaeger/Dad/;
+	} else {
+		$photo->{description} =~ s/Kiesa/Mommy/;
+		$photo->{description} =~ s/Jaeger/Daddy/;
+	}
 
 	print <<HTML;
 <a name="$photo->{round}/$photo->{number}"></a>

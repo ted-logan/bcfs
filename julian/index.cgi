@@ -11,5 +11,5 @@ use lib "$ENV{BCFS}/lib";
 use Jaeger::Calvin;
 
 my $helper = new Jaeger::Calvin('julian');
-$helper->{tagline} = 'The continuing adventures of an intrepid kindergartener';
+$helper->{tagline} = 'The continuing adventures of an intrepid grade-schooler';
 $helper->html();

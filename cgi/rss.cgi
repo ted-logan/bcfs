@@ -85,8 +85,8 @@ if($0 =~ /comment/) {
 		$photo->{url} = "http://${name}logan.com/?month=$month#" .
 			$photo->{round} . "/" . $photo->{number};
 
-		$photo->{description} =~ s/Kiesa/Mommy/;
-		$photo->{description} =~ s/Jaeger/Daddy/;
+		$photo->{description} =~ s/Kiesa/Mom/;
+		$photo->{description} =~ s/Jaeger/Dad/;
 	}
 } else {
 	# This is a changelog feed
