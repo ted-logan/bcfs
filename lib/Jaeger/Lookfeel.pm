@@ -26,7 +26,6 @@ use Jaeger::Photo::Set;
 use Jaeger::Photo::Year;
 use Jaeger::User;
 
-use Fortune;
 use POSIX qw(ceil strftime);
 
 @Jaeger::Lookfeel::ISA = qw(Jaeger::Base);
@@ -351,15 +350,6 @@ sub _main {
 		push @navlink, $meta;
 	}
 	$params{navlink} = join("\n", @navlink);
-
-	# get a quote
-	my $fortune = new Fortune;
-	$fortune->read("$ENV{BCFS}/lib/quotes");
-
-	my $quote = $fortune->quote();
-	$quote =~ s/$/<br\/>/mg;
-
-	$params{quote} = $quote;
 
 	$params{featuredphoto} = $self->featured_photo();
 
