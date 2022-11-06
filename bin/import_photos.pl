@@ -27,10 +27,25 @@ my @new_rounds;
 my %last_photo;
 my %last_photo_mtime;
 
+my $dryrun = 0;
+
+if(grep /^-n$/, @ARGV) {
+	$dryrun = 1;
+}
+
+chdir $photodir;
+my %existing_files;
+foreach my $existing_file (<"*/raw/*.jpg">) {
+	my ($round, $number) = $existing_file =~ m#^(.*?)/raw/(.*?).jpg$#;
+	push @{$existing_files{$number}}, $existing_file;
+}
+
 foreach my $dir (sort @import_dirs) {
 	next unless -d $dir;
 	next unless opendir DIR, $dir;
-	print "Reading directory $dir\n";
+	my $display_dir = $dir;
+	$display_dir =~ s/.*DCIM/DCIM/;
+	print "Reading directory $display_dir\n";
 	my @files = sort grep {/^[^.]/ && /\.(jpe?g|mp4)$/i} readdir DIR;
 	closedir DIR;
 
@@ -77,7 +92,21 @@ foreach my $dir (sort @import_dirs) {
 			# On iPhone, select photos to import that have an mtime
 			# greater than the last imported timestamp
 			@files = grep {(stat($dir . '/' . $_))[9] > $last_photo_mtime} @files;
-			@files = grep /^IMG_\d\d\d\d.JPG$/, @files;
+			@files = grep /^IMG_\d+.JPG$/, @files;
+
+			sub filter_existing_files {
+				my $file = shift;
+				my ($number) = $file =~ /^(.*).JPG/i;
+				if(exists $existing_files{$number}) {
+					print "Skipping $file\n";
+					return 0;
+				} else {
+					return 1;
+				}
+			}
+
+			# Also filter out files that already exist
+			@files = grep {filter_existing_files($_)} @files;
 		} else {
 			# On Android, select photos to import that are
 			# lexographically greater than the last photo imported
@@ -85,7 +114,7 @@ foreach my $dir (sort @import_dirs) {
 		}
 
 		unless(scalar(@files)) {
-			warn "No photos newer than last photo \"$last_photo\", ignoring import directory $dir\n\n";
+			print "\n";
 			next;
 		}
 
@@ -102,8 +131,13 @@ foreach my $dir (sort @import_dirs) {
 		printf "Found %d files in %s\n", scalar(@files), $dir;
 	}
 
-	my $round = new_round();
-	push @new_rounds, $round;
+	my $round;
+	if($dryrun) {
+		$round = "DRYRUN";
+	} else {
+		$round = new_round();
+		push @new_rounds, $round;
+	}
 
 	printf "Importing %d photos from %s to new round %s\n",
 		scalar(@files), $dir, $round;
@@ -133,15 +167,23 @@ foreach my $dir (sort @import_dirs) {
 				$file, $newfile, $count, scalar(@files);
 		}
 
-		system(sprintf("cp -a -i \"%s/%s\" \"%s/%s/raw/%s\"",
-			$dir, $file, $photodir, $round, $newfile)) == 0
-			or die "Unable to copy file $file: $!\n";
-		chmod 0644, "$photodir/$round/raw/$newfile";
+		unless($dryrun) {
+			system(sprintf("cp -a -i \"%s/%s\" \"%s/%s/raw/%s\"",
+				$dir, $file, $photodir, $round, $newfile)) == 0
+				or die "Unable to copy file $file: $!\n";
+			chmod 0644, "$photodir/$round/raw/$newfile";
+		}
 
 		if($unlink) {
 			push @imports, "$dir/$file";
 		}
 	}
+
+	print "\n";
+}
+
+if($dryrun) {
+	exit;
 }
 
 if(@new_rounds) {
