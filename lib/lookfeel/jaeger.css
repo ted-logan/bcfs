@@ -5,7 +5,6 @@ BODY {
 }
 a { color: #2d2; }
 a:active { color: #fff; }
-a:visited { color: #d34; }
 b { color: #ffe; }
 div.hpane {
 	position: relative;
