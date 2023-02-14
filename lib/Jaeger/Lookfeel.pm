@@ -728,7 +728,7 @@ sub _photo_edit {
 			$_->id() . qq'" checked>' . $_->name() . 
 			qq'</input></label><br/>\n'}
 		@this_photo_sets);
-	my @all_sets = Jaeger::Photo::Set->Select();
+	my @all_sets = Jaeger::Photo::Set->Select("1=1 order by id desc");
 	$params{collections} .= join('',
 		map { qq'<label><input type="checkbox" name="sets" value="' .
 			$_->id() . qq'">' . $_->name() .
@@ -742,7 +742,7 @@ sub _photo_list_multiedit {
 	my $self = shift;
 	my %params = @_;
 
-	my @all_sets = Jaeger::Photo::Set->Select();
+	my @all_sets = Jaeger::Photo::Set->Select("1=1 order by id desc");
 	#<option value="1">Hong Kong 2012</option>
 	#<option value="2">India 2012</option>
 	#...
