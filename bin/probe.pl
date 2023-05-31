@@ -110,10 +110,10 @@ my @tests = (
 	},
 	{
 		# Changelog only visible to logged-in users, human-readable url
-		uri => '/changelog/2019/03/24/rain',
+		uri => '/changelog/2019/04/29/working-in-london',
 		success => 0,
 		expect => "Password",
-		exclude => "citation needed",
+		exclude => "leftover punks",
 	},
 	{
 		# Query params at end of url
