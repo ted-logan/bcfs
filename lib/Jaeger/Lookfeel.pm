@@ -443,8 +443,6 @@ sub _main {
 		join('', map { "<li><a href=\"" . $_->url() . "\">" .
 			$_->name() . "</a></li>\n" } @photo_sets) . "</ul>\n";
 
-	$params{analytics} = $self->analytics();
-
 	return %params;
 }
 
@@ -562,8 +560,6 @@ sub _photo_main {
 		);
 	}
 
-	$params{analytics} = $self->analytics();
-
 	my $xrefs = $obj->xrefs();
 	if(@$xrefs > 0) {
 		$params{xrefs} = "Read more: " .
@@ -668,8 +664,6 @@ sub _photo_list_main {
 
 	$params{content} = $obj->html();
 
-	$params{analytics} = $self->analytics();
-
 	if(ref $obj->photos()) {
 		$params{photocount} = scalar(@{$obj->photos()});
 
@@ -755,27 +749,6 @@ sub _photo_list_multiedit {
 		join('', map { qq'<option value="$_">$Jaeger::Changelog::Status{$_}</option>\n' } sort { $a <=> $b } keys %Jaeger::Changelog::Status);
 
 	return %params;
-}
-
-sub analytics {
-	my $self = shift;
-
-	# Do not include analytics in any pre-production environment (in
-	# particular, alpha.festing.org and beta.festing.org).
-	
-	if($Jaeger::Base::BaseURL !~ /jaeger\.festing\.org/) {
-		return "";
-	}
-
-	# Do not include analytics tracking if the logged-in user is Jaeger, to
-	# avoid poluting the analytics data.
-	my $user = Jaeger::User->Login();
-
-	if($user && $user->status() >= 30) {
-		return "";
-	}
-
-	return $self->_lookfeel('analytics');
 }
 
 sub navlinks {

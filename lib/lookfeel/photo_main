@@ -12,7 +12,6 @@
 <meta name="twitter:image" content="---photo---" />
 ---navlink---
 <title>j&auml;gerfesting---title---</title>
----analytics---
 </head>
 
 <body onload="resizer()">
