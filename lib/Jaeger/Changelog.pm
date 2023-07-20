@@ -1177,7 +1177,7 @@ sub Navbar {
 	if(ref $package) {
 		$id = $package->id();
 		$lf = $package->lf();
-		$date = $package->date();
+		$date = $package->sort_date();
 	} else {
 		$id = 0;
 		$lf = Jaeger::Base::Lookfeel();
@@ -1195,8 +1195,8 @@ sub Navbar {
 	
 	if($date) {
 		@changelogs = (
-			reverse(Jaeger::Changelog->Select("status <= $level and time_begin >= '$date' order by time_begin limit 3")),
-			Jaeger::Changelog->Select("status <= $level and time_begin < '$date' order by time_begin desc limit 4"),
+			reverse(Jaeger::Changelog->Select("status <= $level and sort_date >= '$date' order by sort_date limit 4")),
+			Jaeger::Changelog->Select("status <= $level and time_begin < '$date' order by sort_date desc limit 3"),
 		);
 	} else {
 		@changelogs = Jaeger::Changelog->Select("status <= $level order by time_begin desc limit 5");
