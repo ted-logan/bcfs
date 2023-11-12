@@ -212,12 +212,6 @@ sub update {
 		$self->{olduri} = undef;
 	}
 
-	if($self->{key_date}) {
-		$self->{sort_date} = $self->{key_date};
-	} else {
-		$self->{sort_date} = $self->{time_begin};
-	}
-
 	# Update first, so we always have an id
 	my $rv = $self->SUPER::update();
 
@@ -324,19 +318,6 @@ sub create_uri {
 	}
 
 	return '/changelog/' . $date . '/' . $title;
-}
-
-sub sort_date {
-	my $self = shift;
-
-	my $sort_date = $self->{key_date};
-	if($sort_date) {
-		$sort_date =~ s/ \d\d:\d\d:\d\d$//;
-	} else {
-		$sort_date = $self->{time_begin};
-	}
-
-	return $sort_date;
 }
 
 # returns the newest changelog
@@ -762,6 +743,37 @@ sub import_file {
 		$changed = 1;
 	}
 
+	# We are using the "date" field in the human-editable version to
+	# represent two things:
+	# - the key date, which may be null if it's not relevant
+	# - the sort date, which will always be set.
+	#   - if the key date is not null, the sort date will be the key date
+	#     plus an optional hour offset
+	#   - if the key date is null, the sort date will always be the
+	#     beginning time (in this case, the "date" field in the editable
+	#     version will be missing
+	my $key_date;
+	my $sort_date;
+	if($header{date}) {
+		# A key date is specified. 
+		$key_date = $header{date};
+		$key_date =~ s/ \d\d:\d\d:\d\d$//;
+		$sort_date = $header{date};
+	} else {
+		# No key date is specified. Sort date will be the beginning
+		# time.
+		$key_date = undef;
+		$sort_date = $self->{time_begin};
+	}
+	if($self->{key_date} ne $key_date) {
+		$self->{key_date} = $key_date;
+		$changed = 1;
+	}
+	if($self->{sort_date} ne $sort_date) {
+		$self->{sort_date} = $sort_date;
+		$changed = 1;
+	}
+
 	if($header{date} ne $self->{key_date}) {
 		$self->{key_date} = $header{date};
 		$changed = 1;
@@ -823,7 +835,13 @@ sub export_file {
 	print TEMPFILE "Title:  \t$self->{title}\n";
 	print TEMPFILE "Begin:  \t$self->{time_begin}\n";
 	print TEMPFILE "End:    \t$self->{time_end}\n";
-	print TEMPFILE "Date:   \t$self->{key_date}\n";
+	if($self->{key_date}) {
+		my $sort_date = $self->{sort_date};
+		$sort_date =~ s/ 00:00:00$//;
+		print TEMPFILE "Date:   \t$sort_date\n";
+	} else {
+		print TEMPFILE "Date:   \t\n";
+	}
 	print TEMPFILE "Uri:    \t$self->{uri}\n";
 	print TEMPFILE "Status: \t$self->{status}\n";
 	print TEMPFILE "Summary:\t$self->{summary}\n";
