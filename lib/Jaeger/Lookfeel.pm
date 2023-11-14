@@ -177,7 +177,7 @@ sub _browse_changelog {
 	my %params = (
 		url => $changelog->url(),
 		title => $changelog->title(),
-		time_begin => $changelog->sort_date() || $changelog->time_begin(),
+		time_begin => $changelog->key_date() || $changelog->time_begin(),
 		visibility => $Jaeger::Changelog::Status{$changelog->status()},
 	);
 
