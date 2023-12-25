@@ -189,8 +189,10 @@ sub update_todo {
 		}
 		if(-d "$round_path/raw") {
 			unlink glob "$round_path/raw/*";
-			rmdir "$round_path/raw"
-				or warn "Can't remove $round_path/raw: $!\n";
+			unless(-f "$round_path/raw/.keep") {
+				rmdir "$round_path/raw"
+					or warn "Can't remove $round_path/raw: $!\n";
+			}
 		}
 	}
 
