@@ -48,6 +48,10 @@ $Jaeger::Photo::CacheDir = '/var/www/cache/dc';
 $Jaeger::Photo::ThumbnailSize = "256x192";
 # The size used for photos embedded into changelogs
 $Jaeger::Photo::ChangelogEmbedSize = "640x480";
+# The size used for photos included in RSS feed
+$Jaeger::Photo::FeedSize = "800x600";
+# The size used for full-sized photos
+$Jaeger::Photo::FullSize = "1600x1200";
 
 # makes sure timezone_id and location_id are set
 sub update {
@@ -619,7 +623,7 @@ sub _pubDate {
 sub content {
 	my $self = shift;
 
-	$self->{size} = '800x600';
+	$self->{size} = $Jaeger::Photo::FeedSize;
 	return $self->lf()->photo_rss(
 		title => $self->description(),
 		date => $self->date_format(),

@@ -320,6 +320,7 @@ sub annotate_photo {
 	wait;
 
 	$photo->remote_resize($Jaeger::Photo::ThumbnailSize);
+	$photo->remote_resize($Jaeger::Photo::FeedSize);
 	$photo->remote_resize($Jaeger::Photo::FullSize);
 }
 

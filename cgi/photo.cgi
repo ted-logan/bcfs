@@ -171,8 +171,12 @@ if(my $round = $q->param('round')) {
 		# Good. The photo exists, and the user can see it.
 		if($q->param('size')) {
 			$page->{size} = $q->param('size');
-		} elsif(($page->width() > 1600) || ($page->height() > 1200)) {
-			$page->{size} = '1600x1200';
+		} else {
+			my ($full_width, $full_height) =
+		       		split(/x/, $Jaeger::Photo::FullSize);
+			if(($page->width() > $full_width) || ($page->height() > $full_height)) {
+				$page->{size} = $Jaeger::Photo::FullSize;
+			}
 		}
 
 	} elsif($user) {
