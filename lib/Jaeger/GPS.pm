@@ -72,10 +72,12 @@ sub toString {
 		$elevation = sprintf " %.2f m", $self->elevation();
 	}
 
-	return sprintf "[%s] %.5f, %.5f%s",
+	return sprintf "[%s] %.5f %s %.5f %s%s",
 		scalar(localtime $self->date()),
-		$self->longitude(),
-		$self->latitude(),
+		abs($self->longitude()),
+		($self->longitude() >= 0 ? "E" : "W"),
+		abs($self->latitude()),
+		($self->latitude() >= 0 ? "N" : "S"),
 		$elevation;
 }
 
