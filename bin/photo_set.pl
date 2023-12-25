@@ -19,7 +19,7 @@ use Jaeger::User;
 binmode STDOUT, ':utf8';
 
 $Jaeger::User::Current = new Jaeger::User();
-$Jaeger::User::Current->{status} = 10;
+$Jaeger::User::Current->{status} = 20;
 
 foreach my $set (Jaeger::Photo::Set->Select()) {
 	my $dir = $set->directory();
