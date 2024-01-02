@@ -82,10 +82,6 @@ foreach my $dir (sort @import_dirs) {
 
 		my $last_photo_mtime = (stat($last_photo_file))[9];
 
-		print "Last photo is \"$last_photo\" at ",
-			scalar(localtime($last_photo_mtime)), "\n";
-		print "There are a total of ", scalar(@files), " candidate files in the input directory\n";
-
 		@files = grep {$_ !~ /\.mp4$/i} @files;
 
 		if($iphone) {
@@ -95,18 +91,38 @@ foreach my $dir (sort @import_dirs) {
 			@files = grep /^IMG_\d+.JPG$/, @files;
 
 			sub filter_existing_files {
+				my $dir = shift;
 				my $file = shift;
 				my ($number) = $file =~ /^(.*).JPG/i;
 				if(exists $existing_files{$number}) {
-					print "Skipping $file\n";
-					return 0;
+					# We've found a matching filename.
+
+					# Use the size on disk to determine if
+					# the file is different.
+					my $new_size = (stat("$dir/$file"))[7];
+
+					foreach my $existing_file (@{$existing_files{$number}}) {
+						my $existing_size = (stat($existing_file))[7];
+						if($existing_size == $new_size) {
+							print "SKIPPING $file\n";
+							return 0;
+						} else {
+							print "Duplicate file but different sizes:\n";
+							print "$file $new_size\n";
+							print "$existing_file $existing_size\n";
+							print "\n";
+						}
+					}
+
+					# None of the existing files matched
+					return 1;
 				} else {
 					return 1;
 				}
 			}
 
 			# Also filter out files that already exist
-			@files = grep {filter_existing_files($_)} @files;
+			@files = grep {filter_existing_files($dir, $_)} @files;
 		} else {
 			# On Android, select photos to import that are
 			# lexographically greater than the last photo imported
@@ -119,7 +135,6 @@ foreach my $dir (sort @import_dirs) {
 		}
 
 		print "Selecting only the ", scalar(@files), " files newer than last photo \"$last_photo\"\n";
-		print map { "\t$_\n"} @files;
 
 		$normalize = 0;
 		$unlink = 0;
