@@ -2,14 +2,15 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head profile="http://gmpg.org/xfn/1">
-<link REL="icon" HREF="/graphics/aicon.png" TYPE="image/png"/>
-<link rel="stylesheet" href="/jaeger.css" type="text/css"/>
+<link REL="icon" HREF="/graphics/aicon.png" TYPE="image/png">
+<link rel="stylesheet" href="/jaeger.css" type="text/css">
 ---screencss---
-<meta name="description" content="---description---" />
-<meta name="twitter:card" content="photo" />
-<meta name="twitter:site" content="@calvinsdad" />
-<meta name="twitter:title" content="---description---" />
-<meta name="twitter:image" content="---photo---" />
+<meta name="description" content="---description---">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@calvinsdad">
+<meta name="twitter:title" content="---description---">
+<meta name="twitter:image" content="---photo---">
+<meta property="og:image" content="---photo---">
 ---navlink---
 <title>j&auml;gerfesting---title---</title>
 </head>
@@ -57,7 +58,7 @@
 &copy; 1998-2024 Ted Logan.
 </p>
 <p>
-<a href="http://creativecommons.org/licenses/by-sa/2.5/"><img src="/graphics/somerights20.png" alt="Creative Commons some rights reserved" border="0"/></a>
+<a href="http://creativecommons.org/licenses/by-sa/2.5/"><img src="/graphics/somerights20.png" alt="Creative Commons some rights reserved" border="0"></a>
 </p>
 <p>
 This photo is licensed under a

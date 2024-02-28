@@ -318,9 +318,9 @@ sub _main {
 		push @navlink, qq'<link rel="canonical" href="$url" />';
 	}
 	push @navlink,
-		'<meta name="twitter:card" content="summary" />';
+		'<meta name="twitter:card" content="summary_large_image">';
 	push @navlink,
-		'<meta name="twitter:site" content="@calvinsdad" />';
+		'<meta name="twitter:site" content="@calvinsdad">';
 	if(my $summary = $obj[0]->summary()) {
 		# Summary should be plain text. Encode it.
 		$summary =~ s/&/&amp;/g;
@@ -328,9 +328,9 @@ sub _main {
 		$summary =~ s/</&lt;/g;
 		$summary =~ s/>/&gt;/g;
 		push @navlink,
-			qq'<meta name="description" content="$summary" />';
+			qq'<meta name="description" content="$summary">';
 		push @navlink,
-			qq'<meta name="twitter:description" content="$summary" />';
+			qq'<meta name="twitter:description" content="$summary">';
 	}
 	if(my $title = $obj[0]->title()) {
 		$title =~ s/&/&amp;/g;
@@ -338,13 +338,15 @@ sub _main {
 		$title =~ s/</&lt;/g;
 		$title =~ s/>/&gt;/g;
 		push @navlink,
-			qq'<meta name="twitter:title" content="$title" />';
+			qq'<meta name="twitter:title" content="$title">';
 	}
 	if(my $image = $obj[0]->image()) {
 		my $size = "640x480";
 		my $image_url = $image->image_url(size => $size);
 		push @navlink,
-			qq'<meta name="twitter:image" content="$image_url" />';
+			qq'<meta name="twitter:image" content="$image_url">';
+		push @navlink,
+			qq'<meta property="og:image" content="$image_url">';
 	}
 	if(my $meta = $obj[0]->meta()) {
 		push @navlink, $meta;
