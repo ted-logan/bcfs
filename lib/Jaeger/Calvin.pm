@@ -55,6 +55,10 @@ sub html {
 		}
 	};
 
+	if($month !~ /^\d\d\d\d-\d\d-\d\d$/) {
+		$month = $months[-1];
+	}
+
 	print "content-type: text/html; charset=UTF-8\n\n";
 
 	print <<HTML;
@@ -90,7 +94,7 @@ HTML
 	}
 
 	my $where = "id in " .
-		"(select id from ${name}_photo_month where month = '$month') ".
+		"(select id from ${name}_photo_month where month = " . $dbh->quote($month) . ") ".
 		"and status = 0 " .
 		"order by date desc";
 	my @photos = Jaeger::Photo->Select($where);
