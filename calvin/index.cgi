@@ -58,8 +58,13 @@ The continuing adventures of an intrepid middle-schooler
 
 HTML
 
-my $where = "id in (select id from calvin_photo_month where month = '$month') ".
-	"order by date desc";
+if($month !~ /^\d\d\d\d-\d\d-\d\d$/) {
+	$month = $months[-1];
+}
+
+my $where = "id in (select id from calvin_photo_month where month = " .
+	$dbh->quote($month) .") " .
+       	"order by date desc";
 my @photos = Jaeger::Photo->Select($where);
 
 foreach my $photo (@photos) {
