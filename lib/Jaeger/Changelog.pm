@@ -1214,7 +1214,7 @@ sub Navbar {
 	if($date) {
 		@changelogs = (
 			reverse(Jaeger::Changelog->Select("status <= $level and sort_date >= '$date' order by sort_date limit 4")),
-			Jaeger::Changelog->Select("status <= $level and time_begin < '$date' order by sort_date desc limit 3"),
+			Jaeger::Changelog->Select("status <= $level and sort_date < '$date' order by sort_date desc limit 3"),
 		);
 	} else {
 		@changelogs = Jaeger::Changelog->Select("status <= $level order by time_begin desc limit 5");
