@@ -51,8 +51,7 @@ def cloud_resize(r, number, new_size):
     elif 'new' in sizes:
         full_size = sizes['new']
     else:
-        print('Error: full-sized image for %s/%s not found' % (r, number))
-        return False
+        raise RuntimeError('Error: full-sized image for %s/%s not found' % (r, number))
 
     print('Full-size image found: %s' % full_size.name)
 
