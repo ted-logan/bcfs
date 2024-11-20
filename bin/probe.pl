@@ -438,6 +438,11 @@ my @tests = (
 		expect => "Jaeger with Paddington Bear at Paddington Station",
 	},
 	{
+		uri => "/photo.cgi?set=asdf",
+		success => 0,
+		expect => "Not found",
+	},
+	{
 		uri => "/photo.cgi?year=2018",
 		redirect => "/photo/2018/",
 		success => 1,

@@ -141,6 +141,9 @@ if(my $round = $q->param('round')) {
 
 } elsif(my $set = $q->param('set')) {
 	$page = Jaeger::Photo::Set->new_id($set);
+	unless($page) {
+		$page = new Jaeger::Photo::Notfound;
+	}
 
 } elsif(my $year = $q->param('year')) {
 	# display a thumbnail for a specific year
