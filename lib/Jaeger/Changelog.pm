@@ -115,7 +115,7 @@ sub Urimap {
 			$changelog = new Jaeger::Changelog::Browse($year);
 		} else {
 			# redirect to the "directory"
-			$changelog = Jaeger::Redirect("/changelog/$1/",
+			$changelog = new Jaeger::Redirect("/changelog/$1/",
 				Jaeger::Redirect::MOVED_PERMANENTLY);
 		}
 

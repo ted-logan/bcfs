@@ -90,6 +90,11 @@ my @tests = (
 		expect => "Haleakala",
 	},
 	{
+		uri => "/changelog/2024",
+		success => 1,
+		expect => "Winchester",
+	},
+	{
 		# Post a reply to a changelog
 		uri => "/changelog/1807.html/reply",
 		success => 0,
