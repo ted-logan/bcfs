@@ -37,6 +37,7 @@ sub latintoascii {
 		'ø' => 'o',
 		'ā' => 'a',
 		'ñ' => 'n',
+		'ʻ' => '',
 	);
 
 	if(exists $mapping{$char}) {
