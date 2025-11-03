@@ -973,8 +973,9 @@ sub _html {
 		$params{navigation} .= qq'<p><a href="$reply">Post comment</a></p>';
 	} else {
 		# Invite the user to log in to post
-		$reply =~ s/#/%23/;
-		$params{navigation} .= qq'<p><a href="/login.cgi?redirect=$reply" rel="nofollow">Log In</a> to post a comment.</p>';
+		$params{navigation} .= $self->lf()->login_to_post_comment(
+			redirect => $reply,
+		);
 	}
 
 	# show the comments attached to this changelog
