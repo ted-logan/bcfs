@@ -617,8 +617,7 @@ sub _photo_list_main {
 	if(Jaeger::User->Login()) {
 		$params{loginout} = qq'<a href="/logout.cgi">Log out</a>';
 	} else {
-		$params{loginout} = qq'<a href="/login.cgi?redirect=' .
-			$obj->url() . '">Log in</a>';
+		$params{loginout} = qq'<a href="/login.cgi">Log in</a>';
 	}
 
 	my $xrefs = $obj->xrefs();
