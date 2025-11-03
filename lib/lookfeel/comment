@@ -2,8 +2,11 @@
 <h3>Posted by ---user--- on ---date---</h3>
 <h3>---visibility---</h3>
 ---content---
-<hr noshade>
+<form action="/changelog/comment/---id---.html/reply" method="post">
 <small>
-<p><a href="/changelog/comment/---id---.html/reply" rel="nofollow">Reply</a></p>
+<p>
+<input type="submit" value="Reply">
+</p>
 ---navigation---
 </small>
+</form>
