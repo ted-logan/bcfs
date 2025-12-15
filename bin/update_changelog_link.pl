@@ -7,6 +7,8 @@ use lib "$ENV{BCFS}/lib";
 use Jaeger::Changelog;
 use Jaeger::User;
 
+binmode STDOUT, ':utf8';
+
 my $user = new Jaeger::User();
 $user->{status} = 30;
 
@@ -34,13 +36,16 @@ while(my $changelog = $iter->next()) {
 		}
 
 		if(defined($uri)) {
-			print "\t$uri\n";
 			my $target = Jaeger::Changelog::Urimap($uri, $user);
+			print "\t";
 			if(ref $target eq "Jaeger::Redirect") {
-				print "\t-> ", $target->{url}, "\n";
+				print $target->{url}, " <-";
+			} elsif(ref $target eq "Jaeger::Notfound") {
+				print "?";
 			} else {
-				print "\t-> $target\n";
+				print "\x{2705}";
 			}
+			print " $href\n";
 		}
 	}
 	print "\n";
