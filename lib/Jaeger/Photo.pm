@@ -25,11 +25,15 @@ use File::stat;
 use Jaeger::Location;
 use Jaeger::Timezone;
 use Jaeger::GPS;
+use Jaeger::Redirect;
 use Jaeger::PageRedirect;
 use Jaeger::Uri;
 use Jaeger::User;
 
 use Jaeger::Photo::List;
+use Jaeger::Photo::Login;
+use Jaeger::Photo::Notfound;
+use Jaeger::Photo::Recent;
 use Jaeger::Photo::Year;
 
 use Image::Magick;
@@ -52,6 +56,158 @@ $Jaeger::Photo::ChangelogEmbedSize = "640x480";
 $Jaeger::Photo::FeedSize = "800x600";
 # The size used for full-sized photos
 $Jaeger::Photo::FullSize = "1600x1200";
+
+# Decode the photo uri and return an object matching the page. This supports
+# both the older query parameter style (/photo.cgi?round=x&number=y) and the
+# newer human-readable style (/photo/yyyy/mm/dd/name). Clients using the older
+# style will get a redirect object pointing to the new url.
+sub Urimap {
+	my ($uri, $user) = @_;
+
+	my $q = Jaeger::Base::Query();
+	$uri =~ s/\?.*$//;
+
+	my $status = 0;
+	if($user) {
+		$status = $user->{status};
+	}
+
+	my $page;
+
+	if(my $round = $q->param('round')) {
+		if(my $number = $q->param('number')) {
+			# display a specific photo, assuming it exists
+			$page = Jaeger::Photo->Select(
+				round => $round,
+				number => $number
+			);
+
+			if($page && !$page->hidden()) {
+				if($status >= $page->status()) {
+					# Good. The photo exists, and the user can see
+					# it.
+					$page = new Jaeger::Redirect($page->url(),
+						Jaeger::Redirect::MOVED_PERMANENTLY);
+
+				} elsif($user) {
+					# The photo exists, but the logged-in user does
+					# not have permission to see the photo.
+					# Redirect to the photo entry page.
+					print $q->redirect(
+						$Jaeger::Base::BaseURL . "photo/");
+					exit;
+
+				} else {
+					# The photo exists, but the user is not logged
+					# in. Show a login page, which will redirect
+					# back here if successful.
+					$page = new Jaeger::Photo::Login($page);
+				}
+
+			} else {
+				# the photo doesn't exist
+				$page = new Jaeger::Photo::Notfound;
+			}
+
+		} else {
+			# display an index of a round, assuming it exists
+			$page = new Jaeger::Photo::List::Round($round);
+			if(@{$page->photos()} == 0) {
+				# No photos found for this round
+				$page = new Jaeger::Photo::Notfound;
+			} elsif($uri !~ m(^/photo\.cgi)) {
+				$page = new Jaeger::Redirect($page->url(),
+					Jaeger::Redirect::MOVED_PERMANENTLY);
+			}
+		}
+
+	} elsif(my $date = $q->param('date')) {
+		# display photos on a specific date
+		$page = new Jaeger::Photo::List::Date($date);
+		unless(ref($page) =~ /Notfound/) {
+			$page = new Jaeger::Redirect($page->url(),
+				Jaeger::Redirect::MOVED_PERMANENTLY);
+		}
+
+	} elsif(my $set = $q->param('set')) {
+		$page = Jaeger::Photo::Set->new_id($set);
+		unless($page) {
+			$page = new Jaeger::Photo::Notfound;
+		}
+
+	} elsif(my $year = $q->param('year')) {
+		# display a thumbnail for a specific year
+		$page = new Jaeger::Redirect($Jaeger::Base::BaseURL . "photo/$year/",
+			Jaeger::Redirect::MOVED_PERMANENTLY);
+
+	} elsif($uri =~ m(^/photo/(\d\d\d\d)$)) {
+		$page = new Jaeger::Redirect($Jaeger::Base::BaseURL . "photo/$1/",
+			Jaeger::Redirect::MOVED_PERMANENTLY);
+
+	} elsif($uri =~ m(^/photo/(\d\d\d\d)/$)) {
+		# New-style uri: Display a thumbnail for a specific year
+		$page = new Jaeger::Photo::Year($1);
+
+	} elsif($uri =~ m(^/photo/(\d\d\d\d)/(\d\d)/?$)) {
+		# Display photos from a specific month
+		my $date = "$1-$2";
+		$page = new Jaeger::Photo::List::Month($date);
+
+	} elsif($uri =~ m(^/photo/(\d\d\d\d)/(\d\d)/(\d\d)/?$)) {
+		# New-style uri: Display photos on a specific date
+		my $date = "$1-$2-$3";
+		$page = new Jaeger::Photo::List::Date($date);
+
+	} elsif($page = Jaeger::Photo->Select(uri => $uri)) {
+		# Cool, found a page
+		if($status >= $page->status()) {
+			# Good. The photo exists, and the user can see it.
+			if($q->param('size')) {
+				$page->{size} = $q->param('size');
+			} else {
+				my ($full_width, $full_height) =
+					split(/x/, $Jaeger::Photo::FullSize);
+				if(($page->width() > $full_width) || ($page->height() > $full_height)) {
+					$page->{size} = $Jaeger::Photo::FullSize;
+				}
+			}
+
+		} elsif($user) {
+			# The photo exists, but the logged-in user does not have
+			# permission to see the photo.  Redirect to the photo entry
+			# page.
+			my $url = $Jaeger::Base::BaseURL . "photo/";
+			$page = new Jaeger::Redirect($url,
+				Jaeger::Redirect::MOVED_TEMPORARILY);
+
+		} else {
+			# The photo exists, but the user is not logged in. Show a login
+			# page, which will redirect back here if successful.
+			$page = new Jaeger::Photo::Login($page);
+		}
+
+	} elsif(my $redirect = Jaeger::PageRedirect->Select(uri => $uri)) {
+		$page = new Jaeger::Redirect(
+			$redirect->{redirect},
+			Jaeger::Redirect::MOVED_PERMANENTLY);
+
+	} elsif($uri eq '/photo' or $uri =~ '/photo.cgi') {
+		# Redirect permanently to the new photo url, /photo/
+		$page = new Jaeger::Redirect($Jaeger::Base::BaseURL . 'photo/',
+			Jaeger::Redirect::MOVED_PERMANENTLY);
+
+	} elsif($uri eq '/photo/') {
+		# Display the most recent photos
+		$page = new Jaeger::Photo::Recent();
+
+	} else {
+		# Invalid uri, not found
+		$page = new Jaeger::Photo::Notfound;
+
+	}
+
+	return $page;
+}
 
 # makes sure timezone_id and location_id are set
 sub update {
