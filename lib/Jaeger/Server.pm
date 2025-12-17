@@ -37,7 +37,10 @@ sub handle_request {
 	# TODO clean up context, set global variables like $cgi
 	$Jaeger::Base::Ids = ();
 	$Jaeger::Base::Query = $cgi;
+	$Jaeger::User::Current = 0;
 	$lf->{cookies} = undef;
+
+	my $user = Jaeger::User->Login();
 
 	# do something
 	my $uri = $cgi->request_uri();
@@ -47,9 +50,9 @@ sub handle_request {
 	my $page;
 
 	if($uri =~ m"^/changelog") {
-		$page = Jaeger::Changelog::Urimap($uri);
+		$page = Jaeger::Changelog::Urimap($uri, $user);
 	} elsif($uri =~ m"^/photo" || $uri =~ m"^/photo.cgi") {
-		$page = Jaeger::Photo::Urimap($uri);
+		$page = Jaeger::Photo::Urimap($uri, $user);
 	}
 
 	warn "got a page: $page\n";
