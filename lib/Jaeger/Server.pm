@@ -62,6 +62,7 @@ sub handle_request {
 	print "HTTP/1.1 $status $message\r\n";
 	if(ref($page) eq 'Jaeger::Redirect') {
 		print "Location: $page->{url}\r\n";
+		print "\r\n";
 		return;
 	}
 
