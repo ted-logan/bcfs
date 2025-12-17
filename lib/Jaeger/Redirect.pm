@@ -15,9 +15,15 @@ sub new {
 
 	my $self = bless {}, $package;
 	$self->{url} = shift;
-	$self->{code} = shift;
+	$self->{code} = shift || MOVED_TEMPORARILY;
 
 	return $self;
+}
+
+sub http_status {
+	my $self = shift;
+
+	return $self->{code};
 }
 
 package Jaeger::ClientRedirect;
