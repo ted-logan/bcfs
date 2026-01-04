@@ -451,7 +451,7 @@ sub _edit_series {
 			print "($letter) $legal_options{$letter}\n";
 		}
 
-		print "Your choice, master?\n> ";
+		print "Your choice:\n> ";
 
 		my $option;
 		do {
@@ -661,7 +661,7 @@ sub _edit_menu {
 		print "($letter) $value\n";
 	}
 
-	print "Your choice, master?\n> ";
+	print "Your choice:\n> ";
 
 	do {
 		my $option = lc <STDIN>;
