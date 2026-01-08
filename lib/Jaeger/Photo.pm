@@ -20,6 +20,7 @@ use Jaeger::Lookfeel;
 use Carp;
 
 use Encode qw(decode);
+use File::Basename qw(dirname);
 use File::stat;
 
 use Jaeger::Location;
@@ -522,7 +523,9 @@ sub resize {
 
 	return 1 if $self->{sizes} =~ /$size/;
 
-	unless(system("$ENV{BCFS}/bin/cloud_resize.py " .
+	my $bindir = dirname(__FILE__) . '../../bin';
+
+	unless(system("${bindir}/cloud_resize.py " .
 		"--round=\"$self->{round}\" " .
 		"--number=\"$self->{number}\" " .
 		"--size=\"$size\" > /dev/null") == 0) {

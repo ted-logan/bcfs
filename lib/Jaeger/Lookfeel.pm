@@ -26,11 +26,12 @@ use Jaeger::Photo::Set;
 use Jaeger::Photo::Year;
 use Jaeger::User;
 
+use File::Basename qw(dirname);
 use POSIX qw(ceil strftime);
 
 @Jaeger::Lookfeel::ISA = qw(Jaeger::Base);
 
-$Jaeger::Lookfeel::Templatedir = $ENV{BCFS} . '/lib/lookfeel';
+$Jaeger::Lookfeel::Templatedir = dirname(__FILE__) . '/../lookfeel';
 
 sub new {
 	my $package = shift;
