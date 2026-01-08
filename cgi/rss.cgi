@@ -51,18 +51,15 @@ if($0 =~ /comment/) {
 		"mtime >= now() + interval '1 week ago' " .
 		"order by mtime desc"
 	);
-} elsif($0 =~ /(calvin|julian)/) {
-	# This is Calvin or Julian's photo feed
+} elsif($0 =~ /(julian)/) {
+	# This is Julian's photo feed
 	my $name = $1;
 	my $ucname = ucfirst $name;
 
 	$feed->{title} = "${ucname}'s Pictures";
-	if($name eq 'calvin') {
+	if($name eq 'julian') {
 		$feed->{description} =
-			"The continuing adventures of an intrepid middle-schooler";
-	} elsif($name eq 'julian') {
-		$feed->{description} =
-			"The continuing adventures of an intrepid kindergartener";
+			"The continuing adventures of an intrepid grade-schooler";
 	}
 	$feed->{noun} = "photo";
 	$feed->{link} = "http://${name}logan.com/";
