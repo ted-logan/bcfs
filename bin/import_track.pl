@@ -12,7 +12,8 @@ use POSIX qw(strftime);
 use Time::Local;
 use XML::DOM;
 
-use lib '/home/jaeger/src/bcfs/lib';
+use lib::relative '../lib';
+
 use Jaeger::GPS;
 use Jaeger::Photo::List;
 use Jaeger::Photo::List::Date;

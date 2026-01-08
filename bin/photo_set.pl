@@ -5,9 +5,8 @@
 
 use strict;
 
-die "\$BCFS must be set!\n" unless $ENV{BCFS};
+use lib::relative '../lib';
 
-use lib "$ENV{BCFS}/lib";
 use Encode qw(decode);
 use File::Copy;
 use File::Path qw(make_path);

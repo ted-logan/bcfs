@@ -8,7 +8,8 @@
 
 use strict;
 
-use lib '/home/jaeger/src/bcfs/lib';
+use lib::relative '../lib';
+
 use Jaeger::GPS;
 use Jaeger::Photo;
 

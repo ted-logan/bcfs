@@ -8,7 +8,7 @@ use strict;
 use POSIX;
 use Encode qw(decode);
 
-use lib "$ENV{BCFS}/lib";
+use lib::relative '../lib';
 
 use Jaeger::Photo;
 use Jaeger::Uri;

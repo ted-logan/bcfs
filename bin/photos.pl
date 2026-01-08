@@ -14,9 +14,8 @@
 
 use strict;
 
-die "\$BCFS must be set!\n" unless $ENV{BCFS};
+use lib::relative '../lib';
 
-use lib "$ENV{BCFS}/lib";
 use Jaeger::Photo;
 
 use Data::Dumper;

@@ -13,7 +13,7 @@
 
 use strict;
 
-use lib "$ENV{BCFS}/lib";
+use lib::relative '../lib';
 
 use CGI;
 

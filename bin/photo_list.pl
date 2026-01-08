@@ -8,7 +8,7 @@ use File::Copy;
 use File::Path qw(make_path);
 use URI;
 
-use lib "$ENV{BCFS}/lib";
+use lib::relative '../lib';
 
 use Jaeger::Photo;
 

@@ -17,7 +17,8 @@
 
 use strict;
 
-use lib "$ENV{BCFS}/lib";
+use lib::relative '../lib';
+
 use Jaeger::Lookfeel;
 use Jaeger::Photo;
 use Jaeger::Photo::Recent;

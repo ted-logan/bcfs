@@ -8,9 +8,7 @@
 
 use strict;
 
-die "\$BCFS must be set!\n" unless $ENV{BCFS};
-
-use lib "$ENV{BCFS}/lib";
+use lib::relative '../lib';
 
 use Jaeger::Search;
 use Jaeger::Lookfeel;

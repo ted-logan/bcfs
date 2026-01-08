@@ -10,3 +10,10 @@ expect it to be useful to anyone else.
 
 This codebase originated in cvs, and was migrated to svn, and eventually
 to git.
+
+## Dependencies
+
+An extremely incomplete list of dependencies not part of native Perl
+(this mostly covers new dependencies I'm adding, not existing ones):
+
+* [lib::relative](https://metacpan.org/pod/lib::relative)
