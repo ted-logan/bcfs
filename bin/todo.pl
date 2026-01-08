@@ -29,7 +29,8 @@ my %todo = map {$_, undef} <todo/*>;
 my %months;
 
 foreach my $file (sort {(stat $a)[9] <=> (stat $b)[9]} <*/todo/*>) {
-	my ($round, $number) = $file =~ m(^(\w+)/todo/(\w+)\.jpg);
+	my ($round, $number) = $file =~ m(^(\w+)/todo/(.*)\.jpg$)
+		or next;
 	my $todo = "todo/${round}_${number}.jpg";
 	delete $todo{$todo};
 	unless(-f $todo) {
