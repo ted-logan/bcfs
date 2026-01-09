@@ -27,6 +27,7 @@ use Jaeger::Photo::Year;
 use Jaeger::User;
 
 use File::Basename qw(dirname);
+use Log::Any qw($log);
 use POSIX qw(ceil strftime);
 
 @Jaeger::Lookfeel::ISA = qw(Jaeger::Base);
@@ -56,7 +57,7 @@ sub _lookfeel {
 		$template = <LOOKFEEL>;
 		close LOOKFEEL;
 	} else {
-		warn "Can't open $file: $!";
+		$log->warn("Can't open $file: $!");
 	}
 
 	return $template;
@@ -73,7 +74,7 @@ sub AUTOLOAD {
 		# we might have a section-specific thing we need to do
 		my %params = eval "\$self->_$page(\@_)";
 		if($@) {
-			warn "lookfeel eval error: $@\n";
+			$log->warn "lookfeel eval error: $@\n";
 		}
 		unless(%params) {
 			%params = @_;
@@ -100,7 +101,7 @@ sub Update {
 	my ($template, $content) = @_;
 
 	if($template =~ m#/#) {
-		warn "Template name with suspicous '/'";
+		$log->warn "Template name with suspicous '/'";
 		return 0;
 	}
 	my $file = $Jaeger::Lookfeel::Templatedir . '/' . $template;
@@ -109,7 +110,7 @@ sub Update {
 		close TEMPLATE;
 		return 1;
 	} else {
-		warn "Unable to open $file for writing: $!";
+		$log->warn "Unable to open $file for writing: $!";
 		return 0;
 	}
 }
