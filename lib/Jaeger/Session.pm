@@ -6,7 +6,7 @@ use Jaeger::Base;
 
 @Jaeger::Session::ISA = qw(Jaeger::Base);
 
-use Carp;
+use Log::Any qw($log), default_adapter => 'Stderr';
 use POSIX;
 
 sub table {
@@ -42,7 +42,7 @@ sub Create {
 		# tries to use it
 	} while($package->Count(key => $self->{key}));
 
-	warn "Jaeger::Session->Create(): Created key $self->{key} for $user->{login}\n";
+	$log->info("Jaeger::Session->Create(): Created key $self->{key} for $user->{login}");
 
 	return $self;
 }

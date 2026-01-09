@@ -12,6 +12,8 @@ use strict;
 
 use Jaeger::Base;
 
+use Log::Any qw($log), default_adapter => 'Stderr';
+
 @Jaeger::Mapper::ISA = qw(Jaeger::Base);
 
 # Parameters:
@@ -27,7 +29,7 @@ sub Map {
 
 	my $sql = "select * from $params{table} where $params{idfield} = $params{id}";
 	my $sth = Jaeger::Base::Pgdbh()->prepare($sql);
-	$sth->execute() or warn "$sql;\n";
+	$sth->execute() or $log->error("$sql\n");
 
 	my $field = $params{field};
 	$field =~ s/_id//;

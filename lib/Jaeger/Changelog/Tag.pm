@@ -8,6 +8,8 @@ use Jaeger::Base;
 use Jaeger::Lookfeel;
 use Jaeger::User;
 
+use Log::Any qw($log), default_adapter => 'Stderr';
+
 @Jaeger::Changelog::Tag::ISA = qw(Jaeger::Base);
 
 @Jaeger::Changelog::Tag::Sizes = qw(smaller small medium large larger x-large xx-large);
@@ -70,7 +72,7 @@ sub _all_tags {
 	my $tags = Jaeger::Base::Pgdbh()->selectall_arrayref($sql);
 
 	unless($tags) {
-		warn "Select tags: $sql;\n";
+		$log->error("Select tags: $sql;");
 		return [];
 	}
 

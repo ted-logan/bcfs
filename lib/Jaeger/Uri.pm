@@ -5,8 +5,8 @@ package Jaeger::Uri;
 use strict;
 use utf8;
 
-use Carp;
 use Encode qw(encode);
+use Log::Any qw($log), default_adapter => 'Stderr';
 
 sub MakeUriFromTitle {
 	my $title = shift;
@@ -44,8 +44,8 @@ sub latintoascii {
 	if(exists $mapping{$char}) {
 		return $mapping{$char};
 	} else {
-		carp "Unrecogonized non-ascii code point $char (", ord($char),
-			")";
+		$log->warn("Unrecogonized non-ascii code point $char (" .
+			 ord($char) . ")");
 		return '?';
 	}
 }

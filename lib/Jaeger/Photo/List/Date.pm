@@ -12,7 +12,7 @@ package	Jaeger::Photo::List::Date;
 
 use strict;
 
-use Carp;
+use Log::Any qw($log), default_adapter => 'Stderr';
 use Time::Local;
 
 use Jaeger::Photo::Notfound;
@@ -53,7 +53,7 @@ sub new {
 
 		} else {
 			# invalid date
-			carp "Jaeger::Photo::List::Date->new(): Invalid date $date";
+			$log->error("Jaeger::Photo::List::Date->new(): Invalid date $date");
 		}
 
 		my $photos = $self->photos();
@@ -116,7 +116,7 @@ sub _prev {
 		$self->unixdate() .
 		" and " . $self->statusquery();
 	my $sth = $self->dbh()->prepare($sql);
-	$sth->execute() or warn "$sql;\n";
+	$sth->execute() or $log->error("$sql;");
 
 	my ($prev) = $sth->fetchrow_array();
 	if($prev) {
@@ -135,7 +135,7 @@ sub _next {
 		$self->unixdate() .
 		" and " . $self->statusquery();
 	my $sth = $self->dbh()->prepare($sql);
-	$sth->execute() or warn "$sql;\n";
+	$sth->execute() or $log->error("$sql;");
 
 	my ($next) = $sth->fetchrow_array();
 	if($next) {

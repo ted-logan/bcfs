@@ -8,6 +8,8 @@ use Jaeger::Base;
 use Jaeger::Photo;
 use Jaeger::Photo::List;
 
+use Log::Any qw($log), default_adapter => 'Stderr';
+
 @Jaeger::Photo::Set::ISA = qw(Jaeger::Photo::List);
 
 # Select all sets with beginning and ending dates set. For those sets, check
@@ -66,7 +68,7 @@ sub add {
 			$self->id() . ", " .
 			$photo->id() . ")";
 		$self->dbh()->do($sql)
-			or warn "$sql;\n";
+			or $log->error("$sql;");
 	}
 }
 
@@ -100,10 +102,10 @@ sub auto_update_set {
 		" and date <= " . $self->dbh()->quote($self->{date_end}) .
 		" and id not in (select photo_id from photo_set_map where photo_set_id = $self->{id})";
 
-	warn "About to update photo set $self->{id}: $self->{date_begin} -- $self->{date_end}\n";
+	$log->info("About to update photo set $self->{id}: $self->{date_begin} -- $self->{date_end}");
 
 	$self->Pgdbh()->do($sql)
-		or warn $sql;
+		or $log->error($sql);
 }
 
 1;

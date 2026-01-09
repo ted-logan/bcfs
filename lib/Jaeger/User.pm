@@ -20,7 +20,7 @@ use Jaeger::Base;
 use Jaeger::User::List;
 use Jaeger::Session;
 
-use Carp;
+use Log::Any qw($log), default_adapter => 'Stderr';
 
 # What the various status codes mean
 %Jaeger::User::Status = (
@@ -54,7 +54,7 @@ sub update {
 
 	# complain unless a login is given
 	unless($self->{login}) {
-		carp "Jaeger::User->update(): login must be set";
+		$log->error("Jaeger::User->update(): login must be set");
 		return undef;
 	}
 
@@ -63,19 +63,19 @@ sub update {
 
 	# complain unless status is set
 	unless(defined $self->{status}) {
-		carp "Jaeger::User->update(): status must be set";
+		$log->error("Jaeger::User->update(): status must be set");
 		return undef;
 	}
 
 	# complain unless password is set
 	unless($self->{password}) {
-		carp "Jaeger::User->update(): password must be set";
+		$log->error("Jaeger::User->update(): password must be set");
 		return undef;
 	}
 
 	# complain unless the e-mail is set
 	unless($self->{email}) {
-		carp "Jaeger::User->update(): email must be set";
+		$log->error("Jaeger::User->update(): email must be set");
 		return undef;
 	}
 
@@ -294,7 +294,7 @@ sub log_access {
 	}
 
 	$self->dbh()->do($sql)
-		or warn "$sql;\n";
+		or $log->error("$sql;");
 }
 
 #
@@ -353,7 +353,7 @@ sub cookie {
 		# the first time a customer tries to use it
 	} while(Jaeger::User->Count(cookie => $self->{cookie}));
 
-	warn "Jaeger::User->cookie(): Created cookie $self->{cookie} for $self->{login}\n";
+	$log->info("Jaeger::User->cookie(): Created cookie $self->{cookie} for $self->{login}");
 
 	$self->update();
 

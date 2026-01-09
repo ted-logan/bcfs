@@ -25,6 +25,7 @@ use Jaeger::Photo::List::Date;
 use Jaeger::Redirect;
 use Jaeger::Uri;
 
+use Log::Any qw($log), default_adapter => 'Stderr';
 use POSIX;
 
 @Jaeger::Changelog::ISA = qw(Jaeger::Base);
@@ -238,7 +239,7 @@ sub update {
 				"select id from tag where name in (" .
 				join(', ', map {"'$_'"} @delete_tags) . "))";
 			Jaeger::Base::Pgdbh()->do($sql)
-				or warn "Delete tags: $sql;\n";
+				or $log->error("Delete tags: $sql;");
 		}
 
 		$self->{_tags} = $self->{tags};
@@ -265,7 +266,7 @@ sub add_tag {
 			my $sql = "insert into tag (name) values ('" .
 				$tag . "')";
 			unless(Jaeger::Base::Pgdbh()->do($sql)) {
-				warn "Insert tag: $sql;\n";
+				$log->error("Insert tag: $sql;");
 				return;
 			}
 		}
@@ -275,7 +276,7 @@ sub add_tag {
 	my $sql = "insert into changelog_tag_map " .
 		"values ($id, $self->{id})";
 	Jaeger::Base::Pgdbh()->do($sql)
-		or warn "Add tag $tag: $sql;\n";
+		or $log->error("Add tag $tag: $sql;");
 }
 
 sub find_key_date {
@@ -1085,13 +1086,13 @@ sub update_photo_xref {
 		my $photo = $self->fetch_inline_photo_tag($tag);
 
 		if(!defined($photo) || $photo->hidden()) {
-			warn "Changelog ", $self->id(),
-				" references missing photo $tag\n";
+			$log->warn("Changelog " . $self->id() .
+				" references missing photo $tag");
 		} else {
 			if($photos{$photo->id()}) {
-				warn "Changelog ", $self->id(),
-					" references photo ", $photo->uri(),
-					" multiple times\n";
+				$log->warn("Changelog " . $self->id() .
+					" references photo " . $photo->uri() .
+					" multiple times");
 			} else {
 				$photos{$photo->id()} = $photo;
 				# Make sure the photo is resized for the
@@ -1151,7 +1152,7 @@ sub update_photo_xref {
 	my $photo_xref = $self->dbh()->selectcol_arrayref(
 		"select photo_id from photo_xref_map where changelog_id = " . $self->id());
 	if(!defined($photo_xref) || $DBI::err) {
-		warn "Can't select photo cross-references: $DBI::errstr";
+		$log->error("Can't select photo cross-references: $DBI::errstr");
 		return undef;
 	}
 
@@ -1161,7 +1162,7 @@ sub update_photo_xref {
 				"$xref_id, " . $self->id() . ")";
 			print "Adding cross-reference to $xref_id\n";
 			$self->dbh()->do($sql)
-				or warn "Insert photo-changelog xref: $sql";
+				or $log->error("Insert photo-changelog xref: $sql");
 		}
 	}
 
@@ -1173,7 +1174,7 @@ sub update_photo_xref {
 				"changelog_id = " . $self->id();
 			print "Deleting cross-reference to $xref_id\n";
 			$self->dbh()->do($sql)
-				or warn "Delete photo-changelog xref: $sql";
+				or $log->error("Delete photo-changelog xref: $sql");
 		}
 	}
 
@@ -1230,7 +1231,7 @@ sub Navbar {
 			"changelog_id from user_changelog_view where user_id =".
 			$user->id() . ")";
 		my $sth = Jaeger::Base::Pgdbh()->prepare($sql);
-		$sth->execute() or warn "$sql;\n";
+		$sth->execute() or $log->error("$sql;");
 		while(my ($id) = $sth->fetchrow_array()) {
 			$unread{$id} = 1;
 		}
@@ -1349,7 +1350,7 @@ sub _tags {
 		"where changelog_id = $id";
 	my $tags = Jaeger::Base::Pgdbh()->selectcol_arrayref($sql);
 
-	warn "Changelog->tags(): $sql;\n" unless $tags;
+	$log->error("Changelog->tags(): $sql;") unless $tags;
 
 	# Cache the tags from the database so we can compare them if we're
 	# editing the entry

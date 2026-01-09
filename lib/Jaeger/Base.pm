@@ -16,7 +16,7 @@ package Jaeger::Base;
 
 use strict;
 use DBI;
-use Carp;
+use Log::Any qw($log), default_adapter => 'Stderr';
 
 use CGI;
 
@@ -47,7 +47,7 @@ sub Pgdbh {
 			DBI->connect("DBI:Pg:${connection}dbname=jaeger", "",
 				"");
 		unless($Jaeger::Base::Pgdbh) {
-			confess "Jaeger::Base: Unable to connect to pg database";
+			die $log->fatal("Jaeger::Base: Unable to connect to pg database");
 		}
 	}
 	return $Jaeger::Base::Pgdbh;
@@ -60,7 +60,7 @@ sub Pgdbh {
 sub Pingdbh {
 	if($Jaeger::Base::Pgdbh) {
 		unless($Jaeger::Base::Pgdbh->ping()) {
-			warn "Database handle invalid, attempting to reconnect\n";
+			$log->info("Database handle invalid, attempting to reconnect");
 			$Jaeger::Base::Pgdbh = undef;
 			Pgdbh();
 		}
@@ -186,7 +186,7 @@ sub Prepare {
 
 	my $sth = $dbh->prepare($sql);
 	$sth->execute()
-		or warn "$sql;\n";
+		or $log->error("$sql;");
 
 	return Jaeger::Base::Iterator->new($package, $sth);
 }
@@ -236,7 +236,7 @@ sub Count {
 
 	my $sth = $dbh->prepare($sql);
 	$sth->execute()
-		or warn "$sql;\n";
+		or $log->error("$sql;");
 
 	return ($sth->fetchrow_array())[0];
 }
@@ -261,7 +261,7 @@ sub columns {
 		"') and attnum > 0";
 	my $sth = $self->dbh()->prepare($sql);
 	$sth->execute()
-		or warn "$sql;\n";
+		or $log->error("$sql;");
 
 	my @columns;
 	while(my ($c) = $sth->fetchrow_array()) {
@@ -307,7 +307,7 @@ sub AUTOLOAD {
 	my $value = shift;
 
 	unless(ref $obj) {
-		confess "hmm, $obj doesn't seem to be a reference (autoloading $Jaeger::Base::AUTOLOAD)\n";
+		die $log->fatal("hmm, $obj doesn't seem to be a reference (autoloading $Jaeger::Base::AUTOLOAD)");
 	}
 
 	if(exists $obj->{$varible}) {
@@ -322,7 +322,7 @@ sub AUTOLOAD {
 		# we do this to only select things we actually need
 		my $value = eval "\$obj->_$varible(\@_)";
 		if($@) {
-			carp "property $varible not found ($obj) ($@)";
+			$log->warn("property $varible not found ($obj) ($@)");
 		} else {
 			return $value;
 		}
@@ -351,7 +351,7 @@ sub update {
 
 		$rv = $dbh->do($sql);
 		unless($rv) {
-			warn "$sql;\n";
+			$log->error("$sql;");
 		}
 
 	} else {
@@ -368,7 +368,7 @@ sub update {
 				undef, undef, $self->table(), undef
 			);
 		} else {
-			warn "$sql;\n";
+			$log->error("$sql;");
 		}
 	}
 
@@ -385,7 +385,7 @@ sub delete {
 
 	my $rv = $self->dbh()->do($sql);
 	unless($rv) {
-		warn "$sql;\n";
+		$log->error("$sql;");
 	}
 
 	return $rv;
@@ -400,7 +400,7 @@ sub parsetimestamp {
 	my $sql = "select extract(epoch from timestamp with time zone '$timestamp')";
 	my $sth = $self->dbh()->prepare($sql);
 	$sth->execute
-		or warn "$sql;\n";
+		or $log->error("$sql;");
 
 	return ($sth->fetchrow_array())[0];
 }

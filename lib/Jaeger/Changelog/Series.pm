@@ -12,6 +12,8 @@ use Jaeger::Changelog;
 use Jaeger::Lookfeel;
 use Jaeger::User;
 
+use Log::Any qw($log), default_adapter => 'Stderr';
+
 @Jaeger::Changelog::Series::ISA = qw(Jaeger::Base);
 
 sub table {
@@ -130,7 +132,7 @@ sub add_changelog {
 		my $sql = "select * from changelog_series_entry " .
 			"where series_id = $self->{id}";
 		my $data = $dbh->selectall_hashref($sql, 'sort_order')
-			or warn "$sql;\n";
+			or $log->error("$sql;");
 
 		# Determine if an existing changelog has the same sort order as
 		# the new changelog
@@ -141,14 +143,14 @@ sub add_changelog {
 				"set sort_order = ? " .
 				"where id = ?";
 			my $sth = $dbh->prepare($sql)
-				or warn "$sql;\n";
+				or $log->error("$sql;");
 
 			foreach my $sort_order (
 					sort {$b <=> $a}
 					grep { $_ >= $position }
 					keys %$data) {
 				$sth->execute($sort_order + 1, $data->{$sort_order}->{id})
-					or warn "$sql $sort_order, $data->{$sort_order}->{id}\n";
+					or $log->error("$sql $sort_order, $data->{$sort_order}->{id}");
 
 			}
 		}
@@ -158,7 +160,7 @@ sub add_changelog {
 		my $sql = "select max(sort_order) from changelog_series_entry ".
 			"where series_id = $self->{id}";
 		my @row = $dbh->selectrow_array($sql)
-			or warn "$sql;\n";
+			or $log->error("$sql;");
 		$position = $row[0] + 1;
 	}
 
@@ -166,7 +168,7 @@ sub add_changelog {
 		"(series_id, sort_order, changelog_id) values " .
 		"($self->{id}, $position, $changelog->{id})";
 	$dbh->do($sql)
-		or warn "Unable to update changelog series: $sql;\n";
+		or $log->error("Unable to update changelog series: $sql;");
 
 	return 1;
 }
@@ -181,7 +183,7 @@ sub delete_changelog {
 
 	my $dbh = $self->Pgdbh();
 	$dbh->do($sql)
-		or warn "Unable to update changelog series: $sql;\n";
+		or $log->error("Unable to update changelog series: $sql;");
 
 	return 1;
 }

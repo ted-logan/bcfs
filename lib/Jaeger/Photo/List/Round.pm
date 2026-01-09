@@ -12,7 +12,7 @@ package	Jaeger::Photo::List::Round;
 
 use strict;
 
-use Carp;
+use Log::Any qw($log), default_adapter => 'Stderr';
 use Time::Local;
 
 @Jaeger::Photo::List::Round::ISA = qw(Jaeger::Photo::List);
@@ -75,7 +75,7 @@ sub _prev {
 		$self->dbh()->quote($self->{round}) . " and " .
 		$self->statusquery();
 	my $sth = $self->dbh()->prepare($sql);
-	$sth->execute() or warn "$sql;\n";
+	$sth->execute() or $log->error("$sql;");
 
 	my ($prev) = $sth->fetchrow_array();
 	if($prev) {
@@ -94,7 +94,7 @@ sub _next {
 		$self->dbh()->quote($self->{round}) . " and " .
 		$self->statusquery();
 	my $sth = $self->dbh()->prepare($sql);
-	$sth->execute() or warn "$sql;\n";
+	$sth->execute() or $log->error("$sql;");
 
 	my ($next) = $sth->fetchrow_array();
 	if($next) {

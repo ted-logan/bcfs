@@ -20,7 +20,7 @@ use Jaeger::Photo::List::Date;
 use Jaeger::Thumbnail qw(year_thumbnail);
 use Jaeger::User;
 
-use Carp;
+use Log::Any qw($log), default_adapter => 'Stderr';
 use POSIX qw(strftime);
 use Time::Local;
 
@@ -44,7 +44,7 @@ sub years {
 
 	my $sql = "select year from photo_year";
 	my $sth = $self->dbh()->prepare($sql);
-	$sth->execute() or warn "$sql;\n";
+	$sth->execute() or $log->error("$sql;");
 	while(my ($year) = $sth->fetchrow_array()) {
 		push @years, $year;
 	}

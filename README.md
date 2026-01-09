@@ -17,3 +17,4 @@ An extremely incomplete list of dependencies not part of native Perl
 (this mostly covers new dependencies I'm adding, not existing ones):
 
 * [lib::relative](https://metacpan.org/pod/lib::relative)
+* [Log::Any](https://metacpan.org/pod/Log::Any)

@@ -17,11 +17,10 @@ use Jaeger::Lookfeel;
 
 @Jaeger::Photo::ISA = qw(Jaeger::Base);
 
-use Carp;
-
 use Encode qw(decode);
 use File::Basename qw(dirname);
 use File::stat;
+use Log::Any qw($log), default_adapter => 'Stderr';
 
 use Jaeger::Location;
 use Jaeger::Timezone;
@@ -218,7 +217,7 @@ sub update {
 		if($self->{timezone}) {
 			$self->{timezone_id} = $self->{timezone}->id();
 		} else {
-			carp "Jaeger::Photo->update(): timezone must be set";
+			$log->warn("Jaeger::Photo->update(): timezone must be set");
 			return undef;
 		}
 	}
@@ -227,7 +226,7 @@ sub update {
 		if($self->{location}) {
 			$self->{location_id} = $self->{location}->id();
 		} else {
-			carp "Jaeger::Photo->update(): location must be set";
+			$log->warn("Jaeger::Photo->update(): location must be set");
 			return undef;
 		}
 	}
@@ -245,16 +244,16 @@ sub update {
 		$self->{uri} = $self->create_uri();
 
 		unless($olduri) {
-			warn "Creating new photo uri for ",
-				"$self->{round}/$self->{number}:\n",
-				"\t$self->{uri}\n";
+			$log->info("Creating new photo uri for " .
+				"$self->{round}/$self->{number}:\n" .
+				"\t$self->{uri}");
 		}
 
 		if($olduri && $olduri ne $self->{uri}) {
-			warn "Creating redirect for ",
-				"$self->{round}/$self->{number}:\n",
-				"\tfrom $olduri\n",
-				"\tto $self->{uri}\n";
+			$log->info("Creating redirect for " .
+				"$self->{round}/$self->{number}:\n" .
+				"\tfrom $olduri\n" .
+				"\tto $self->{uri}");
 
 			my $redirect = new Jaeger::PageRedirect();
 			$redirect->{uri} = $olduri;
@@ -400,7 +399,7 @@ sub _file {
 	}
 
 	# this really shouldn't happen
-	warn "braindamage: $self->{round}/$self->{number} has no photo\n";
+	$log->error("braindamage: $self->{round}/$self->{number} has no photo");
 	return undef;
 }
 
@@ -530,7 +529,7 @@ sub resize {
 		"--number=\"$self->{number}\" " .
 		"--size=\"$size\" > /dev/null") == 0) {
 
-		warn "Photo $self->{round}/$self->{number}: Unable to resize to $size";
+		$log->error("Photo $self->{round}/$self->{number}: Unable to resize to $size");
 		return 0;
 	}
 
@@ -569,8 +568,8 @@ sub remote_resize {
 		print "ok.\n";
 	} else {
 		print "error ", $response->code(), "\n";
-		warn "Sent http resize request to $url; got ",
-	       		$response->status_line(), "\n";
+		$log->error("Sent http resize request to $url; got " .
+			$response->status_line());
 	}
 
 	return $response->is_success();
@@ -815,7 +814,7 @@ sub update_sets {
 	foreach my $set (keys %new_sets) {
 		if(!exists $old_sets{$set}) {
 			unless($sth->execute($set, $self->id())) {
-				warn "Error adding photo to set $set: $sql\n";
+				$log->error("Error adding photo to set $set: $sql");
 				$success = 0;
 			}
 		}
@@ -828,7 +827,7 @@ sub update_sets {
 	foreach my $set (keys %old_sets) {
 		if(!exists $new_sets{$set}) {
 			unless($sth->execute($set, $self->id())) {
-				warn "Error removing photo from set $set: $sql\n";
+				$log->error("Error removing photo from set $set: $sql");
 				$success = 0;
 			}
 		}

@@ -16,7 +16,7 @@ use Jaeger::Base;
 use Jaeger::Lookfeel;
 use Jaeger::Vehicle;
 
-use Carp;
+use Log::Any qw($log), default_adapter => 'Stderr';
 
 @Jaeger::Mileage::ISA = qw(Jaeger::Base);
 
@@ -36,13 +36,13 @@ sub new {
 	} elsif($vehicle =~ /^\d+$/) {
 		$self->{vehicle} = Jaeger::Vehicle->new_id($vehicle);
 		unless($self->{vehicle}) {
-			carp "Unable to find vehicle with id $vehicle";
+			$log->error("Unable to find vehicle with id $vehicle");
 			return undef;
 		}
 	} else {
 		$self->{vehicle} = Jaeger::Vehicle->Select(name => $vehicle);
 		unless($self->{vehicle}) {
-			carp "Unable to find vehicle with name $vehicle";
+			$log->error("Unable to find vehicle with name $vehicle");
 			return undef;
 		}
 	}
@@ -58,7 +58,7 @@ sub insert {
 
 	foreach my $p (@Jaeger::Mileage::Params) {
 		unless($params{$p}) {
-			warn "Mileage.pm: Rejected empty parameter $p\n";
+			$log->error("Mileage.pm: Rejected empty parameter $p");
 			return 0;
 		}
 	}

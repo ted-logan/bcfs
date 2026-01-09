@@ -4,8 +4,8 @@ package	Jaeger::Photo::List::Month;
 
 use strict;
 
-use Carp;
 use Time::Local;
+use Log::Any qw($log), default_adapter => 'Stderr';
 
 use Jaeger::Photo::Notfound;
 use Jaeger::Photo;
@@ -39,7 +39,7 @@ sub new {
 
 		} else {
 			# invalid date
-			carp "Jaeger::Photo::List::Month->new(): Invalid month $date";
+			$log->error("Jaeger::Photo::List::Month->new(): Invalid month $date");
 		}
 
 		my $photos = $self->photos();
