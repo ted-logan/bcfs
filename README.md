@@ -18,3 +18,4 @@ An extremely incomplete list of dependencies not part of native Perl
 
 * [lib::relative](https://metacpan.org/pod/lib::relative)
 * [Log::Any](https://metacpan.org/pod/Log::Any)
+* [Log::Any::Adapter::Screen](https://metacpan.org/pod/Log::Any::Adapter::Screen)

@@ -22,6 +22,9 @@ use Data::Dumper;
 use POSIX qw(strftime);
 use Image::ExifTool;
 use Image::Magick;
+use Log::Any::Adapter;
+
+Log::Any::Adapter->set('Screen', min_level => 'debug');
 
 # Set an empty timezone to force the EXIF module to not to time-zone
 # conversions, since we'll do them ourselves.

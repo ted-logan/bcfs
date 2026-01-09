@@ -15,6 +15,10 @@ use lib::relative '../lib';
 use Jaeger::Changelog;
 use Jaeger::User;
 
+use Log::Any::Adapter;
+
+Log::Any::Adapter->set('Screen', min_level => 'debug');
+
 my $id;
 my $import;
 my $help;

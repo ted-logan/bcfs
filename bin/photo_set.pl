@@ -11,9 +11,12 @@ use Encode qw(decode);
 use File::Copy;
 use File::Path qw(make_path);
 use Image::Magick;
+use Log::Any::Adapter;
 use Jaeger::Photo;
 use Jaeger::Photo::Set;
 use Jaeger::User;
+
+Log::Any::Adapter->set('Screen', min_level => 'debug');
 
 binmode STDOUT, ':utf8';
 
