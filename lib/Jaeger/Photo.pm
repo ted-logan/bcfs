@@ -523,7 +523,7 @@ sub resize {
 
 	return 1 if $self->{sizes} =~ /$size/;
 
-	my $bindir = dirname(__FILE__) . '../../bin';
+	my $bindir = dirname(__FILE__) . '/../../bin';
 
 	unless(system("${bindir}/cloud_resize.py " .
 		"--round=\"$self->{round}\" " .
