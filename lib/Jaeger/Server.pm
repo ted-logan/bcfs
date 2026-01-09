@@ -9,6 +9,7 @@ use Jaeger::Photo;
 # install libhttp-server-simple-perl
 use HTTP::Server::Simple::CGI;
 use HTTP::Status qw(status_message);
+use Log::Any qw($log);
 
 use base qw(HTTP::Server::Simple::CGI);
 
@@ -45,7 +46,9 @@ sub handle_request {
 	# do something
 	my $uri = $cgi->request_uri();
 
-	warn "Serving request for $uri\n";
+	$log->debug("Serving request for $uri");
+
+	local $log->context->{uri} = $uri;
 
 	my $page;
 
@@ -55,13 +58,11 @@ sub handle_request {
 		$page = Jaeger::Photo::Urimap($uri, $user);
 	}
 
-	warn "got a page: $page\n";
-
-	warn "cgi object is $cgi\n";
+	$log->debug("got a page: $page");
 
 	my $status = $page->http_status() || 200;
 	my $message = status_message($status);
-	warn "Response is $status $message\n";
+	$log->info("Response is $status $message");
 	print "HTTP/1.1 $status $message\r\n";
 	if(ref($page) eq 'Jaeger::Redirect') {
 		print "Location: $page->{url}\r\n";
@@ -90,7 +91,7 @@ sub handle_request {
 sub print_banner {
 	my $self = shift;
 
-	print("Jaeger::Server starting up\n");
+	$log->info("Jaeger::Server starting up");
 }
 
 1;
