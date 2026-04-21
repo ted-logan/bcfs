@@ -54,7 +54,8 @@ sub _photos {
 
 	my $statusquery = $self->statusquery();
 	return $self->{photos} = [Jaeger::Photo->Select(
-		"round = '$self->{round}' and $statusquery order by rowkey"
+		"round = " . $self->dbh()->quote($self->{round}) .
+		" and $statusquery order by rowkey"
 	)];
 }
 

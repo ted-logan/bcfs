@@ -378,6 +378,11 @@ my @tests = (
 		expect => "site model of the Marin County Civic Center",
 	},
 	{
+		uri => "/photo.cgi?round=516'",
+		success => 0,
+		expect => "Not found",
+	},
+	{
 		uri => "/photo/analog/photo.cgi?round=analog",
 		success => 1,
 		expect => "Fairview High School burns",
