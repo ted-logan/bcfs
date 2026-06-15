@@ -128,7 +128,13 @@ sub _changelog {
 		);
 	}
 
-	if($params{time_begin} && $params{time_end} &&
+	if($params{key_date}) {
+		$params{timestamp} = $self->changelog_date(
+			date => $params{key_date},
+			time_end => $params{time_end},
+			visibility => $Jaeger::Changelog::Status{$params{status}},
+		);
+	} elsif($params{time_begin} && $params{time_end} &&
 			($params{time_begin} ne $params{time_end})) {
 		$params{timestamp} = $self->changelog_timeboth(
 			time_begin => $params{time_begin},
