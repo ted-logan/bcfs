@@ -92,7 +92,7 @@ sub _html {
 
 	foreach my $cl (@{$self->content()}) {
 		next unless $cl;
-		my $date = $cl->time_begin() ? $cl->time_begin() : $cl->date();
+		my $date = $cl->key_date() // $cl->time_begin();
 		$date =~ s/\..*//;
 		push @content, $self->lf()->search_results_text(
 			url => $cl->url(),
