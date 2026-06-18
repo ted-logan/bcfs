@@ -1212,14 +1212,21 @@ sub Navbar {
 	}
 
 	my @changelogs;
-	
+
+	my $count = 12;
 	if($date) {
-		@changelogs = (
-			reverse(Jaeger::Changelog->Select("status <= $level and sort_date >= '$date' order by sort_date limit 4")),
-			Jaeger::Changelog->Select("status <= $level and sort_date < '$date' order by sort_date desc limit 3"),
-		);
+		my $half_count = int($count / 2);
+		@changelogs = reverse(Jaeger::Changelog->Select(
+			"status <= $level and sort_date >= '$date' " .
+			"order by sort_date limit $half_count"));
+		$count -= scalar @changelogs;
+		push @changelogs, Jaeger::Changelog->Select(
+			"status <= $level and sort_date < '$date' " .
+			"order by sort_date desc limit $count");
 	} else {
-		@changelogs = Jaeger::Changelog->Select("status <= $level order by time_begin desc limit 5");
+		@changelogs = Jaeger::Changelog->Select(
+			"status <= $level " .
+			"order by sort_date desc limit $count");
 	}
 
 	# these are the changelog ids that haven't yet been read by the user
