@@ -32,6 +32,7 @@ sub latintoascii {
 	my %mapping = (
 		'Ø' => 'O',
 		'ä' => 'ae',
+		'é' => 'e',
 		'í' => 'i',
 		'ö' => 'o',
 		'ø' => 'o',
