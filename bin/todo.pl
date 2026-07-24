@@ -24,19 +24,22 @@ unless(-d "todo") {
 }
 
 # The contents of the current "todo" directory
-my %todo = map {$_, undef} <todo/*>;
+my %todo = map {$_, undef} glob("todo/*/*.jpg");
 
 my %months;
 
 foreach my $file (sort {(stat $a)[9] <=> (stat $b)[9]} <*/todo/*>) {
 	my ($round, $number) = $file =~ m(^(\w+)/todo/(.*)\.jpg$)
 		or next;
-	my $todo = "todo/${round}_${number}.jpg";
+	my $m = strftime("%Y-%m", localtime ((stat $file)[9]));
+	my $todo = "todo/$m/${round}_${number}.jpg";
 	delete $todo{$todo};
+	unless(-d "todo/$m") {
+		mkdir "todo/$m";
+	}
 	unless(-f $todo) {
 		link $file, $todo;
 	}
-	my $m = strftime("%Y-%m", localtime ((stat $file)[9]));
 	$months{$m}->{count}++;
 	$months{$m}->{round}->{$round}++;
 }
